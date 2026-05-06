@@ -1,4 +1,3 @@
-import asyncio
 import re
 from pathlib import Path
 
@@ -35,29 +34,71 @@ async def _save_response(response, output_root: Path, manifest: Manifest, skip_p
 
 
 def _record_responses(output_root: Path, manifest: Manifest, skip_patterns: list[str]):
-    """Build the page_action coroutine that wires response capture and reload."""
-    pending: list[asyncio.Task] = []
+    """Build a page_action coroutine that intercepts every request via page.route,
+    forces a real network fetch (bypassing the browser cache), and saves the body
+    to disk before forwarding the response back to the page.
+
+    Why route() and not page.on("response", ...): on a reload the browser may serve
+    many assets from cache without firing a "response" event, or fire 304s that have
+    no body. route() runs before the cache check, so we always see every request.
+    """
+    seen: set[str] = set()
 
     async def page_action(page: Page) -> None:
-        def on_response(response) -> None:
-            pending.append(asyncio.create_task(
-                _save_response(response, output_root, manifest, skip_patterns)
-            ))
+        async def handle(route) -> None:
+            url = route.request.url
+            if url.startswith(("data:", "blob:")) or _is_skipped(url, skip_patterns):
+                try:
+                    await route.continue_()
+                except Exception:
+                    pass
+                return
+            try:
+                response = await route.fetch()
+            except Exception:
+                try:
+                    await route.continue_()
+                except Exception:
+                    pass
+                return
+            try:
+                body = await response.body()
+            except Exception:
+                body = b""
+            if 200 <= response.status < 300 and body and url not in seen:
+                seen.add(url)
+                content_type = response.headers.get("content-type", "application/octet-stream").split(";")[0].strip()
+                save_body(url, body, content_type, output_root, manifest)
+            try:
+                await route.fulfill(response=response, body=body)
+            except Exception:
+                try:
+                    await route.continue_()
+                except Exception:
+                    pass
 
-        # 1. Attach listener BEFORE any (re)issued requests.
-        page.on("response", on_response)
+        # 1. Install interceptor BEFORE we trigger any (re)requests.
+        await page.route("**/*", handle)
 
-        # 2. Reload — every initial asset fires again and is now captured.
-        await page.reload(wait_until="networkidle", timeout=60_000)
+        # 2. Reload — every asset goes through our handler, which forces a fresh
+        #    network fetch via route.fetch() (no cache reads).
+        try:
+            await page.reload(wait_until="networkidle", timeout=60_000)
+        except Exception:
+            # networkidle can occasionally time out on heavy SPAs; we still proceed
+            # to scroll/idle-wait so any in-flight requests land in our handler.
+            pass
 
         # 3. Trigger lazy-loaded sprites (parallax, lazy <img>, IntersectionObserver).
         await page.wait_for_timeout(1500)
-        await page.mouse.wheel(0, 2000)
-        await page.wait_for_load_state("networkidle")
-
-        # 4. Drain pending save tasks before returning so the manifest is complete.
-        if pending:
-            await asyncio.gather(*pending, return_exceptions=True)
+        try:
+            await page.mouse.wheel(0, 2000)
+        except Exception:
+            pass
+        try:
+            await page.wait_for_load_state("networkidle", timeout=15_000)
+        except Exception:
+            pass
 
     return page_action
 

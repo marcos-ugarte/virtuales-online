@@ -1,4 +1,3 @@
-import asyncio
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -78,33 +77,45 @@ async def test_save_response_swallows_body_errors(tmp_path):
     assert manifest.entries == []
 
 
+def _fake_route(url, status=200, body=b"x", content_type="text/css"):
+    """Build a Playwright Route mock that yields the given response when fetched."""
+    response = MagicMock()
+    response.status = status
+    response.headers = {"content-type": content_type}
+    response.body = AsyncMock(return_value=body)
+
+    route = MagicMock()
+    route.request = MagicMock()
+    route.request.url = url
+    route.fetch = AsyncMock(return_value=response)
+    route.fulfill = AsyncMock()
+    route.continue_ = AsyncMock()
+    return route, response
+
+
 @pytest.mark.asyncio
-async def test_capture_page_attaches_listener_then_reloads(tmp_path):
-    """Verify capture_page wires page_action correctly: listener attached, then
-    reload triggers it with each fake response, and bodies end up on disk."""
+async def test_capture_page_intercepts_routes_and_fulfills(tmp_path):
+    """Verify capture_page installs a route handler, routes go through it,
+    bodies are fetched + saved + forwarded to the page via fulfill()."""
     manifest = Manifest(tmp_path)
 
-    fake_responses = [
-        _fake_response("https://x.com/a.css", content_type="text/css"),
-        _fake_response("https://x.com/b.js", body=b"alert(1)", content_type="application/javascript"),
+    routes = [
+        _fake_route("https://x.com/a.css", content_type="text/css"),
+        _fake_route("https://x.com/b.js", body=b"alert(1)", content_type="application/javascript"),
     ]
 
     fake_page = MagicMock()
-    listener = {"cb": None}
+    handler = {"cb": None}
 
-    def on(event, cb):
-        if event == "response":
-            listener["cb"] = cb
+    async def route(_pattern, cb):
+        handler["cb"] = cb
 
     async def reload(**kwargs):
-        assert listener["cb"] is not None, "listener must be attached before reload"
-        for r in fake_responses:
-            listener["cb"](r)
-        # Allow scheduled save tasks to run
-        await asyncio.sleep(0)
-        await asyncio.sleep(0)
+        assert handler["cb"] is not None, "route handler must be installed before reload"
+        for r, _ in routes:
+            await handler["cb"](r)
 
-    fake_page.on = on
+    fake_page.route = route
     fake_page.reload = reload
     fake_page.wait_for_timeout = AsyncMock()
     fake_page.wait_for_load_state = AsyncMock()
@@ -123,3 +134,46 @@ async def test_capture_page_attaches_listener_then_reloads(tmp_path):
     assert (tmp_path / "x.com" / "a.css").read_bytes() == b"x"
     assert (tmp_path / "x.com" / "b.js").read_bytes() == b"alert(1)"
     assert {e["url"] for e in manifest.entries} == {"https://x.com/a.css", "https://x.com/b.js"}
+    # Each route was fulfilled (response forwarded to the page)
+    for r, _ in routes:
+        r.fulfill.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_capture_page_skips_data_urls_via_continue(tmp_path):
+    """data: and blob: URLs must not be fetched/saved; the route is continued."""
+    manifest = Manifest(tmp_path)
+
+    data_route, _ = _fake_route("data:image/png;base64,AAAA")
+    blob_route, _ = _fake_route("blob:abc")
+
+    fake_page = MagicMock()
+    handler = {"cb": None}
+
+    async def route(_pattern, cb):
+        handler["cb"] = cb
+
+    async def reload(**kwargs):
+        await handler["cb"](data_route)
+        await handler["cb"](blob_route)
+
+    fake_page.route = route
+    fake_page.reload = reload
+    fake_page.wait_for_timeout = AsyncMock()
+    fake_page.wait_for_load_state = AsyncMock()
+    fake_page.mouse = MagicMock()
+    fake_page.mouse.wheel = AsyncMock()
+
+    async def fake_async_fetch(url, page_action=None, **kw):
+        await page_action(fake_page)
+
+    from lib import capture as capture_mod
+
+    with patch.object(capture_mod.StealthyFetcher, "async_fetch", side_effect=fake_async_fetch):
+        await capture_mod.capture_page("https://x.com/", tmp_path, manifest, skip_patterns=[])
+
+    assert manifest.entries == []
+    data_route.continue_.assert_awaited_once()
+    blob_route.continue_.assert_awaited_once()
+    data_route.fetch.assert_not_awaited()
+    blob_route.fetch.assert_not_awaited()
