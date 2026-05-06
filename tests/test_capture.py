@@ -1,5 +1,6 @@
+import asyncio
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -75,3 +76,50 @@ async def test_save_response_swallows_body_errors(tmp_path):
     r.body = AsyncMock(side_effect=Exception("body gone"))
     await _save_response(r, tmp_path, manifest, [])  # must not raise
     assert manifest.entries == []
+
+
+@pytest.mark.asyncio
+async def test_capture_page_attaches_listener_then_reloads(tmp_path):
+    """Verify capture_page wires page_action correctly: listener attached, then
+    reload triggers it with each fake response, and bodies end up on disk."""
+    manifest = Manifest(tmp_path)
+
+    fake_responses = [
+        _fake_response("https://x.com/a.css", content_type="text/css"),
+        _fake_response("https://x.com/b.js", body=b"alert(1)", content_type="application/javascript"),
+    ]
+
+    fake_page = MagicMock()
+    listener = {"cb": None}
+
+    def on(event, cb):
+        if event == "response":
+            listener["cb"] = cb
+
+    async def reload(**kwargs):
+        assert listener["cb"] is not None, "listener must be attached before reload"
+        for r in fake_responses:
+            listener["cb"](r)
+        # Allow scheduled save tasks to run
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)
+
+    fake_page.on = on
+    fake_page.reload = reload
+    fake_page.wait_for_timeout = AsyncMock()
+    fake_page.wait_for_load_state = AsyncMock()
+    fake_page.mouse = MagicMock()
+    fake_page.mouse.wheel = AsyncMock()
+
+    async def fake_async_fetch(url, page_action=None, **kw):
+        await page_action(fake_page)
+
+    from lib import capture as capture_mod
+
+    with patch.object(capture_mod.StealthyFetcher, "async_fetch", side_effect=fake_async_fetch):
+        await capture_mod.capture_page("https://x.com/", tmp_path, manifest, skip_patterns=[])
+
+    # Both bodies on disk
+    assert (tmp_path / "x.com" / "a.css").read_bytes() == b"x"
+    assert (tmp_path / "x.com" / "b.js").read_bytes() == b"alert(1)"
+    assert {e["url"] for e in manifest.entries} == {"https://x.com/a.css", "https://x.com/b.js"}
