@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 126 126" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47 (45396) - http://www.bohemiancoding.com/sketch -->
+    <title>gr-play</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="icons" transform="translate(-1134.000000, -126.000000)" fill-rule="nonzero" fill="#000000">
+            <g id="Group" transform="translate(1163.000000, 142.000000)">
+                <path d="M68,48.008066 C68,50.8825829 66.5201584,53.5071418 64.0537556,54.8819107 L11.8387331,94.875189 C10.6055318,95.625063 9.24901027,96 7.89248877,96 C6.53596726,96 5.17944575,95.625063 3.94624438,95.000168 C1.47984164,93.5004201 0,90.8758612 0,88.0013443 L0,8.01478763 C0,5.14027075 1.47984164,2.51571186 3.94624438,1.01596392 C6.41264712,-0.358805024 9.49565055,-0.358805024 11.8387331,1.14094291 L64.0537556,41.1342213 C66.5201584,42.5089902 68,45.1335491 68,48.008066 Z" id="path"></path>
+            </g>
+        </g>
+    </g>
+</svg>
