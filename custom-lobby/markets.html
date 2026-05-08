@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Race Markets — Golden Race</title>
+
+  <!-- Bootstrap 4.4.1 -->
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+        crossorigin="anonymous">
+
+  <!-- FontAwesome 4.7.0 -->
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+        crossorigin="anonymous">
+
+  <!-- Google Fonts — same as lobby -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Open+Sans:wght@400;600;700&display=swap">
+
+  <!-- Shared styles (lobby + markets) -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="markets-page">
+
+  <!-- ============================================================
+       NAVBAR — identical to lobby
+       ============================================================ -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark" role="navigation" aria-label="Main navigation">
+    <a class="navbar-brand" href="index.html">
+      <img src="assets/goldenrace_logo.svg" alt="Golden Race" width="128" height="28">
+    </a>
+
+    <button class="navbar-toggler" type="button"
+            data-toggle="collapse" data-target="#main-menu"
+            aria-controls="main-menu" aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="main-menu">
+      <!-- Breadcrumb pill -->
+      <div class="markets-breadcrumb">
+        <a href="index.html" class="breadcrumb-back">
+          <span class="fa fa-angle-left" aria-hidden="true"></span>
+          Lobby
+        </a>
+        <span class="breadcrumb-sep" aria-hidden="true">/</span>
+        <span class="breadcrumb-current" id="nav-race-title">Race Markets</span>
+      </div>
+
+      <ul class="navbar-nav mr-auto" role="list"></ul>
+
+      <!-- Mock user info -->
+      <div class="navbar-user">
+        <span class="fa fa-user" aria-hidden="true"></span>
+        <span class="user-name">demo-player-01</span>
+        <span class="user-balance" title="Available balance" aria-label="Balance: 1,000.00 EUR">
+          &euro;&nbsp;1,000.00
+        </span>
+        <button class="btn btn-outline-light btn-sm" type="button" aria-label="Sign out"
+                onclick="window.location.href='index.html'">
+          Sign out&nbsp;<span class="fa fa-sign-out" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <main class="markets-main">
+
+    <!-- Race header title bar -->
+    <div class="markets-race-header" id="markets-race-header">
+      <div class="mrh-title-bar card-title-bar" id="mrh-title-bar">
+        <span class="mrh-race-title" id="mrh-race-title">Loading&hellip;</span>
+        <a class="card-watch-link mrh-watch" href="#" id="mrh-watch-link" aria-label="Watch live stream">
+          <img class="watch-tv-icon" src="assets/icons/tv.svg" alt="" aria-hidden="true">
+          <span>WATCH</span>
+        </a>
+      </div>
+      <!-- Compact participant recap table -->
+      <div class="mrh-recap-table-wrap" id="mrh-recap-table-wrap">
+        <!-- JS renders this -->
+      </div>
+    </div>
+
+    <!-- 2-column body: markets (left) + sidebar (right) -->
+    <div class="markets-body">
+
+      <!-- LEFT: market panels stack -->
+      <div class="markets-panels" id="markets-panels">
+        <!-- JS renders panels here -->
+      </div>
+
+      <!-- RIGHT: sticky sidebar -->
+      <aside class="markets-sidebar" id="markets-sidebar" aria-label="Betslip sidebar">
+
+        <!-- Betslip tabs -->
+        <div class="sidebar-tabs" role="tablist">
+          <button class="stab active" role="tab" aria-selected="true" id="tab-betslip"
+                  onclick="switchTab('betslip')">Betslip</button>
+          <button class="stab" role="tab" aria-selected="false" id="tab-mybets"
+                  onclick="switchTab('mybets')">My Bets</button>
+        </div>
+
+        <!-- BETSLIP PANEL -->
+        <div class="sidebar-panel" id="panel-betslip" role="tabpanel">
+
+          <!-- Race info card with hero photo -->
+          <div class="sidebar-race-card" id="sidebar-race-card">
+            <div class="src-hero-wrap">
+              <img class="src-hero-img" id="src-hero-img" src="" alt="Race hero photo">
+              <div class="src-hero-overlay">
+                <span class="src-hero-title" id="src-hero-title">Loading&hellip;</span>
+                <span class="src-hero-countdown" id="src-hero-countdown">00:26</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Place Bet CTA -->
+          <div class="sidebar-place-bet-wrap">
+            <div class="sidebar-empty-msg" id="sidebar-empty-msg">
+              Please add bets by clicking on the respective odds.
+            </div>
+            <button class="btn-place-bet" id="btn-place-bet" type="button" disabled>
+              Place Bet
+            </button>
+          </div>
+
+          <!-- Race lineup table -->
+          <div class="sidebar-lineup" id="sidebar-lineup">
+            <div class="lineup-header">Race lineup</div>
+            <div class="lineup-table-wrap" id="lineup-table-wrap">
+              <!-- JS renders this -->
+            </div>
+          </div>
+
+          <!-- GlobalJackpot teaser -->
+          <div class="sidebar-jackpot">
+            <div class="jackpot-label">GLOBAL JACKPOT</div>
+            <div class="jackpot-amount">&euro;0.00</div>
+            <div class="jackpot-promo">ArcadeHotel&hellip; Max Payout 100,000.00</div>
+          </div>
+
+        </div>
+
+        <!-- MY BETS PANEL (empty state) -->
+        <div class="sidebar-panel hidden" id="panel-mybets" role="tabpanel">
+          <div class="mybets-empty">
+            <span class="fa fa-ticket" aria-hidden="true"></span>
+            <p>No bets placed yet.</p>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER — identical to lobby
+       ============================================================ -->
+  <footer class="lobby-footer" role="contentinfo">
+    <div class="footer-left">
+      <img src="assets/goldenrace_logo.svg" alt="Golden Race" height="18">
+      <span>&copy; 2024 Golden Race &mdash; Virtual Sports Platform</span>
+    </div>
+    <div class="footer-right">
+      <span>18+</span>
+      &nbsp;&middot;&nbsp;
+      <a href="#" aria-label="Responsible gambling">Responsible Gambling</a>
+      &nbsp;&middot;&nbsp;
+      <a href="#" aria-label="Terms and conditions">Terms &amp; Conditions</a>
+    </div>
+  </footer>
+
+  <!-- jQuery + Bootstrap 4 -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+          integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+          crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+          integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+          crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+          integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+          crossorigin="anonymous"></script>
+
+  <!-- Markets page JS -->
+  <script src="markets.js"></script>
+
+</body>
+</html>

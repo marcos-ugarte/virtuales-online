@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Virtual Sports Lobby — Golden Race</title>
+
+  <!-- Bootstrap 4.4.1 — same CDN as original demo/desktop/index.html -->
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+        crossorigin="anonymous">
+
+  <!-- FontAwesome 4.7.0 — same CDN as original demo/desktop/index.html -->
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+        crossorigin="anonymous">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Open+Sans:wght@400;600;700&display=swap">
+
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ============================================================
+       NAVBAR — matches original demo/desktop/index.html structure
+       ============================================================ -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark" role="navigation" aria-label="Main navigation">
+    <a class="navbar-brand" href="./">
+      <img src="assets/goldenrace_logo.svg" alt="Golden Race" width="128" height="28">
+    </a>
+
+    <button class="navbar-toggler" type="button"
+            data-toggle="collapse" data-target="#main-menu"
+            aria-controls="main-menu" aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="main-menu">
+      <ul class="navbar-nav mr-auto" role="list"></ul>
+
+      <!-- Mock user info -->
+      <div class="navbar-user">
+        <span class="fa fa-user" aria-hidden="true"></span>
+        <span class="user-name">demo-player-01</span>
+        <span class="user-balance" title="Available balance" aria-label="Balance: 1,000.00 EUR">
+          &euro;&nbsp;1,000.00
+        </span>
+        <button class="btn btn-outline-light btn-sm" type="button" aria-label="Sign out">
+          Sign out&nbsp;<span class="fa fa-sign-out" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <main>
+
+    <div class="lobby-section-header">
+      <h1>Upcoming Races</h1>
+      <span class="section-badge" id="event-count-badge">3 Events</span>
+      <span class="section-line" aria-hidden="true"></span>
+    </div>
+
+    <!-- JS renders race cards here -->
+    <div id="lobby-container">
+      <div class="lobby-loading" id="lobby-loading" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <span>Loading race data&hellip;</span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="lobby-footer" role="contentinfo">
+    <div class="footer-left">
+      <img src="assets/goldenrace_logo.svg" alt="Golden Race" height="18">
+      <span>&copy; 2024 Golden Race &mdash; Virtual Sports Platform</span>
+    </div>
+    <div class="footer-right">
+      <span>18+</span>
+      &nbsp;&middot;&nbsp;
+      <a href="#" aria-label="Responsible gambling">Responsible Gambling</a>
+      &nbsp;&middot;&nbsp;
+      <a href="#" aria-label="Terms and conditions">Terms &amp; Conditions</a>
+    </div>
+  </footer>
+
+  <!-- jQuery (required by Bootstrap 4) -->
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+          integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+          crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+          integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+          crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+          integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+          crossorigin="anonymous"></script>
+
+  <!-- ============================================================
+       APP — vanilla JS, no build step, no frameworks
+       Fetches data/races.json and renders 3 race cards matching
+       the Virtustec SPA visual layout.
+       ============================================================ -->
+  <script>
+  (function () {
+    'use strict';
+
+    /* ------------------------------------------------------------------
+       Helpers
+    ------------------------------------------------------------------ */
+
+    /**
+     * Escape HTML to prevent XSS when inserting participant names, etc.
+     */
+    function esc(str) {
+      var d = document.createElement('div');
+      d.appendChild(document.createTextNode(String(str)));
+      return d.innerHTML;
+    }
+
+    /**
+     * Render N filled stars + (5-N) empty stars for a given star rating.
+     * Shows "<N>/5 " prefix in dim grey, then filled+empty star chars.
+     */
+    function renderStars(star) {
+      var s = Math.max(0, Math.min(5, Math.round(star)));
+      var html = '<span class="star-rating" aria-label="' + s + ' out of 5 stars">';
+      html += '<span class="star-label">' + s + '/5</span>';
+      for (var i = 0; i < 5; i++) {
+        html += i < s
+          ? '<span class="star-filled">&#9733;</span>'
+          : '<span class="star-empty">&#9734;</span>';
+      }
+      html += '</span>';
+      return html;
+    }
+
+    /**
+     * Render the Last Results forecast array as 5 monospace cells.
+     * "0" values render as "X" (scratched / no result).
+     */
+    function renderForecast(forecast) {
+      if (!forecast || !forecast.length) return '<span class="forecast-empty">—</span>';
+      var html = '<span class="forecast-cells">';
+      for (var i = 0; i < forecast.length; i++) {
+        var val = forecast[i];
+        var display = (val === '0') ? 'X' : esc(val);
+        var cls = (val === '0') ? 'fc-cell fc-scratch' : 'fc-cell';
+        html += '<span class="' + cls + '">' + display + '</span>';
+      }
+      html += '</span>';
+      return html;
+    }
+
+    /**
+     * Render a performance bar: percentage label + gold fill bar.
+     * form is 0..1, bar fill = Math.round(form * 100) percent.
+     */
+    function renderPerformance(form) {
+      var pct = Math.max(0, Math.min(100, Math.round(form * 100)));
+      return [
+        '<span class="perf-wrap">',
+          '<span class="perf-pct">' + pct + '%</span>',
+          '<span class="perf-track">',
+            '<span class="perf-fill" style="width:' + pct + '%"></span>',
+          '</span>',
+        '</span>'
+      ].join('');
+    }
+
+    /**
+     * Compute WIN / PLACE / SHOW odds for a participant.
+     *
+     * For HORSES: oddValues[i] = WIN, oddValues[N+i] = PLACE, oddValues[2N+i] = SHOW.
+     * However, the captured oddValues[N+i] and [2N+i] for horses produce implausible
+     * results (e.g. WIN=13.9, PLACE=1.17), so we use the same approximation for both
+     * dogs and horses:
+     *   PLACE = WIN / 2.2   (common bookmaker convention ~45% of win)
+     *   SHOW  = WIN / 3.8   (common bookmaker convention ~26% of win)
+     *
+     * NOTE: Dog oddValues[N..2N-1] and [2N..3N-1] are unrelated markets (forecast
+     * combinations, not place/show). Horse oddValues[N+i] are also misaligned with
+     * the expected place market. Approximation is used for all three cards.
+     */
+    function computeOdds(oddValues, i, N) {
+      var winRaw = parseFloat(oddValues[i]);
+      if (isNaN(winRaw) || winRaw <= 0) {
+        return { win: '—', place: '—', show: '—' };
+      }
+      var placeRaw = winRaw / 2.2;
+      var showRaw  = winRaw / 3.8;
+      return {
+        win:   winRaw.toFixed(2),
+        place: placeRaw.toFixed(2),
+        show:  showRaw.toFixed(2)
+      };
+    }
+
+    /**
+     * Map raceKey to the display title shown in the card title bar.
+     */
+    var RACE_TITLES = {
+      dog_race_1:   'Greyhound Racing: London',
+      dog_race_2:   'Greyhound Racing: Hove',
+      horse_race_1: 'Horse Racing: Royal Ascot'
+    };
+
+    /**
+     * Map raceKey to hero image path.
+     * Two dog cards share the same dog-race banner; horse card gets horse banner.
+     */
+    var RACE_HEROES = {
+      dog_race_1:   'assets/hero/dog-race.jpg',
+      dog_race_2:   'assets/hero/dog-race.jpg',
+      horse_race_1: 'assets/hero/horse-race-v2.png'
+    };
+
+    /**
+     * Per-race-type theme. Mirrors the virteon-platform POS:
+     *   dos = Dog 6  (deep blue gradient)
+     *   doe = Dog 8  (deep olive-green gradient)
+     *   hoc = Horse Classic 7 (light grey gradient — user-chosen, divergent
+     *         from the POS brown)
+     * Each entry also names the shield-icon set for the runners.
+     */
+    var RACE_THEMES = {
+      dog_race_1:   { gameType: 'dos', shieldDir: 'assets/dos-shields/dos-', titleStart: '#05215c', titleEnd: '#021138' },
+      dog_race_2:   { gameType: 'doe', shieldDir: 'assets/doe-shields/doe-', titleStart: '#0e432d', titleEnd: '#0a241b' },
+      horse_race_1: { gameType: 'hoc', shieldDir: 'assets/hoc-shields/hoc-', titleStart: '#b0bac3', titleEnd: '#7a8390' }
+    };
+
+    /* ------------------------------------------------------------------
+       Card HTML builder
+    ------------------------------------------------------------------ */
+
+    /**
+     * Build the HTML string for one race card.
+     *
+     * @param {string} raceKey   - "dog_race_1" | "dog_race_2" | "horse_race_1"
+     * @param {object} raceData  - entry from races.json
+     */
+    function buildCardHTML(raceKey, raceData) {
+      var isDog        = raceData.classType === 'DogParticipant';
+      var eventId      = raceData.eventId;
+      var participants = raceData.event.data.participants;
+      var oddValues    = raceData.event.data.oddValues || [];
+      var N            = participants.length;
+      var theme        = RACE_THEMES[raceKey] || RACE_THEMES.dog_race_1;
+      // Each race type uses its own set of POS shields (dos/doe/hoc).
+      function iconForPost(pos) {
+        return theme.shieldDir + pos + '.svg';
+      }
+      var titleHover   = theme.gameType === 'hoc' ? '#222' : '#fff';
+
+      var titleBase = RACE_TITLES[raceKey] || (isDog ? 'Greyhound Racing' : 'Horse Racing');
+      var heroSrc   = RACE_HEROES[raceKey];
+
+      /* --- Title bar --- */
+      var marketsUrl = 'markets.html?race=' + encodeURIComponent(raceKey);
+      var titleStyle =
+        'background: linear-gradient(180deg, ' + theme.titleStart + ', ' + theme.titleEnd + ');' +
+        'color: ' + titleHover + ';';
+      var titleClass = 'card-title-bar' + (theme.gameType === 'hoc' ? ' card-title-bar--light' : '');
+      var titleBarHTML = [
+        '<div class="' + titleClass + '" style="' + titleStyle + '">',
+          '<span class="card-race-title">',
+            esc(titleBase) + ' <span class="card-event-id">#' + eventId + '</span>',
+          '</span>',
+          '<a class="card-watch-link" href="' + marketsUrl + '&play=1" tabindex="0" aria-label="Watch live stream for ' + esc(titleBase) + '">',
+            '<img class="watch-tv-icon" src="assets/icons/tv.svg" alt="" aria-hidden="true">',
+            '<span>WATCH</span>',
+          '</a>',
+        '</div>'
+      ].join('');
+
+      /* --- Hero photo strip --- */
+      var heroBust = heroSrc + (heroSrc.indexOf('?') === -1 ? '?' : '&') + 't=' + Date.now();
+      var startsAtMs = raceData.startsAtMs || 0;
+      var heroHTML = [
+        '<div class="card-hero" style="position:relative;">',
+          '<img src="' + esc(heroBust) + '" alt="' + esc(titleBase) + ' race photo" class="hero-img">',
+          '<div class="card-countdown-overlay" data-starts-at="' + startsAtMs + '">',
+            '<span class="countdown-text"></span>',
+          '</div>',
+        '</div>'
+      ].join('');
+
+      /* --- Column header row --- */
+      var headerHTML = [
+        '<thead>',
+          '<tr class="col-header-row">',
+            '<th class="th-hat" scope="col"><img src="assets/icons/tv.svg" class="th-hat-icon" alt=""></th>',
+            '<th class="th-name" scope="col"></th>',
+            '<th class="th-forecast" scope="col">Last Results</th>',
+            '<th class="th-perf" scope="col">Performance</th>',
+            '<th class="th-rating" scope="col">Rating</th>',
+            '<th class="th-win" scope="col">WIN</th>',
+            '<th class="th-place" scope="col">PLACE</th>',
+            '<th class="th-show" scope="col">SHOW</th>',
+          '</tr>',
+        '</thead>'
+      ].join('');
+
+      /* --- Participant rows --- */
+      var rowsHTML = participants.map(function (p, i) {
+        var pos    = i + 1;
+        var hatSrc = iconForPost(pos);
+        var odds   = computeOdds(oddValues, i, N);
+        // The flag shields already carry the post number visually for both
+        // species, so we hide the separate post-number badge.
+        var hatClass = 'hat-img hat-img--shield';
+        var postBadge = '';
+
+        return [
+          '<tr class="participant-row">',
+            /* Hat + post number */
+            '<td class="td-hat">',
+              '<span class="hat-post-wrap">',
+                '<img class="' + hatClass + '" src="' + esc(hatSrc) + '" alt="Post ' + pos + '">',
+                postBadge,
+              '</span>',
+            '</td>',
+
+            /* Name */
+            '<td class="td-name">',
+              '<span class="participant-name">' + esc(p.name) + '</span>',
+            '</td>',
+
+            /* Last Results */
+            '<td class="td-forecast">',
+              renderForecast(p.forecast),
+            '</td>',
+
+            /* Performance */
+            '<td class="td-perf">',
+              renderPerformance(p.form),
+            '</td>',
+
+            /* Rating */
+            '<td class="td-rating">',
+              renderStars(p.star),
+            '</td>',
+
+            /* WIN */
+            '<td class="td-odd td-win">',
+              '<span class="odd-box">' + esc(odds.win) + '</span>',
+            '</td>',
+
+            /* PLACE */
+            '<td class="td-odd td-place">',
+              '<span class="odd-box">' + esc(odds.place) + '</span>',
+            '</td>',
+
+            /* SHOW */
+            '<td class="td-odd td-show">',
+              '<span class="odd-box">' + esc(odds.show) + '</span>',
+            '</td>',
+          '</tr>'
+        ].join('');
+      }).join('');
+
+      /* --- Table --- */
+      var tableHTML = [
+        '<div class="participants-table">',
+          '<table role="table" aria-label="Runners for event ' + eventId + '">',
+            '<colgroup>',
+              '<col class="col-hat">',
+              '<col class="col-name">',
+              '<col class="col-forecast">',
+              '<col class="col-perf">',
+              '<col class="col-rating">',
+              '<col class="col-win">',
+              '<col class="col-place">',
+              '<col class="col-show">',
+            '</colgroup>',
+            headerHTML,
+            '<tbody>',
+              rowsHTML,
+            '</tbody>',
+          '</table>',
+        '</div>'
+      ].join('');
+
+      /* --- Card footer --- */
+      var footerHTML = [
+        '<div class="card-footer-gr">',
+          '<a href="' + marketsUrl + '" class="all-markets-link" aria-label="Go to all markets for event ' + eventId + '">',
+            'Go to all markets &rsaquo;',
+          '</a>',
+        '</div>'
+      ].join('');
+
+      /* --- Full card --- */
+      return [
+        '<article class="race-card" aria-label="' + esc(titleBase) + ' event ' + eventId + '">',
+          titleBarHTML,
+          heroHTML,
+          tableHTML,
+          footerHTML,
+        '</article>'
+      ].join('');
+    }
+
+    /* ------------------------------------------------------------------
+       Main render function
+    ------------------------------------------------------------------ */
+
+    function renderLobby(races) {
+      var container = document.getElementById('lobby-container');
+      if (!container) return;
+
+      var keys = ['dog_race_1', 'dog_race_2', 'horse_race_1'];
+      var missing = keys.filter(function (k) { return !races[k]; });
+      if (missing.length) {
+        container.innerHTML =
+          '<div class="lobby-error">Missing race data for: ' + missing.join(', ') + '</div>';
+        return;
+      }
+
+      var gridHTML = [
+        '<div class="games-grid" role="list" aria-label="Race events">',
+          keys.map(function (k) {
+            return buildCardHTML(k, races[k]);
+          }).join(''),
+        '</div>'
+      ].join('');
+
+      container.innerHTML = gridHTML;
+
+      /* Update badge count */
+      var badge = document.getElementById('event-count-badge');
+      if (badge) badge.textContent = keys.length + ' Events';
+
+      /* Kick off countdowns immediately after render */
+      updateCountdowns();
+    }
+
+    /* ------------------------------------------------------------------
+       Countdown — shared 1Hz updater for all card overlays
+    ------------------------------------------------------------------ */
+
+    function updateCountdowns() {
+      var now = Date.now();
+      var overlays = document.querySelectorAll('[data-starts-at]');
+      for (var i = 0; i < overlays.length; i++) {
+        var el = overlays[i];
+        var startsAt = parseInt(el.getAttribute('data-starts-at'), 10) || 0;
+        var textEl = el.querySelector('.countdown-text');
+        if (!textEl) continue;
+
+        /* Once LIVE, leave it alone */
+        if (textEl.classList && textEl.classList.contains('countdown-live-inner')) continue;
+
+        var diff = startsAt - now;
+        if (diff <= 0) {
+          textEl.innerHTML = '<span class="countdown-live-inner">LIVE NOW</span>';
+          el.classList.add('countdown-live');
+        } else {
+          var totalSec = Math.ceil(diff / 1000);
+          var mm = Math.floor(totalSec / 60);
+          var ss = totalSec % 60;
+          var mmStr = (mm < 10 ? '0' : '') + mm;
+          var ssStr = (ss < 10 ? '0' : '') + ss;
+          textEl.textContent = 'STARTS IN ' + mmStr + ':' + ssStr;
+          el.classList.remove('countdown-live');
+        }
+      }
+    }
+
+    /* Shared 1Hz interval — started once and stays alive */
+    setInterval(updateCountdowns, 1000);
+
+    /* ------------------------------------------------------------------
+       Boot — fetch races.json, render, graceful fallback
+    ------------------------------------------------------------------ */
+
+    function showError(msg) {
+      var container = document.getElementById('lobby-container');
+      if (container) {
+        container.innerHTML =
+          '<div class="lobby-error">'
+          + '<strong>Could not load race data.</strong><br>'
+          + esc(msg)
+          + '</div>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      fetch('data/races.json?t=' + Date.now(), { cache: 'no-store' })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error('HTTP ' + response.status + ' ' + response.statusText);
+          }
+          return response.json();
+        })
+        .then(function (races) {
+          renderLobby(races);
+        })
+        .catch(function (err) {
+          showError(err.message || 'Unknown error');
+        });
+    });
+
+  })();
+  </script>
+
+</body>
+</html>
