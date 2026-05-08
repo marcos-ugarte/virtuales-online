@@ -1,0 +1,16 @@
+{
+  "name": "virteon-relay",
+  "version": "1.0.0",
+  "description": "Mock WebSocket relay that replays virteon racing fixtures on the real 240-second cadence",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ws": "^8.0.0"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT"
+}
