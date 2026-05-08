@@ -20,6 +20,8 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--include-game", action="append", default=[], metavar="URL", help="Manually specify a game URL (repeatable). Bypasses discovery.")
     p.add_argument("--skip-game", action="append", default=[], metavar="URL", help="Skip a specific game URL (repeatable)")
     p.add_argument("--skip-asset-pattern", action="append", default=[], metavar="REGEX", help="Skip assets whose URL matches the regex (repeatable)")
+    p.add_argument("--capture-seconds", type=int, default=0, metavar="N",
+                   help="Keep the page open N extra seconds after load to record WebSocket traffic.")
     return p.parse_args()
 
 
@@ -43,7 +45,7 @@ async def run(args: argparse.Namespace) -> None:
     print(f"[2/3] Capturing {len(urls)} URLs ...")
     for i, url in enumerate(urls, 1):
         print(f"  [{i}/{len(urls)}] {url}")
-        await capture_page(url, args.out, manifest, args.skip_asset_pattern)
+        await capture_page(url, args.out, manifest, args.skip_asset_pattern, args.capture_seconds)
 
     manifest.write()
 

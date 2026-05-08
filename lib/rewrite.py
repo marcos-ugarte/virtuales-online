@@ -11,10 +11,12 @@ def is_text(content_type: str) -> bool:
 
 
 def rewrite_text(content: str, host: str) -> str:
-    """Replace `https://{host}` and `http://{host}` with `/{host}` so absolute
-    references resolve under any local static server rooted at the mirror dir."""
+    """Strip `https://{host}` and `http://{host}` from absolute URLs, leaving
+    just the path. Combined with serving the mirror from `mirror/{host}/`, this
+    means root-relative paths in the original HTML keep working AND any
+    absolute self-references in the JS bundles also resolve locally."""
     pattern = re.compile(r"https?://" + re.escape(host))
-    return pattern.sub(f"/{host}", content)
+    return pattern.sub("", content)
 
 
 def rewrite_mirror(output_root: Path, host: str, manifest: Manifest) -> None:

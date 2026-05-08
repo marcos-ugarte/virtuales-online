@@ -6,22 +6,22 @@ from lib.storage import Manifest, save_body
 
 def test_rewrite_in_html():
     out = rewrite_text('<link href="https://x.com/a.css">', "x.com")
-    assert out == '<link href="/x.com/a.css">'
+    assert out == '<link href="/a.css">'
 
 
 def test_rewrite_in_css_url():
     out = rewrite_text('background: url(https://x.com/font.woff);', "x.com")
-    assert out == 'background: url(/x.com/font.woff);'
+    assert out == 'background: url(/font.woff);'
 
 
 def test_rewrite_handles_http_and_https():
     out = rewrite_text('http://x.com/a https://x.com/b', "x.com")
-    assert out == '/x.com/a /x.com/b'
+    assert out == '/a /b'
 
 
 def test_rewrite_keeps_other_hosts():
     out = rewrite_text('https://other.com/foo https://x.com/bar', "x.com")
-    assert out == 'https://other.com/foo /x.com/bar'
+    assert out == 'https://other.com/foo /bar'
 
 
 def test_rewrite_no_change_when_host_absent():
@@ -43,7 +43,7 @@ def test_rewrite_mirror_walks_text_files(tmp_path):
     save_body("https://x.com/a.css", b'@import "https://x.com/b.css";', "text/css", tmp_path, manifest)
     save_body("https://x.com/img.png", b"\x89PNG\r\n", "image/png", tmp_path, manifest)
     rewrite_mirror(tmp_path, "x.com", manifest)
-    assert (tmp_path / "x.com" / "a.css").read_text() == '@import "/x.com/b.css";'
+    assert (tmp_path / "x.com" / "a.css").read_text() == '@import "/b.css";'
     # Binary file untouched
     assert (tmp_path / "x.com" / "img.png").read_bytes() == b"\x89PNG\r\n"
 

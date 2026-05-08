@@ -4,3 +4,31 @@ __pycache__/
 .pytest_cache/
 mirror/
 .DS_Store
+
+# Node / Vite builds
+node_modules/
+dist/
+playwright-report/
+test-results/
+
+# Local artefacts and logs
+*.log
+mirror_run.log
+relay.log
+explore_log.txt
+explore_run.log
+explore_*.png
+snapshot.png
+snapshot-wide.png
+serve.log
+serve_custom.log
+serve_mirror.log
+web-lobby-dev.log
+served.json
+
+# Vite / TS leftovers (web-lobby)
+*.tsbuildinfo
+.vite/
+
+# Custom-lobby scratch
+custom-lobby/served.json

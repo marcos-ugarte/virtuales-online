@@ -1,5 +1,9 @@
+import base64
+import json
 import re
+import time
 from pathlib import Path
+from urllib.parse import urlparse
 
 from playwright.async_api import Page
 from scrapling.fetchers import StealthyFetcher
@@ -33,10 +37,78 @@ async def _save_response(response, output_root: Path, manifest: Manifest, skip_p
     save_body(url, body, content_type, output_root, manifest)
 
 
-def _record_responses(output_root: Path, manifest: Manifest, skip_patterns: list[str]):
+def _ws_host_dir(ws_url: str) -> str:
+    """Return the host (with port if non-default) from a WebSocket URL.
+
+    wss://example.com/path      -> example.com
+    wss://example.com:8443/path -> example.com:8443
+    """
+    parsed = urlparse(ws_url)
+    host = parsed.hostname or "unknown"
+    port = parsed.port
+    # Default ports for ws/wss
+    scheme = parsed.scheme.lower()
+    default_port = 443 if scheme == "wss" else 80
+    if port and port != default_port:
+        return f"{host}:{port}"
+    return host
+
+
+def _record_frame(
+    ws_url: str,
+    direction: str,
+    payload,
+    output_root: Path,
+    ws_state: dict,
+) -> None:
+    """Write a single WebSocket frame as a JSONL line to the appropriate file.
+
+    ws_state is a mutable dict with keys:
+      - "counter": int  — next connection ID to assign
+      - "url_to_id": dict[str, int]  — maps ws_url -> assigned ID
+    """
+    # Assign a stable integer ID to each unique WebSocket URL/connection.
+    url_to_id = ws_state["url_to_id"]
+    if ws_url not in url_to_id:
+        url_to_id[ws_url] = ws_state["counter"]
+        ws_state["counter"] += 1
+    conn_id = url_to_id[ws_url]
+
+    host_dir = _ws_host_dir(ws_url)
+    ws_dir = output_root / host_dir / "_websocket"
+    ws_dir.mkdir(parents=True, exist_ok=True)
+    file_path = ws_dir / f"ws-{conn_id}.jsonl"
+
+    if isinstance(payload, (bytes, bytearray)):
+        payload_str = base64.b64encode(payload).decode("ascii")
+        is_binary = True
+    else:
+        payload_str = payload
+        is_binary = False
+
+    record = {
+        "timestamp": time.time(),
+        "direction": direction,
+        "url": ws_url,
+        "payload": payload_str,
+        "binary": is_binary,
+    }
+    with open(file_path, "a", encoding="utf-8") as fh:
+        fh.write(json.dumps(record) + "\n")
+
+
+def _record_responses(
+    output_root: Path,
+    manifest: Manifest,
+    skip_patterns: list[str],
+    capture_seconds: int = 0,
+):
     """Build a page_action coroutine that intercepts every request via page.route,
     forces a real network fetch (bypassing the browser cache), and saves the body
     to disk before forwarding the response back to the page.
+
+    Additionally installs a WebSocket listener that records every frame sent and
+    received to per-connection JSONL files under <output_root>/<host>/_websocket/.
 
     Why route() and not page.on("response", ...): on a reload the browser may serve
     many assets from cache without firing a "response" event, or fire 304s that have
@@ -45,6 +117,28 @@ def _record_responses(output_root: Path, manifest: Manifest, skip_patterns: list
     seen: set[str] = set()
 
     async def page_action(page: Page) -> None:
+        # --- WebSocket capture setup ---
+        ws_state: dict = {"counter": 0, "url_to_id": {}}
+
+        def on_ws(ws) -> None:
+            ws_url = ws.url
+
+            ws.on(
+                "framesent",
+                lambda payload: _record_frame(ws_url, "sent", payload, output_root, ws_state),
+            )
+            ws.on(
+                "framereceived",
+                lambda payload: _record_frame(ws_url, "received", payload, output_root, ws_state),
+            )
+            ws.on(
+                "close",
+                lambda _ws=ws: None,  # intentional no-op; hook for future logging
+            )
+
+        page.on("websocket", on_ws)
+
+        # --- HTTP capture setup ---
         async def handle(route) -> None:
             url = route.request.url
             if url.startswith(("data:", "blob:")) or _is_skipped(url, skip_patterns):
@@ -100,6 +194,10 @@ def _record_responses(output_root: Path, manifest: Manifest, skip_patterns: list
         except Exception:
             pass
 
+        # 4. Extra dwell time to capture WebSocket traffic.
+        if capture_seconds > 0:
+            await page.wait_for_timeout(capture_seconds * 1000)
+
     return page_action
 
 
@@ -108,12 +206,17 @@ async def capture_page(
     output_root: Path,
     manifest: Manifest,
     skip_patterns: list[str] | None = None,
+    capture_seconds: int = 0,
 ) -> None:
-    """Open `url` with StealthyFetcher and persist every successful HTTP response."""
+    """Open `url` with StealthyFetcher and persist every successful HTTP response.
+
+    If capture_seconds > 0, the page is kept alive that many extra seconds so
+    that WebSocket frames (and any late-arriving HTTP responses) can be recorded.
+    """
     skip = skip_patterns or []
     await StealthyFetcher.async_fetch(
         url,
         headless=True,
         network_idle=True,
-        page_action=_record_responses(output_root, manifest, skip),
+        page_action=_record_responses(output_root, manifest, skip, capture_seconds),
     )
