@@ -76,7 +76,7 @@ test('countdown shows MM:SS and decrements after 1 s', async ({ page }) => {
 // ---------------------------------------------------------------------------
 // Test 5: Each card lists the right number of participant rows
 // ---------------------------------------------------------------------------
-test('participant counts: dos=6, doe=8, hoc=7', async ({ page }) => {
+test('participant counts: dog=6, dog8=8, horsec=7', async ({ page }) => {
   await page.goto('/');
   // Wait for tables to populate
   await expect(page.locator('.race-card').first().locator('.participant-row')).toHaveCount(6, { timeout: 10_000 });

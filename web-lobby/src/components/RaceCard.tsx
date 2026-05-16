@@ -1,11 +1,11 @@
 /**
  * RaceCard — renders a single race card with:
- *   - Title bar (per-game gradient)
+ *   - Title bar (per-game gradient + optional bonus badge + weather chip)
  *   - Hero photo strip with countdown overlay
  *   - 8-column participant table (hat | name | last5 | perf | rating | win | place | show)
  */
 
-import type { GameKey, RaceData, Competitor } from '../types/websocket';
+import type { GameKey, Race, Competitor } from '../types/websocket';
 import { useTimer } from '../hooks/useTimer';
 import { CountdownOverlay } from './CountdownOverlay';
 
@@ -23,34 +23,34 @@ interface Theme {
 }
 
 // Per-game theme colors (matching virteon-platform's POS theme map):
-//   dos = Dog 6     → deep blue
-//   doe = Dog 8     → deep olive-green
-//   hoc = Horse 7   → light grey (user-chosen)
+//   dog    (betoffer 141) → deep blue       — greyhound 6
+//   dog8   (betoffer 541) → deep olive      — greyhound 8
+//   horsec (betoffer 241) → light grey      — horse classic 7
 const THEMES: Record<GameKey, Theme> = {
-  dos: {
+  dog: {
     titleStart: '#05215c',
     titleEnd: '#021138',
     titleColor: '#fff',
     lightTitle: false,
-    shieldDir: '/assets/dos-shields/dos-',
+    shieldDir: '/assets/dog-shields/dog-',
     heroSrc: '/assets/hero/dog-race.jpg',
     titleText: 'Greyhound Racing: London',
   },
-  doe: {
+  dog8: {
     titleStart: '#0e432d',
     titleEnd: '#0a241b',
     titleColor: '#fff',
     lightTitle: false,
-    shieldDir: '/assets/doe-shields/doe-',
+    shieldDir: '/assets/dog8-shields/dog8-',
     heroSrc: '/assets/hero/dog-race-2.png',
     titleText: 'Greyhound Racing: Hove',
   },
-  hoc: {
+  horsec: {
     titleStart: '#b0bac3',
     titleEnd: '#7a8390',
     titleColor: '#222',
     lightTitle: true,
-    shieldDir: '/assets/hoc-shields/hoc-',
+    shieldDir: '/assets/horsec-shields/horsec-',
     heroSrc: '/assets/hero/horse-race-v2.png',
     titleText: 'Horse Racing: Royal Ascot',
   },
@@ -63,6 +63,17 @@ const THEMES: Record<GameKey, Theme> = {
 /** Stars from strike rate (1-5). Same formula as static prototype. */
 function starsFromStrikeRate(strikeRate: number | undefined): number {
   return Math.max(1, Math.min(5, Math.round((strikeRate ?? 10) / 20)));
+}
+
+/**
+ * Race number derived from the roundCode tail.
+ * RoundCode format: "<betoff>_<scheduleId>_<YYYYMMDD><nnnn>"
+ * The last 4 digits are the per-day race counter.
+ */
+function deriveRaceNumber(id: string): string | undefined {
+  const last = id.split('_').pop();
+  if (!last || last.length < 4) return undefined;
+  return last.slice(-4);
 }
 
 /** Render star icons */
@@ -121,6 +132,53 @@ function OddBox({ value, className }: { value: string; className: string }) {
   );
 }
 
+/** Small weather/temperature chip in the title bar. */
+function WeatherChip({
+  weather,
+  temperature,
+  light,
+}: {
+  weather?: string;
+  temperature?: number;
+  light: boolean;
+}) {
+  if (!weather && temperature === undefined) return null;
+  const icon = weatherIcon(weather);
+  return (
+    <span
+      className="card-weather-chip"
+      style={{
+        color: light ? '#222' : '#fff',
+        opacity: 0.85,
+      }}
+    >
+      {icon}
+      {temperature !== undefined ? `${Math.round(temperature)}°C` : ''}
+    </span>
+  );
+}
+
+function weatherIcon(weather?: string): string {
+  if (!weather) return '';
+  const w = weather.toLowerCase();
+  if (w.includes('sun') || w.includes('fine')) return '☀️ ';
+  if (w.includes('rain')) return '🌧 ';
+  if (w.includes('cloud')) return '☁️ ';
+  if (w.includes('fog') || w.includes('mist')) return '🌫 ';
+  if (w.includes('snow')) return '❄️ ';
+  return '🌡 ';
+}
+
+/** Bonus multiplier badge in the title bar. */
+function BonusBadge({ bonus }: { bonus: number | undefined }) {
+  if (!bonus || bonus <= 1) return null;
+  return (
+    <span className="card-bonus-badge" title={`x${bonus} bonus`}>
+      x{bonus} BONUS
+    </span>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Skeleton shown while race data is null
 // ---------------------------------------------------------------------------
@@ -154,7 +212,7 @@ function SkeletonCard({ theme }: { theme: Theme }) {
 // ---------------------------------------------------------------------------
 interface RaceCardProps {
   gameType: GameKey;
-  race: RaceData | null;
+  race: Race | null;
   clockOffsetMs: number;
 }
 
@@ -168,13 +226,14 @@ export function RaceCard({ gameType, race, clockOffsetMs }: RaceCardProps) {
 
   // Convert competitors Record → sorted array by post position (key is 1-based string)
   const sortedEntries: Array<{ pos: number; comp: Competitor }> = Object.entries(
-    race.competitors
+    race.competitors,
   )
     .map(([key, comp]) => ({ pos: parseInt(key, 10), comp }))
     .sort((a, b) => a.pos - b.pos);
 
-  const titleText = race.raceNumber
-    ? `${theme.titleText} — Race #${race.raceNumber}`
+  const raceNumber = deriveRaceNumber(race.id);
+  const titleText = raceNumber
+    ? `${theme.titleText} — Race #${raceNumber}`
     : theme.titleText;
 
   return (
@@ -189,6 +248,14 @@ export function RaceCard({ gameType, race, clockOffsetMs }: RaceCardProps) {
       >
         <span className="card-race-title" style={{ color: theme.titleColor }}>
           {titleText}
+        </span>
+        <span className="card-title-meta">
+          <BonusBadge bonus={race.bonus} />
+          <WeatherChip
+            weather={race.weather}
+            temperature={race.temperature}
+            light={theme.lightTitle}
+          />
         </span>
         <a
           className="card-watch-link"
@@ -241,9 +308,12 @@ export function RaceCard({ gameType, race, clockOffsetMs }: RaceCardProps) {
             {sortedEntries.map(({ pos, comp }) => {
               const i = pos - 1; // 0-based index for odds array
               const winOdd = race.odds[i] ?? 0;
-              // PLACE / SHOW heuristics — virteon-platform's data model only
-              // exposes WIN per runner; PLACE and SHOW shown here mirror the
-              // visual conventions of the original Virtustec demo lobby.
+              // PLACE / SHOW heuristics — the vendor `odds` array is a
+              // matrix indexed by bettype; the first N entries are WIN.
+              // PLACE / SHOW live at other offsets defined in
+              // betoffer.bettypes[].oddsIndexStart, not modelled here yet.
+              // The /2.2 and /3.8 multipliers preserve the visual demo
+              // shape from the original Virtustec lobby.
               const placeOdd = winOdd / 2.2;
               const showOdd = winOdd / 3.8;
               const stars = starsFromStrikeRate(comp.strikeRate);

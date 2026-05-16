@@ -1,12 +1,14 @@
 import { Navbar } from './components/Navbar';
 import { RaceCard } from './components/RaceCard';
 import { LiveMonitor } from './components/LiveMonitor';
-import { useRealRaceData } from './hooks/useRealRaceData';
+import { useRaceFeed } from './hooks/useRaceFeed';
 
-const RELAY_URL = (import.meta.env.VITE_WS_URL as string | undefined) ?? 'ws://localhost:8765';
+const WS_URL =
+  (import.meta.env.VITE_WS_URL as string | undefined) ??
+  'ws://localhost:4099/web-ds';
 
 export default function App() {
-  const { allGames, status, clockOffsetMs } = useRealRaceData({ relayUrl: RELAY_URL });
+  const { allGames, status, clockOffsetMs } = useRaceFeed({ wsUrl: WS_URL });
 
   return (
     <>
@@ -21,9 +23,9 @@ export default function App() {
         </div>
         <div className="lobby-shell">
           <div className="games-grid">
-            <RaceCard gameType="dos" race={allGames.dos} clockOffsetMs={clockOffsetMs} />
-            <RaceCard gameType="doe" race={allGames.doe} clockOffsetMs={clockOffsetMs} />
-            <RaceCard gameType="hoc" race={allGames.hoc} clockOffsetMs={clockOffsetMs} />
+            <RaceCard gameType="dog" race={allGames.dog} clockOffsetMs={clockOffsetMs} />
+            <RaceCard gameType="dog8" race={allGames.dog8} clockOffsetMs={clockOffsetMs} />
+            <RaceCard gameType="horsec" race={allGames.horsec} clockOffsetMs={clockOffsetMs} />
           </div>
           <LiveMonitor allGames={allGames} clockOffsetMs={clockOffsetMs} />
         </div>

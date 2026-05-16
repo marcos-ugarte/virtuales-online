@@ -1,70 +1,118 @@
 /**
- * WebSocket relay message types — simplified for web-lobby (no betting).
- * Adapted from virteon-platform/apps/pos-go/src/types/websocket.ts
+ * WebSocket types for /web-ds (mobile-vendor wire).
+ *
+ * Names and shapes mirror the captured vendor wire 1:1 so that frames
+ * deserialise into these types with minimal transformation. The lobby
+ * canonical game keys are the vendor's eventType strings:
+ *
+ *   dog     (betoffer 141)  → greyhound 6
+ *   dog8    (betoffer 541)  → greyhound 8
+ *   horsec  (betoffer 241)  → horse classic 7
+ *
+ * The vendor wire also publishes `horse` (251), `dog63` (741), `kart` (441),
+ * `wgp` (600). They are out of lobby scope and ignored by the parser.
  */
 
-export type GameKey = 'dos' | 'doe' | 'hoc';
+export type GameKey = 'dog' | 'dog8' | 'horsec';
 
+export const GAME_KEYS: readonly GameKey[] = ['dog', 'dog8', 'horsec'] as const;
+
+/**
+ * Competitor — fields the vendor emits for a single runner.
+ * Optional fields appear only for some event types (e.g. age/sex on horsec).
+ */
 export interface Competitor {
   name: string;
   weight?: number;
+  bestLap?: number;
+  performance?: number;        // 0..1
+  strikeRate?: number;         // 0..100
   numberOfRaces?: number;
   numberOfWins?: number;
   numberOfSecond?: number;
-  strikeRate?: number;
-  bestLap?: number;
-  performance?: number;     // 0..1
-  resultHistory?: string;
-  last5?: string;            // e.g. '5|3|4|2|8'
+  racesForStatistic?: number;
+  last5?: string;              // e.g. "5|3|4|2|8"
+  resultHistory?: string;      // e.g. "5;3;4;2;8" (semicolon variant)
   nbr1?: number;
   nbr2?: number;
   nbr3?: number;
   trend?: number;
+  // horsec only:
+  age?: number;
+  sex?: string;
 }
 
-export interface RaceData {
+/**
+ * VideoName — pre-signed CloudFront URLs for the recorded race video.
+ * Both fields rotate per session; the asset path before `?` is stable.
+ */
+export interface VideoName {
+  mp4?: string;
+  jpg?: string;
+}
+
+/**
+ * JackpotInfo — per-race bonus accrual snapshot.
+ * Only emitted for dog/dog8/horsec (null for kart/wgp/dog63).
+ */
+export interface JackpotInfo {
+  bonusValue?: number;
+  oldBonusValue?: number;
+  bonusHistory?: Array<{
+    round: string;
+    id: string;
+    date: string;
+    time: string;
+    name: string;
+    amount: number;
+  }>;
+}
+
+/**
+ * Race — one entry from gameRound.gamepool[]. Field names are the
+ * vendor's verbatim, except where TypeScript convention demands camelCase
+ * (vendor already uses camelCase everywhere we consume).
+ */
+export interface Race {
+  /** Unique round identifier, e.g. "141_101_202605160056". Wire field is `id`. */
   id: string;
-  raceId?: string;
-  raceNumber?: string;
-  game: GameKey;
-  videoStartDt: string;     // 'YYYY-MM-DD HH:mm:ss' (UTC)
+  /** Vendor betoffer id (141/541/251/241). */
+  idBetoffer: number;
+  /** Vendor eventType string; one of GAME_KEYS (or out-of-scope). */
+  eventType: GameKey;
+  /** UTC string "YYYY-MM-DD HH:MM:SS" — when the video starts. */
+  videoStartDt: string;
+  /** UTC string "YYYY-MM-DD HH:MM:SS" — when the video ends. */
   videoEndDt: string;
-  roundInterval: number;     // 240
+  /** Round period in seconds (e.g. 240 for dog6/dog8, 320 for horsec). */
+  roundInterval: number;
+  /** Bonus multiplier for this round (1/2/3). 1 = no bonus. */
+  bonus?: number;
+  /** Runners keyed by post position (1-based string). */
   competitors: Record<string, Competitor>;
+  /**
+   * Flat odds array — actually a matrix indexed by bettype.
+   * For dog6 it's 36 entries (6×6), dog8 64 (8×8), horsec 49 (7×7).
+   * The first N entries are WIN odds (one per dorsal); further indices
+   * are PLACE/SHOW/EXACTA/etc. defined by betoffer.bettypes[i].oddsIndexStart.
+   */
   odds: number[];
-  bonus?: number;
-  eventType?: string;
+  weather?: string;            // "sunny", "fine", "cloudy", "fog", ...
+  temperature?: number;        // °C
+  humidity?: number;           // %
+  wind?: string;               // e.g. "5 NE"
+  courseConditions?: string;   // "fast", "soft", ...
+  videoname?: VideoName;
+  jackpotInfo?: JackpotInfo | null;
+  /** Finish data — only set after gameResult arrives. */
+  finish?: Record<string, { competitorIndex: number; time?: number }>;
 }
 
-export interface RaceFinishEntry {
-  position: number;
-  competitorIndex: number;
-  time?: number;
-}
+/**
+ * AllGames — one current race per lobby game key.
+ * Null while waiting for data.
+ */
+export type AllGames = Record<GameKey, Race | null>;
 
-export interface RaceResult {
-  type: 'raceResult';
-  game: GameKey;
-  raceId: string;
-  finish: Record<string, RaceFinishEntry> | RaceFinishEntry[];
-  bonus?: number;
-  eventType?: string;
-}
-
-export interface RaceUpdate extends RaceData {
-  type: 'raceUpdate';
-}
-
-export interface GamepoolUpdate {
-  type: 'gamepoolUpdate';
-  gamepool: Partial<Record<GameKey, RaceData[]>>;
-  sourceMode: 'mock' | 'live';
-}
-
-export interface TimeSync {
-  type: 'timeSync';
-  serverTime: string;
-  serverTimeUnix: number;
-}
-
-export type RelayMessage = GamepoolUpdate | RaceUpdate | RaceResult | TimeSync;
+/** Connection status surfaced by useRaceFeed. */
+export type FeedStatus = 'connecting' | 'connected' | 'reconnecting' | 'error';
