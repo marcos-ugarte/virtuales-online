@@ -2,7 +2,13 @@
  * RaceCard — renders a single race card with:
  *   - Title bar (per-game gradient + optional bonus badge + weather chip)
  *   - Hero photo strip with countdown overlay
- *   - 8-column participant table (hat | name | last5 | perf | rating | win | place | show)
+ *   - 6-column participant table (hat | name | last5 | perf | rating | win)
+ *
+ * Only WIN is rendered. PLACE/SHOW are not native markets for our 3
+ * betoffers (141/541/241) — the vendor wire only exposes Winner +
+ * Forecast in order for those. Forecast (EXACTA — pick 1st + 2nd in
+ * order) is the wire-native "second position" market and belongs in a
+ * separate panel, not as a per-runner column.
  */
 
 import type { GameKey, Race, Competitor } from '../types/websocket';
@@ -293,8 +299,6 @@ export function RaceCard({ gameType, race, clockOffsetMs }: RaceCardProps) {
             <col className="col-perf" />
             <col className="col-rating" />
             <col className="col-win" />
-            <col className="col-place" />
-            <col className="col-show" />
           </colgroup>
           <thead>
             <tr className="col-header-row">
@@ -304,22 +308,12 @@ export function RaceCard({ gameType, race, clockOffsetMs }: RaceCardProps) {
               <th className="th-perf">Performance</th>
               <th className="th-rating">Rating</th>
               <th className="th-win">WIN</th>
-              <th className="th-place">PLACE</th>
-              <th className="th-show">SHOW</th>
             </tr>
           </thead>
           <tbody>
             {sortedEntries.map(({ pos, comp }) => {
               const i = pos - 1; // 0-based index for odds array
               const winOdd = race.odds[i] ?? 0;
-              // PLACE / SHOW heuristics — the vendor `odds` array is a
-              // matrix indexed by bettype; the first N entries are WIN.
-              // PLACE / SHOW live at other offsets defined in
-              // betoffer.bettypes[].oddsIndexStart, not modelled here yet.
-              // The /2.2 and /3.8 multipliers preserve the visual demo
-              // shape from the original Virtustec lobby.
-              const placeOdd = winOdd / 2.2;
-              const showOdd = winOdd / 3.8;
               const stars = starsFromStrikeRate(comp.strikeRate);
 
               return (
@@ -355,10 +349,7 @@ export function RaceCard({ gameType, race, clockOffsetMs }: RaceCardProps) {
                     <StarRating stars={stars} />
                   </td>
 
-                  {/* WIN / PLACE / SHOW columns — match the Virtustec lobby. */}
                   <OddBox value={winOdd.toFixed(2)} className="td-win" />
-                  <OddBox value={placeOdd.toFixed(2)} className="td-place" />
-                  <OddBox value={showOdd.toFixed(2)} className="td-show" />
                 </tr>
               );
             })}

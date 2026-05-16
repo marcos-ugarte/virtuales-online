@@ -93,8 +93,12 @@ export interface Race {
   /**
    * Flat odds array — actually a matrix indexed by bettype.
    * For dog6 it's 36 entries (6×6), dog8 64 (8×8), horsec 49 (7×7).
-   * The first N entries are WIN odds (one per dorsal); further indices
-   * are PLACE/SHOW/EXACTA/etc. defined by betoffer.bettypes[i].oddsIndexStart.
+   * Layout per bettype is defined by the betoffer's bettypes[].oddsIndexStart.
+   * Our 3 in-scope betoffers (141 dog, 541 dog8, 241 horsec) expose only:
+   *   - bettypeId 1 "Winner"           — first N entries (one per dorsal)
+   *   - bettypeId 2 "Forecast in order" — N²-N entries: (i,j) pairs for i≠j
+   * PLACE/SHOW are NOT in the vendor wire for these games (they exist on
+   * dog63/741 but not on ours). Do not synthesise them.
    */
   odds: number[];
   weather?: string;            // "sunny", "fine", "cloudy", "fog", ...
