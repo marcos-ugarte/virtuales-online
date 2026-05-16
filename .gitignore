@@ -32,3 +32,11 @@ served.json
 
 # Custom-lobby scratch
 custom-lobby/served.json
+
+# Secrets — never commit
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
