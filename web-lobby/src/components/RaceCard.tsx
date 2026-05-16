@@ -276,7 +276,11 @@ export function RaceCard({ gameType, race, clockOffsetMs }: RaceCardProps) {
       {/* ── 2. Hero photo strip + countdown overlay ── */}
       <div className="card-hero" style={{ position: 'relative' }}>
         <img className="hero-img" src={theme.heroSrc} alt="" />
-        <CountdownOverlay remainingSec={remainingSec} phase={phase} />
+        <CountdownOverlay
+          remainingSec={remainingSec}
+          phase={phase}
+          scheduledAt={race.videoStartDt}
+        />
       </div>
 
       {/* ── 3. Participant table ── */}
