@@ -14,6 +14,8 @@
 import type { GameKey, Race, Competitor } from '../types/websocket';
 import { useTimer } from '../hooks/useTimer';
 import { CountdownOverlay } from './CountdownOverlay';
+import { useLang } from '../i18n';
+import { useBetslip, useIsSelected } from '../state/betslip';
 
 // ---------------------------------------------------------------------------
 // Per-game theme constants
@@ -40,7 +42,8 @@ const THEMES: Record<GameKey, Theme> = {
     lightTitle: false,
     shieldDir: '/assets/dog-shields/dog-',
     heroSrc: '/assets/hero/dog-race.jpg',
-    titleText: 'Greyhound Racing: London',
+    /** titleText holds the prefix-key + ": location"; rendered via t() */
+    titleText: 'card.dog6:London',
   },
   dog8: {
     titleStart: '#0e432d',
@@ -49,7 +52,7 @@ const THEMES: Record<GameKey, Theme> = {
     lightTitle: false,
     shieldDir: '/assets/dog8-shields/dog8-',
     heroSrc: '/assets/hero/dog-race-2.png',
-    titleText: 'Greyhound Racing: Hove',
+    titleText: 'card.dog8:Hove',
   },
   horsec: {
     titleStart: '#b0bac3',
@@ -58,9 +61,15 @@ const THEMES: Record<GameKey, Theme> = {
     lightTitle: true,
     shieldDir: '/assets/horsec-shields/horsec-',
     heroSrc: '/assets/hero/horse-race-v2.png',
-    titleText: 'Horse Racing: Royal Ascot',
+    titleText: 'card.horse7:Royal Ascot',
   },
 };
+
+/** Convert "card.greyhound:London" → "Greyhound Racing: London" (or ES). */
+function formatTitle(key: string, t: (k: string) => string): string {
+  const [k, loc] = key.split(':');
+  return loc ? `${t(k)}: ${loc}` : t(k);
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -83,10 +92,10 @@ function deriveRaceNumber(id: string): string | undefined {
 }
 
 /** Render star icons */
-function StarRating({ stars }: { stars: number }) {
+function StarRating({ stars, label }: { stars: number; label: string }) {
   return (
     <div className="star-rating">
-      <span className="star-label">RTG</span>
+      <span className="star-label">{label}</span>
       {Array.from({ length: 5 }, (_, i) => (
         <span key={i} className={i < stars ? 'star-filled' : 'star-empty'}>
           {i < stars ? '★' : '☆'}
@@ -129,11 +138,40 @@ function PerfBar({ performance }: { performance: number | undefined }) {
   );
 }
 
-/** Odd box */
-function OddBox({ value, className }: { value: string; className: string }) {
+/** Clickable WIN odd cell — toggles the runner into the betslip.
+ *  When `disabled` (race is in live phase), shown grey + not interactive. */
+function WinOddCell({
+  value,
+  onClick,
+  selected,
+  disabled,
+  ariaLabel,
+  tooltip,
+}: {
+  value: string;
+  onClick: () => void;
+  selected: boolean;
+  disabled: boolean;
+  ariaLabel: string;
+  tooltip: string;
+}) {
   return (
-    <td className={`td-odd ${className}`}>
-      <span className="odd-box">{value}</span>
+    <td className="td-odd td-win">
+      <button
+        type="button"
+        className={
+          'odd-box' +
+          (selected ? ' odd-box--selected' : '') +
+          (disabled ? ' odd-box--disabled' : '')
+        }
+        onClick={onClick}
+        disabled={disabled}
+        aria-label={ariaLabel}
+        aria-pressed={selected}
+        title={tooltip}
+      >
+        {value}
+      </button>
     </td>
   );
 }
@@ -189,6 +227,7 @@ function BonusBadge({ bonus }: { bonus: number | undefined }) {
 // Skeleton shown while race data is null
 // ---------------------------------------------------------------------------
 function SkeletonCard({ theme }: { theme: Theme }) {
+  const { t } = useLang();
   return (
     <div className="race-card">
       <div
@@ -199,7 +238,7 @@ function SkeletonCard({ theme }: { theme: Theme }) {
         }}
       >
         <span className="card-race-title" style={{ color: theme.titleColor }}>
-          {theme.titleText}
+          {formatTitle(theme.titleText, t)}
         </span>
       </div>
       <div className="card-hero" style={{ position: 'relative' }}>
@@ -207,7 +246,7 @@ function SkeletonCard({ theme }: { theme: Theme }) {
       </div>
       <div className="lobby-loading">
         <div className="spinner" aria-hidden="true" />
-        <span>Waiting for data&hellip;</span>
+        <span>{t('card.waiting')}</span>
       </div>
     </div>
   );
@@ -220,10 +259,16 @@ interface RaceCardProps {
   gameType: GameKey;
   race: Race | null;
   clockOffsetMs: number;
+  /** True when this card is the one currently driving the LiveMonitor. */
+  isWatching: boolean;
+  /** Fired when the user clicks WATCH on this card. */
+  onWatch: () => void;
 }
 
-export function RaceCard({ gameType, race, clockOffsetMs }: RaceCardProps) {
+export function RaceCard({ gameType, race, clockOffsetMs, isWatching, onWatch }: RaceCardProps) {
   const theme = THEMES[gameType];
+  const { t } = useLang();
+  const { toggleWin } = useBetslip();
   const { remainingSec, phase } = useTimer(race?.videoStartDt, clockOffsetMs);
 
   if (!race) {
@@ -238,9 +283,10 @@ export function RaceCard({ gameType, race, clockOffsetMs }: RaceCardProps) {
     .sort((a, b) => a.pos - b.pos);
 
   const raceNumber = deriveRaceNumber(race.id);
+  const baseTitle = formatTitle(theme.titleText, t);
   const titleText = raceNumber
-    ? `${theme.titleText} — Race #${raceNumber}`
-    : theme.titleText;
+    ? `${baseTitle} — ${t('card.race')} #${raceNumber}`
+    : baseTitle;
 
   return (
     <div className="race-card">
@@ -255,18 +301,19 @@ export function RaceCard({ gameType, race, clockOffsetMs }: RaceCardProps) {
         <span className="card-race-title" style={{ color: theme.titleColor }}>
           {titleText}
         </span>
-        <span className="card-title-meta">
-          <BonusBadge bonus={race.bonus} />
-          <WeatherChip
-            weather={race.weather}
-            temperature={race.temperature}
-            light={theme.lightTitle}
-          />
-        </span>
-        <a
-          className="card-watch-link"
-          href="#"
-          aria-label="Watch live"
+        <WeatherChip
+          weather={race.weather}
+          temperature={race.temperature}
+          light={theme.lightTitle}
+        />
+        <span className="card-title-spacer" aria-hidden="true" />
+        <BonusBadge bonus={race.bonus} />
+        <button
+          type="button"
+          className={`card-watch-link${isWatching ? ' card-watch-link--active' : ''}`}
+          onClick={onWatch}
+          aria-pressed={isWatching}
+          aria-label="Watch this race on the monitor"
           style={{ color: theme.titleColor }}
         >
           <img
@@ -275,8 +322,8 @@ export function RaceCard({ gameType, race, clockOffsetMs }: RaceCardProps) {
             alt=""
             aria-hidden="true"
           />
-          WATCH
-        </a>
+          {isWatching ? 'WATCHING' : 'WATCH'}
+        </button>
       </div>
 
       {/* ── 2. Hero photo strip + countdown overlay ── */}
@@ -304,10 +351,10 @@ export function RaceCard({ gameType, race, clockOffsetMs }: RaceCardProps) {
             <tr className="col-header-row">
               <th className="th-hat" aria-hidden="true"></th>
               <th className="th-name" aria-hidden="true"></th>
-              <th className="th-forecast">Last Results</th>
-              <th className="th-perf">Performance</th>
-              <th className="th-rating">Rating</th>
-              <th className="th-win">WIN</th>
+              <th className="th-forecast">{t('col.lastResults')}</th>
+              <th className="th-perf">{t('col.performance')}</th>
+              <th className="th-rating">{t('col.rating')}</th>
+              <th className="th-win">{t('col.win')}</th>
             </tr>
           </thead>
           <tbody>
@@ -317,45 +364,118 @@ export function RaceCard({ gameType, race, clockOffsetMs }: RaceCardProps) {
               const stars = starsFromStrikeRate(comp.strikeRate);
 
               return (
-                <tr key={pos} className="participant-row">
-                  {/* Hat / shield */}
-                  <td className="td-hat">
-                    <div className="hat-post-wrap">
-                      <img
-                        className="hat-img hat-img--shield"
-                        src={`${theme.shieldDir}${pos}.svg`}
-                        alt={`Post ${pos}`}
-                      />
-                    </div>
-                  </td>
-
-                  {/* Name */}
-                  <td className="td-name">
-                    <span className="participant-name">{comp.name}</span>
-                  </td>
-
-                  {/* Last 5 results */}
-                  <td className="td-forecast">
-                    <ForecastCells last5={comp.last5} />
-                  </td>
-
-                  {/* Performance bar */}
-                  <td className="td-perf">
-                    <PerfBar performance={comp.performance} />
-                  </td>
-
-                  {/* Star rating */}
-                  <td className="td-rating">
-                    <StarRating stars={stars} />
-                  </td>
-
-                  <OddBox value={winOdd.toFixed(2)} className="td-win" />
-                </tr>
+                <ParticipantRow
+                  key={pos}
+                  pos={pos}
+                  comp={comp}
+                  winOdd={winOdd}
+                  stars={stars}
+                  theme={theme}
+                  raceId={race.id}
+                  raceLabel={titleText}
+                  gameType={gameType}
+                  onToggleWin={toggleWin}
+                  bettingClosed={phase === 'live'}
+                  t={t}
+                />
               );
             })}
           </tbody>
         </table>
       </div>
     </div>
+  );
+}
+
+/**
+ * One <tr> per runner. Extracted as a component so `useIsSelected` (which
+ * subscribes to the betslip context) only re-renders the rows that changed.
+ */
+function ParticipantRow({
+  pos,
+  comp,
+  winOdd,
+  stars,
+  theme,
+  raceId,
+  raceLabel,
+  gameType,
+  onToggleWin,
+  bettingClosed,
+  t,
+}: {
+  pos: number;
+  comp: Competitor;
+  winOdd: number;
+  stars: number;
+  theme: Theme;
+  raceId: string;
+  raceLabel: string;
+  gameType: GameKey;
+  onToggleWin: ReturnType<typeof useBetslip>['toggleWin'];
+  bettingClosed: boolean;
+  t: (k: string) => string;
+}) {
+  const selected = useIsSelected(raceId, pos, 'win');
+  const handleClick = () => {
+    if (bettingClosed) return;
+    onToggleWin({
+      raceId,
+      raceLabel,
+      gameType,
+      runnerPos: pos,
+      runnerName: comp.name,
+      odds: winOdd,
+    });
+  };
+
+  return (
+    <tr className="participant-row">
+      {/* Hat / shield */}
+      <td className="td-hat">
+        <div className="hat-post-wrap">
+          <img
+            className="hat-img hat-img--shield"
+            src={`${theme.shieldDir}${pos}.svg`}
+            alt={`Post ${pos}`}
+          />
+        </div>
+      </td>
+
+      {/* Name */}
+      <td className="td-name">
+        <span className="participant-name">{comp.name}</span>
+      </td>
+
+      {/* Last 5 results */}
+      <td className="td-forecast">
+        <ForecastCells last5={comp.last5} />
+      </td>
+
+      {/* Performance bar */}
+      <td className="td-perf">
+        <PerfBar performance={comp.performance} />
+      </td>
+
+      {/* Star rating */}
+      <td className="td-rating">
+        <StarRating stars={stars} label={t('col.rtg')} />
+      </td>
+
+      <WinOddCell
+        value={winOdd.toFixed(2)}
+        onClick={handleClick}
+        selected={selected}
+        disabled={bettingClosed}
+        ariaLabel={`${comp.name} ${t('betslip.win')} @ ${winOdd.toFixed(2)}`}
+        tooltip={
+          bettingClosed
+            ? t('countdown.liveNow')
+            : selected
+              ? t('betslip.tooltipRemove')
+              : t('betslip.tooltipAdd')
+        }
+      />
+    </tr>
   );
 }

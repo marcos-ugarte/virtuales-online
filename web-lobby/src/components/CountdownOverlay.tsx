@@ -4,6 +4,8 @@
  * (or a pulsing "LIVE NOW" badge when the race is running).
  */
 
+import { useLang } from '../i18n';
+
 type Props = {
   remainingSec: number;
   phase: 'pre' | 'live' | 'idle';
@@ -33,6 +35,7 @@ function fmtScheduled(scheduledAt: string | undefined): string {
 }
 
 export function CountdownOverlay({ remainingSec, phase, scheduledAt }: Props) {
+  const { t } = useLang();
   if (phase === 'idle') return null;
 
   const scheduled = fmtScheduled(scheduledAt);
@@ -41,7 +44,7 @@ export function CountdownOverlay({ remainingSec, phase, scheduledAt }: Props) {
     return (
       <div className="card-countdown-overlay countdown-live">
         <span className="countdown-live">
-          <span className="countdown-live-inner">LIVE NOW</span>
+          <span className="countdown-live-inner">{t('countdown.liveNow')}</span>
         </span>
         {scheduled && (
           <span className="countdown-scheduled" aria-label="Race time">
@@ -54,10 +57,10 @@ export function CountdownOverlay({ remainingSec, phase, scheduledAt }: Props) {
 
   return (
     <div className="card-countdown-overlay">
-      <span className="countdown-text">STARTS IN {fmtCountdown(remainingSec)}</span>
+      <span className="countdown-text">{t('countdown.startsIn')} {fmtCountdown(remainingSec)}</span>
       {scheduled && (
         <span className="countdown-scheduled" aria-label="Race time">
-          at {scheduled}
+          {scheduled}
         </span>
       )}
     </div>

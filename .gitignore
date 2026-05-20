@@ -40,3 +40,27 @@ custom-lobby/served.json
 *.pem
 *.key
 
+# Agent / MCP / tooling scratch
+.claude/
+.playwright-mcp/
+skills-lock.json
+out/
+
+# Local screenshots and design captures (root + web-lobby/)
+/betslip-*.png
+/cta-*.png
+/dop-*.png
+/jackpot-*.png
+/local-video-*.png
+/next-event-*.png
+/no-clue.png
+/phase-a-*.png
+/ref-*.png
+/right-panel-*.png
+/tickets-working*.png
+/title-bar-*.png
+/video-fixed.png
+/watch-*.png
+/web-lobby/snap-*.png
+/web-lobby/snapshot-*.png
+
