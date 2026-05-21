@@ -30,6 +30,16 @@ const STRINGS: Record<Lang, Dict> = {
   en: {
     'nav.signout': 'Sign out',
     'nav.balance': 'Balance',
+    'nav.user': 'User',
+    'lang.label': 'Language',
+    'currency.label': 'Currency',
+
+    'mobile.bar.openSlip': 'Open betslip',
+    'mobile.bar.selectionOne': 'selection',
+    'mobile.bar.selectionMany': 'selections',
+    'mobile.bar.win': 'wins',
+    'mobile.bar.openCta': 'PLACE',
+    'rp.mobile.openMyBets': 'My bets',
 
     'lobby.upcoming': 'Upcoming Races',
     'lobby.status.connected': 'LIVE',
@@ -158,6 +168,16 @@ const STRINGS: Record<Lang, Dict> = {
   es: {
     'nav.signout': 'Cerrar sesión',
     'nav.balance': 'Saldo',
+    'nav.user': 'Usuario',
+    'lang.label': 'Idioma',
+    'currency.label': 'Moneda',
+
+    'mobile.bar.openSlip': 'Abrir betslip',
+    'mobile.bar.selectionOne': 'selección',
+    'mobile.bar.selectionMany': 'selecciones',
+    'mobile.bar.win': 'gana',
+    'mobile.bar.openCta': 'APOSTAR',
+    'rp.mobile.openMyBets': 'Mis apuestas',
 
     'lobby.upcoming': 'Próximas Carreras',
     'lobby.status.connected': 'EN VIVO',

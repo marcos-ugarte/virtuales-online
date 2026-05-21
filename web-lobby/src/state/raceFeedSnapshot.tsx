@@ -20,6 +20,7 @@ import type { AllGames, Race } from '../types/websocket';
 export interface RaceFeedSnapshot {
   allGames: AllGames;
   recentResults: Race[];
+  jackpotValue: number;
 }
 
 const Ctx = createContext<RaceFeedSnapshot | null>(null);
@@ -27,15 +28,17 @@ const Ctx = createContext<RaceFeedSnapshot | null>(null);
 export function RaceFeedSnapshotProvider({
   allGames,
   recentResults,
+  jackpotValue,
   children,
 }: {
   allGames: AllGames;
   recentResults: Race[];
+  jackpotValue: number;
   children: ReactNode;
 }) {
   const value = useMemo<RaceFeedSnapshot>(
-    () => ({ allGames, recentResults }),
-    [allGames, recentResults],
+    () => ({ allGames, recentResults, jackpotValue }),
+    [allGames, recentResults, jackpotValue],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

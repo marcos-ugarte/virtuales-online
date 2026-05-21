@@ -63,6 +63,8 @@ out/
 /watch-*.png
 /web-lobby/snap-*.png
 /web-lobby/snapshot-*.png
+/mobile-*.png
+/desktop-*.png
 
 
 # Visual companion mockups (brainstorming)

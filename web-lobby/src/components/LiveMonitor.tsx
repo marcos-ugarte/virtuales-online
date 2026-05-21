@@ -10,18 +10,14 @@
  * a jackpotInfo (only dog / dog8 / horsec do — the others are null).
  */
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import type { AllGames, GameKey, Race } from '../types/websocket';
 import { useTimer } from '../hooks/useTimer';
 import { useLang } from '../i18n';
 import { JackpotDisplay } from './JackpotDisplay';
 import { resolveVideoUrl, resolveVideoPoster } from '../services/videoUrl';
-
-/** Game types the LiveMonitor will render video for. Horsec is on the
- *  roadmap but excluded for now — video assets aren't ready. The cards
- *  for excluded types still show on the lobby, the JACKPOT still adds
- *  their pool, and bets still place; they just don't drive the monitor. */
-const MONITOR_GAMES: GameKey[] = ['dog', 'dog8'];
+import { RaceVideo } from './RaceVideo';
+import { MONITOR_GAMES } from './raceVideoConfig';
 
 const GAME_LABEL_KEYS: Record<GameKey, string> = {
   dog: 'monitor.label.dog',
@@ -54,61 +50,6 @@ function fmt(sec: number): string {
   const m = Math.floor(sec / 60).toString().padStart(2, '0');
   const s = (sec % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
-}
-
-function parseVendorTs(ts: string | undefined): number | undefined {
-  if (!ts) return undefined;
-  return Date.parse(ts.replace(' ', 'T') + 'Z');
-}
-
-/**
- * VideoPlayer — auto-syncs <video> currentTime to the elapsed time since
- * videoStartDt so a late viewer joins mid-race. Re-syncs whenever the URL
- * changes (i.e. when the picked race advances).
- */
-function VideoPlayer({
-  url,
-  poster,
-  videoStartDt,
-  clockOffsetMs,
-}: {
-  url: string;
-  poster?: string;
-  videoStartDt: string;
-  clockOffsetMs: number;
-}) {
-  const ref = useRef<HTMLVideoElement | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const handleLoaded = () => {
-      const startMs = parseVendorTs(videoStartDt);
-      if (startMs === undefined) return;
-      const elapsedSec = Math.max(0, (Date.now() + clockOffsetMs - startMs) / 1000);
-      if (elapsedSec < el.duration) {
-        el.currentTime = elapsedSec;
-      }
-      el.play().catch(() => {
-        /* autoplay might be blocked; user has to interact */
-      });
-    };
-    el.addEventListener('loadedmetadata', handleLoaded);
-    return () => el.removeEventListener('loadedmetadata', handleLoaded);
-  }, [url, videoStartDt, clockOffsetMs]);
-
-  return (
-    <video
-      ref={ref}
-      className="lm-video-el"
-      src={url}
-      poster={poster}
-      autoPlay
-      muted
-      playsInline
-      controls={false}
-    />
-  );
 }
 
 export function LiveMonitor({
@@ -238,7 +179,7 @@ export function LiveMonitor({
       {/* Video / countdown area */}
       <div className="lm-video">
         {pickedRace && pickedTimer && pickedTimer.phase === 'live' && pickedRace.videoname?.mp4 ? (
-          <VideoPlayer
+          <RaceVideo
             url={resolveVideoUrl(pickedRace.videoname.mp4)!}
             poster={resolveVideoPoster(pickedRace.videoname.jpg)}
             videoStartDt={pickedRace.videoStartDt}

@@ -3,6 +3,7 @@ import { Navbar } from './components/Navbar';
 import { RaceCard } from './components/RaceCard';
 import { LiveMonitor } from './components/LiveMonitor';
 import { RightPanel } from './components/RightPanel';
+import { MobileActionBar } from './components/MobileActionBar';
 import { LoginScreen } from './components/LoginScreen';
 import { RecentResults } from './components/RecentResults';
 import { useRaceFeed } from './hooks/useRaceFeed';
@@ -89,7 +90,11 @@ function Lobby() {
       : t('lobby.status.error');
 
   return (
-    <RaceFeedSnapshotProvider allGames={allGames} recentResults={recentResults}>
+    <RaceFeedSnapshotProvider
+      allGames={allGames}
+      recentResults={recentResults}
+      jackpotValue={jackpotValue}
+    >
       <Navbar />
       <main className="lobby-main">
         <div className="lobby-section-header">
@@ -132,8 +137,15 @@ function Lobby() {
             <RecentResults results={recentResults} />
           </div>
           <RightPanel />
+          {/* Mobile-only second instance — desktop hides it via CSS.
+              Lives outside lobby-rail so it survives the mobile rule that
+              hides that rail. */}
+          <div className="recent-results-mobile-host">
+            <RecentResults results={recentResults} />
+          </div>
         </div>
       </main>
+      <MobileActionBar />
       <footer className="lobby-footer" role="contentinfo">
         <div className="footer-left">
           <img src="/assets/virtualrace_logo.png" alt="Virtual Race" height="18" />

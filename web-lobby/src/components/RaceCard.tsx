@@ -13,7 +13,11 @@
 
 import type { GameKey, Race, Competitor } from '../types/websocket';
 import { useTimer } from '../hooks/useTimer';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { CountdownOverlay } from './CountdownOverlay';
+import { RaceVideo } from './RaceVideo';
+import { MONITOR_GAMES } from './raceVideoConfig';
+import { resolveVideoUrl, resolveVideoPoster } from '../services/videoUrl';
 import { useLang } from '../i18n';
 import { useBetslip, useIsSelected } from '../state/betslip';
 
@@ -269,11 +273,27 @@ export function RaceCard({ gameType, race, clockOffsetMs, isWatching, onWatch }:
   const theme = THEMES[gameType];
   const { t } = useLang();
   const { toggleWin } = useBetslip();
+  const isMobile = useIsMobile();
   const { remainingSec, phase } = useTimer(race?.videoStartDt, clockOffsetMs);
 
   if (!race) {
     return <SkeletonCard theme={theme} />;
   }
+
+  // Mobile-only: the card hosts its own live video when this race is in
+  // the live phase. On desktop the LiveMonitor handles video; here we'd
+  // just render the static hero. The MONITOR_GAMES filter excludes
+  // horsec (no video assets yet).
+  const mobileVideoUrl =
+    isMobile &&
+    phase === 'live' &&
+    MONITOR_GAMES.includes(gameType) &&
+    race.videoname?.mp4
+      ? resolveVideoUrl(race.videoname.mp4)
+      : null;
+  const mobileVideoPoster = race.videoname?.jpg
+    ? resolveVideoPoster(race.videoname.jpg)
+    : undefined;
 
   // Convert competitors Record → sorted array by post position (key is 1-based string)
   const sortedEntries: Array<{ pos: number; comp: Competitor }> = Object.entries(
@@ -327,8 +347,21 @@ export function RaceCard({ gameType, race, clockOffsetMs, isWatching, onWatch }:
       </div>
 
       {/* ── 2. Hero photo strip + countdown overlay ── */}
-      <div className="card-hero" style={{ position: 'relative' }}>
-        <img className="hero-img" src={theme.heroSrc} alt="" />
+      <div
+        className={`card-hero${mobileVideoUrl ? ' card-hero--mobile-video' : ''}`}
+        style={{ position: 'relative' }}
+      >
+        {mobileVideoUrl ? (
+          <RaceVideo
+            url={mobileVideoUrl}
+            poster={mobileVideoPoster}
+            videoStartDt={race.videoStartDt}
+            clockOffsetMs={clockOffsetMs}
+            className="card-hero-video"
+          />
+        ) : (
+          <img className="hero-img" src={theme.heroSrc} alt="" />
+        )}
         <CountdownOverlay
           remainingSec={remainingSec}
           phase={phase}

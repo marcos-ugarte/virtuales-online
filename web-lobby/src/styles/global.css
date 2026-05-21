@@ -2663,3 +2663,620 @@ button.odd-box {
   text-align: right;
   width: 64px;
 }
+
+/* ============================================================================
+   MOBILE-ONLY ELEMENTS — hidden on desktop, revealed in the @media block below
+   ============================================================================ */
+.navbar-jackpot-chip,
+.navbar-mobile-cluster,
+.navbar-mobile-menu,
+.mab-bar,
+.mab-sheet-backdrop,
+.recent-results-mobile-host {
+  display: none;
+}
+
+/* ============================================================================
+   MOBILE LAYOUT (≤720px)
+   ----------------------------------------------------------------------------
+   Single breakpoint that activates the Adaptive mobile reflow:
+     - Lobby shell collapses to one column
+     - Desktop rail (LiveMonitor + RecentResults) is hidden; the live video
+       is hosted inside the matching RaceCard (.card-hero--mobile-video)
+       and the RecentResults section re-renders below the cards via the
+       .recent-results-mobile-host slot
+     - Desktop RightPanel is hidden; Betslip + MyBets surface as a sticky
+       bottom bar (MobileActionBar) with full-screen sheets
+     - Navbar collapses to: logo · jackpot chip · balance · 🎫 · ☰
+     - Race-card runner table reflows to 2 lines per runner
+     - Touch targets ≥44×44px; input font-size ≥16px (prevents iOS zoom)
+   See docs/superpowers/specs/2026-05-20-mobile-responsive-adaptive-design.md
+   ============================================================================ */
+@media (max-width: 720px) {
+  html { font-size: 14px; }
+  body { font-size: 14px; }
+
+  /* ---- Global touch / typography ---- */
+  button, [role="button"], a.btn, .navbar-mybets-btn, .navbar-hamburger {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  input, textarea, select {
+    font-size: 16px;
+  }
+  h1 { font-size: 1.25rem; }
+  h2 { font-size: 1.1rem; }
+  h3 { font-size: 1rem; }
+
+  /* ---- Lobby shell: single column, hide desktop rails ---- */
+  .lobby-main {
+    padding: 8px 12px calc(64px + 16px) 12px; /* room for sticky betslip bar */
+  }
+  .lobby-shell {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 0;
+  }
+  .lobby-rail { display: none; }
+  .rp { display: none; }
+  .games-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    width: 100%;
+  }
+  .games-grid > * { min-width: 0; max-width: 100%; }
+  .race-card { min-width: 0; max-width: 100%; }
+  .race-card * { min-width: 0; }
+  .card-hero { width: 100%; }
+  .card-hero .hero-img { width: 100%; max-width: 100%; }
+  .participants-table { width: 100%; }
+  .participants-table table { table-layout: fixed; max-width: 100%; }
+  .lobby-section-header {
+    margin: 4px 0 8px;
+  }
+  .lobby-section-header h1 {
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* ---- Mobile RecentResults host ---- */
+  .recent-results-mobile-host {
+    display: block;
+    margin-top: 8px;
+  }
+  .recent-results-mobile-host .recent-results {
+    width: 100%;
+  }
+
+  /* ============================================================================
+     NAVBAR (mobile)
+     ============================================================================ */
+  .navbar {
+    flex-wrap: nowrap;
+    padding: 8px 10px;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    min-height: 56px;
+    align-items: center;
+  }
+  .navbar-brand img {
+    height: 24px;
+  }
+  /* Hide the desktop user cluster on mobile (moved into ☰ menu) */
+  .navbar > .collapse,
+  .navbar > .collapse.navbar-collapse {
+    display: none !important;
+  }
+  .navbar-toggler {
+    display: none; /* legacy bootstrap toggler — replaced by .navbar-hamburger */
+  }
+
+  .navbar-jackpot-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f5a623, #d4891a);
+    color: #1a1a1a;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    box-shadow: 0 1px 0 rgba(0,0,0,.25);
+    flex: 0 0 auto;
+  }
+  .navbar-jackpot-chip-label {
+    font-size: 12px;
+  }
+  .navbar-jackpot-chip-value {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .navbar-mobile-cluster {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+  .navbar-mobile-balance {
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    line-height: 1;
+  }
+  .navbar-mybets-btn {
+    position: relative;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 16px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .navbar-mybets-btn:hover { background: rgba(255,255,255,0.14); }
+  .navbar-mybets-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #dc2626;
+    color: #fff;
+    border-radius: 999px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+  }
+  .navbar-hamburger {
+    background: transparent;
+    border: 0;
+    color: #fff;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 6px 8px;
+  }
+  .navbar-hamburger--open { color: var(--accent-gold); }
+
+  .navbar-mobile-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--surface-darkest);
+    border-bottom: 1px solid var(--border-card);
+    padding: 14px;
+    box-shadow: 0 10px 24px rgba(0,0,0,.5);
+    z-index: 99;
+  }
+  .navbar-mobile-menu-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .navbar-mobile-menu-label {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .navbar-mobile-menu-value {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  .navbar-mobile-menu-logout {
+    align-self: stretch;
+    margin-top: 4px;
+  }
+
+  /* ============================================================================
+     RACE CARD (mobile)
+       2-line per runner: name+button on row 1, perf/rating/stars on row 2.
+       Achieved by switching the <table> from cells-in-a-row to a CSS grid.
+     ============================================================================ */
+  .race-card {
+    border-radius: 8px;
+  }
+  .card-title-bar {
+    padding: 8px 10px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .card-race-title {
+    font-size: 13px;
+  }
+  .card-watch-link {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .card-watch-link .watch-tv-icon {
+    width: 14px;
+    height: 14px;
+  }
+  .card-hero {
+    max-height: 160px;
+    overflow: hidden;
+  }
+  .card-hero .hero-img { height: 100px; object-fit: cover; }
+  .card-hero--mobile-video {
+    max-height: none;
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+  .card-hero-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Reflow the participants table to 2-line rows on mobile.
+     Each <tr> becomes a 2-column CSS grid: left column carries
+     hat+name+stars+perf (stacked), right column carries the WIN button. */
+  .participants-table table { display: block; width: 100%; }
+  .participants-table colgroup,
+  .participants-table thead,
+  .participants-table tbody,
+  .participants-table tr,
+  .participants-table td,
+  .participants-table th {
+    display: block;
+  }
+  .participants-table colgroup { display: none; }
+  .col-header-row { display: none !important; }
+  .participants-table tbody { padding: 4px 0; }
+  .participant-row {
+    display: grid !important;
+    grid-template-columns: 36px 1fr auto auto;
+    grid-template-areas:
+      "hat name     name   win"
+      "hat forecast rating win";
+    align-items: center;
+    column-gap: 8px;
+    row-gap: 2px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--cell-border);
+  }
+  .participant-row:last-child { border-bottom: 0; }
+  .participant-row:nth-child(even) { background: rgba(255,255,255,0.02); }
+
+  .participant-row .td-hat {
+    grid-area: hat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    width: 36px;
+  }
+  .participant-row .td-hat .hat-post-wrap {
+    width: 32px; height: 32px;
+  }
+  .participant-row .td-hat .hat-img--shield {
+    width: 32px; height: 32px;
+  }
+  .participant-row .td-name {
+    grid-area: name;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    text-align: left;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 13px;
+  }
+  /* Stats line — forecast on left, rating on right, both compact */
+  .participant-row .td-forecast {
+    grid-area: forecast;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 10px;
+    justify-self: start;
+  }
+  .participant-row .td-rating {
+    grid-area: rating;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 10px;
+    justify-self: end;
+  }
+  .participant-row .td-perf { display: none; }
+  .participant-row .td-rating .star-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+    font-size: 11px;
+  }
+  .participant-row .td-rating .star-label { display: none; }
+  .participant-row .forecast-cells {
+    display: inline-flex;
+    gap: 3px;
+  }
+  .participant-row .fc-cell {
+    min-width: 14px;
+    padding: 1px 2px;
+    font-size: 10px;
+  }
+
+  .participant-row .td-win {
+    grid-area: win;
+    width: auto;
+    padding: 0;
+    text-align: right;
+  }
+  .participant-row .td-win .odd-box {
+    min-width: 64px;
+    min-height: 44px;
+    padding: 8px 14px;
+    font-size: 16px;
+    font-weight: 800;
+  }
+
+  /* Countdown overlay sized to card width */
+  .card-countdown-overlay {
+    padding: 8px 12px;
+  }
+  .card-countdown-overlay .countdown-text {
+    font-size: 1rem;
+  }
+  .card-countdown-overlay .countdown-scheduled {
+    font-size: 1.4rem;
+  }
+
+  /* ============================================================================
+     RECENT RESULTS (mobile)
+     ============================================================================ */
+  .recent-results {
+    margin-top: 4px;
+  }
+  .rr-list { padding: 0; margin: 0; }
+  .rr-row {
+    padding: 10px 8px;
+    min-height: 44px;
+  }
+
+  /* ============================================================================
+     LOGIN SCREEN (mobile)
+     ============================================================================ */
+  .login-screen {
+    padding: 16px;
+  }
+  .login-card {
+    width: 100%;
+    max-width: none;
+    padding: 20px 16px;
+  }
+  .login-logo {
+    max-height: 80px;
+    margin-bottom: 8px;
+  }
+  .login-field input {
+    width: 100%;
+    min-height: 48px;
+    font-size: 16px; /* prevents iOS zoom-on-focus */
+    padding: 10px 12px;
+  }
+  .login-submit {
+    width: 100%;
+    min-height: 48px;
+    font-size: 15px;
+  }
+
+  /* ============================================================================
+     FOOTER (mobile) — sit above the sticky betslip bar
+     ============================================================================ */
+  .lobby-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+    font-size: 11px;
+    padding: 12px 16px;
+  }
+  .footer-left, .footer-right {
+    justify-content: center;
+  }
+
+  /* ============================================================================
+     MOBILE ACTION BAR — sticky bottom bar + full-screen sheets
+     ============================================================================ */
+  .mab-bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 90;
+    height: 64px;
+    padding: 8px 12px;
+    background: linear-gradient(180deg, var(--surface-darkest), #2a2a2a);
+    border-top: 2px solid var(--accent-gold);
+    box-shadow: 0 -6px 16px rgba(0,0,0,.5);
+    color: var(--text-primary);
+    text-align: left;
+    cursor: pointer;
+  }
+  .mab-bar-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .mab-bar-count {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .mab-bar-count strong {
+    color: var(--text-primary);
+    font-size: 14px;
+  }
+  .mab-bar-totals {
+    font-size: 13px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mab-bar-totals strong { color: var(--accent-gold); }
+  .mab-bar-sep { margin: 0 6px; opacity: 0.5; }
+  .mab-bar-payout { color: var(--text-secondary); }
+  .mab-bar-cta {
+    background: var(--accent-gold);
+    color: #1a1a1a;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .mab-sheet-backdrop {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    background: rgba(0,0,0,0.6);
+    animation: mabFadeIn 0.18s ease;
+  }
+  @keyframes mabFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes mabSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  .mab-sheet {
+    background: var(--surface-darkest);
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    max-height: 92dvh;
+    display: flex;
+    flex-direction: column;
+    animation: mabSlideUp 0.22s ease;
+    overflow: hidden;
+  }
+  .mab-sheet-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--cell-border);
+  }
+  .mab-sheet-grabber {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--text-dim);
+    opacity: 0.4;
+  }
+  .mab-sheet-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--text-primary);
+  }
+  .mab-sheet-close {
+    background: transparent;
+    color: var(--text-primary);
+    border: 0;
+    font-size: 24px;
+    line-height: 1;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .mab-sheet-body {
+    flex: 1 1 auto;
+    overflow: auto;
+    padding: 12px;
+  }
+
+  /* Inside the betslip sheet, let the existing Betslip styles take over but
+     remove the panel chrome (.rp gives them their box on desktop). */
+  .mab-sheet-body .betslip {
+    width: 100%;
+    box-shadow: none;
+    border: 0;
+    background: transparent;
+  }
+  .mab-sheet-body .bs-submit {
+    min-height: 48px;
+    font-size: 15px;
+  }
+  .mab-sheet-body .bs-master-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .mab-mybets {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mab-mybets-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--cell-border);
+  }
+  .mab-mybets-tab {
+    flex: 1;
+    padding: 10px 8px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 0;
+    border-bottom: 2px solid transparent;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+  }
+  .mab-mybets-tab--active {
+    color: var(--accent-gold);
+    border-bottom-color: var(--accent-gold);
+  }
+  .mab-mybets-body { padding-top: 4px; }
+}
