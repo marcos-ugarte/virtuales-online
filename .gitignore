@@ -64,3 +64,6 @@ out/
 /web-lobby/snap-*.png
 /web-lobby/snapshot-*.png
 
+
+# Visual companion mockups (brainstorming)
+.superpowers/
