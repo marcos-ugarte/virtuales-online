@@ -38,12 +38,19 @@ export function RaceVideo({
     return () => el.removeEventListener('loadedmetadata', handleLoaded);
   }, [url, videoStartDt, clockOffsetMs]);
 
+  // Only show the poster JPG when the race is actually starting. On a
+  // mid-race switch the browser would otherwise flash the static first
+  // frame between the old video and the seek into the new one.
+  const startMs = parseVendorTs(videoStartDt);
+  const elapsedSec = startMs === undefined ? 0 : (Date.now() + clockOffsetMs - startMs) / 1000;
+  const effectivePoster = elapsedSec < 2 ? poster : undefined;
+
   return (
     <video
       ref={ref}
       className={className ?? 'lm-video-el'}
       src={url}
-      poster={poster}
+      poster={effectivePoster}
       autoPlay
       muted
       playsInline
