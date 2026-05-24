@@ -205,10 +205,11 @@ export function LiveMonitor({
     return false;
   };
 
-  // 1. User pin — when a game is pinned (user clicked WATCH) we show ONLY
-  //    that game and do NOT fall through to the sticky/auto layers below,
-  //    otherwise a gap in the pinned game's cycle would leak another game.
-  //    pickFor covers live + pre; outside those we show the idle state.
+  // 1. User pin — when a game is pinned we show ONLY that game. We do NOT
+  //    fall through to the sticky/auto layers below, otherwise a gap in the
+  //    pinned game's cycle would "leak" another game (e.g. pinned dog6 going
+  //    quiet would start showing dog8). pickFor already covers live + pre;
+  //    outside those phases we intentionally show the idle "waiting" state.
   if (pinnedGame) pickFor(pinnedGame);
 
   // 2. Sticky: keep the last-shown game if its race is still live
