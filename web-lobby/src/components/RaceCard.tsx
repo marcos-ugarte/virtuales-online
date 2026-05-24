@@ -310,8 +310,11 @@ export function RaceCard({ gameType, race, clockOffsetMs, isWatching, onWatch }:
         <BonusBadge bonus={race.bonus} />
         <button
           type="button"
-          className={`card-watch-link${isWatching ? ' card-watch-link--active' : ''}`}
+          className={`card-watch-link${isWatching ? ' card-watch-link--active' : ''}${phase !== 'live' ? ' card-watch-link--disabled' : ''}`}
           onClick={onWatch}
+          // Only a live race can be watched. While WAITING (countdown /
+          // between races) the button is inert.
+          disabled={phase !== 'live'}
           aria-pressed={isWatching}
           aria-label="Watch this race on the monitor"
           style={{ color: theme.titleColor }}
@@ -322,7 +325,15 @@ export function RaceCard({ gameType, race, clockOffsetMs, isWatching, onWatch }:
             alt=""
             aria-hidden="true"
           />
-          {isWatching ? 'WATCHING' : 'WATCH'}
+          {/* Three states driven by the race's own phase:
+              - not started yet / between races (phase 'pre'|'idle') → WAITING
+                (shown regardless of selection, incl. on first app load)
+              - live + this card is the one being shown → WATCHING
+              - live + not selected → WATCH (click to watch it)
+              When the live race ends the data advances to the next race
+              (phase 'pre') so it flips back to WAITING automatically; picking
+              another card clears isWatching → WATCHING falls back to WATCH. */}
+          {phase !== 'live' ? 'WAITING' : isWatching ? 'WATCHING' : 'WATCH'}
         </button>
       </div>
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 28.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 342 82" width="342" height="82" style="enable-background:new 0 0 342 82;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:url(#SVGID_1_);}
+	.st1{fill:url(#SVGID_00000016064698453097659800000000656266752334396042_);}
+	.st2{fill:url(#SVGID_00000164502377303552096870000007322404542062594218_);}
+</style>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="114.9751" y1="-0.0982" x2="114.9751" y2="25.6518" gradientTransform="matrix(0.9968 0 0 -0.9968 0.0669 81.9021)">
+	<stop  offset="0" style="stop-color:#E6E6E6"/>
+	<stop  offset="1" style="stop-color:#E6E6E8"/>
+</linearGradient>
+<path class="st0" d="M222.596,82H0.421l3.888-23.585c0.196-1.202,1.234-2.085,2.452-2.083h222.176l-3.888,23.585
+	C224.857,81.121,223.816,82.005,222.596,82z"/>
+<linearGradient id="SVGID_00000042012592435458885510000005187520102654426549_" gradientUnits="userSpaceOnUse" x1="305.0945" y1="82.0718" x2="305.0945" y2="27.9518" gradientTransform="matrix(0.9968 0 0.1695 -0.9968 -54.9965 81.9021)">
+	<stop  offset="3.090118e-07" style="stop-color:#A9563F"/>
+	<stop  offset="1" style="stop-color:#5E2B1D"/>
+</linearGradient>
+<path style="fill:url(#SVGID_00000042012592435458885510000005187520102654426549_);" d="M324.194,53.829H175.356l7.576-45.077
+	c0.793-5.003,5.082-8.703,10.148-8.752h148.529l-7.636,45.416C333.212,50.236,329.074,53.796,324.194,53.829z"/>
+<linearGradient id="SVGID_00000088840262738538195050000002892788295854119098_" gradientUnits="userSpaceOnUse" x1="133.1869" y1="86.772" x2="133.1869" y2="33.8945" gradientTransform="matrix(0.9968 0 0.1495 -1.0168 -48.5185 88.3802)">
+	<stop  offset="5.327789e-08" style="stop-color:#410F01"/>
+	<stop  offset="1" style="stop-color:#5E2B1D"/>
+</linearGradient>
+<path style="fill:url(#SVGID_00000088840262738538195050000002892788295854119098_);" d="M164.162,53.829H4.478l7.526-45.027
+	C12.973,3.65,17.528-0.045,22.77,0.07h159.315l-7.576,45.326C173.595,50.365,169.212,53.937,164.162,53.829z"/>
+</svg>

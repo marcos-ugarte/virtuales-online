@@ -385,10 +385,18 @@ main {
   cursor: pointer;
 }
 
-.card-watch-link:hover {
+.card-watch-link:hover:not(.card-watch-link--disabled) {
   background-color: rgba(255,255,255,0.20);
   border-color: rgba(255,255,255,0.35);
   text-decoration: none;
+}
+
+/* WAITING state — race not running yet, nothing to watch, so the button is
+   disabled and visually muted (no hover, no pointer interaction). */
+.card-watch-link--disabled {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
 }
 
 /* Light-themed title bar (horsec): replace the white translucent fill

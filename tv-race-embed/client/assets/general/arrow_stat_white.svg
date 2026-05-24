@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <style>
+      .trendarrow {
+        fill: #fff;
+        stroke-width: 0px;
+      }
+    </style>
+  </defs>
+  <polygon class="trendarrow" points="10.03 2 8.784 3.254 12.614 7.104 0 7.104 0 8.895 12.615 8.895 8.784 12.745 10.03 14 16 8 10.03 2"/>
+</svg>

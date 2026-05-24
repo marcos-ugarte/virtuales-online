@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "ES2020"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+      "client/assets/*": ["./client/assets/*"],
+      "client/*": ["./client/src/*"],
+      "common/*": ["./common/src/*"],
+      "assets/*": ["./client/assets/*"],
+      "settings/*": ["./client/settings/*"]
+    }
+  },
+  "include": ["client/**/*", "common/**/*"],
+  "exclude": ["node_modules", "rtclib"]
+}

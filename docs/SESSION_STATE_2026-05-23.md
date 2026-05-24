@@ -4,7 +4,7 @@ Snapshot of in-progress work building a PIXI-overlay-capable race monitor embedd
 
 ## What we're trying to build
 
-A standalone web page (`tv-monitor`) that:
+A standalone web page (`tvbox-online`) that:
 1. Subscribes to the same race broadcast the lobby uses
 2. Plays the MP4 race video at the correct elapsed time (so a late-connecting viewer sees the right moment of the race)
 3. Will eventually overlay PIXI graphics (race number, countdown, runner names, finish positions) — the same overlays the VSTVAPP webview burns onto the TV-box video
@@ -21,7 +21,7 @@ The end goal: drop this into the lobby (or use it standalone) for a CDN-free, in
 | 8888 | `serve_webapp.py` | VSTVAPP webview bundle (the TV-box code) |
 | 8889 | `serve_webapp.py` of `web-lobby/dist/` | Production lobby (built without `VITE_VIDEO_OVERRIDE_BASE` → uses CloudFront) |
 | 8890 | `serve_webapp.py` of `tv-race-embed/dist/` | The mini.html test bench (older iteration) |
-| 8891 | `serve_webapp.py` of `tv-monitor/dist/` | The NEW minimal viewer (current focus) |
+| 8891 | `serve_webapp.py` of `tvbox-online/dist/` | The NEW minimal viewer (current focus) |
 
 All four `serve_webapp.py` instances are `tools/playwright/serve_webapp.py` from `virtuales-go`. The script provides HTTP-Range support which is required for `<video>` seek.
 
@@ -29,16 +29,16 @@ All four `serve_webapp.py` instances are `tools/playwright/serve_webapp.py` from
 
 | Path | Purpose |
 |------|---------|
-| `tv-monitor/src/App.tsx` | Minimal root — pulls `WS_URL` from `?ws=…` or `VITE_WS_URL` env; pinned game from `?gameType=…` |
-| `tv-monitor/src/components/LiveMonitor.tsx` | Copied from web-lobby; renders the video element + race UI |
-| `tv-monitor/src/services/videoUrl.ts` | `resolveVideoUrl` — rewrites CloudFront URL to `/videos/<gameType>/<filename>` when `VITE_VIDEO_OVERRIDE_BASE=/videos` |
-| `tv-monitor/src/hooks/useRaceFeed.ts` | WS subscription, clock-sync via `time` ping, gamepool maintenance |
-| `tv-monitor/dist/videos/dog6/R*_h.mp4` | 1006 symlinks → `/home/claude/projects/ds_assets/dog6/R*_h50.mp4` |
-| `tv-monitor/dist/videos/dog6/R*_h.jpg` | 1006 poster symlinks |
-| `tv-monitor/dist/videos/dog8/R*_h.mp4` | 414 symlinks → `/home/claude/projects/ds_assets/dog8/R*_crf27.mp4` |
+| `tvbox-online/src/App.tsx` | Minimal root — pulls `WS_URL` from `?ws=…` or `VITE_WS_URL` env; pinned game from `?gameType=…` |
+| `tvbox-online/src/components/LiveMonitor.tsx` | Copied from web-lobby; renders the video element + race UI |
+| `tvbox-online/src/services/videoUrl.ts` | `resolveVideoUrl` — rewrites CloudFront URL to `/videos/<gameType>/<filename>` when `VITE_VIDEO_OVERRIDE_BASE=/videos` |
+| `tvbox-online/src/hooks/useRaceFeed.ts` | WS subscription, clock-sync via `time` ping, gamepool maintenance |
+| `tvbox-online/dist/videos/dog6/R*_h.mp4` | 1006 symlinks → `/home/claude/projects/ds_assets/dog6/R*_h50.mp4` |
+| `tvbox-online/dist/videos/dog6/R*_h.jpg` | 1006 poster symlinks |
+| `tvbox-online/dist/videos/dog8/R*_h.mp4` | 414 symlinks → `/home/claude/projects/ds_assets/dog8/R*_crf27.mp4` |
 | `web-lobby/dist/` | The lobby bundle — **was built WITHOUT `VITE_VIDEO_OVERRIDE_BASE`** so it pass-through uses CloudFront URLs |
 
-The symlink farm at `tv-monitor/dist/videos/` is built AFTER `vite build` because vite copies symlink TARGETS not the symlinks themselves when they're in `public/`.
+The symlink farm at `tvbox-online/dist/videos/` is built AFTER `vite build` because vite copies symlink TARGETS not the symlinks themselves when they're in `public/`.
 
 ## The video URL handling — clarified 2026-05-23
 
@@ -48,7 +48,7 @@ The broadcaster sends CloudFront URLs in `gameResult.videoname.mp4` (e.g. `https
 |----------|--------------|----------------|
 | VSTVAPP webview (port 8888) | `/.local/dog6/R0987_h50.mp4` via local symlinks | ✅ works |
 | Lobby production build (port 8889) | CloudFront URL pass-through | ✅ works in user's Chrome, ❌ fails in VPS-Playwright (CloudFront unreachable from VPS network) |
-| tv-monitor (port 8891) | `/videos/dog6/R0987_h.mp4` via `VITE_VIDEO_OVERRIDE_BASE=/videos` | ✅ works everywhere |
+| tvbox-online (port 8891) | `/videos/dog6/R0987_h.mp4` via `VITE_VIDEO_OVERRIDE_BASE=/videos` | ✅ works everywhere |
 
 **User's stated preference (2026-05-23):** the lobby in real production points at VPS-local paths, NOT CloudFront. The current `web-lobby/dist/` build on this VPS was built without that env var, so it doesn't match production. If/when we rebuild the lobby with `VITE_VIDEO_OVERRIDE_BASE=/videos` (or matching the webview's `/.local`), both consumers will be consistent and the Playwright tests will pass uniformly.
 
@@ -105,31 +105,58 @@ LOCAL_VIDEOS_DIR=/home/claude/projects/ds_assets
 
 Folder names match the CDN paths → **no `PATH_REWRITES` needed**. Startup log: `[local-race-videos] serving /videos/* from /home/claude/projects/ds_assets`. curl verified: dog6 `_h.mp4`→200 (fallback to crf27, 77 MB), dog8 Range→206, horse7→200 (179 MB), poster jpg→200. The plugin's own suffix fallback means it works even without the ds_assets `_h` aliases.
 
-## tv-monitor (8891): pinned-game now strict + defaults to dog6 (2026-05-23 PM)
+## tvbox-online (8891): pinned-game now strict + defaults to dog6 (2026-05-23 PM)
 
-Jorge reported the 8891 monitor "mixing" dog6 and dog8 (a dog6 race ends, a dog8 starts). Two bugs in `tv-monitor/src/components/LiveMonitor.tsx` game-pick logic:
+Jorge reported the 8891 monitor "mixing" dog6 and dog8 (a dog6 race ends, a dog8 starts). Two bugs in `tvbox-online/src/components/LiveMonitor.tsx` game-pick logic:
 
 1. **`pinnedGame` didn't actually pin.** Steps 2 (sticky) + 3 (auto) ran even when a game was pinned, iterating `MONITOR_GAMES=['dog','dog8']` — so a gap in the pinned game's cycle leaked the other game. Fix: guarded both fallback layers with `if (!pinnedGame …)`. When pinned and the game is neither live nor pre, we show the idle "waiting" state instead of another game.
-2. **Bare URL had no pin** (`PINNED=null` → auto across dog6+dog8). Fix: `App.tsx` now falls back to `import.meta.env.VITE_PINNED_GAME`, and `tv-monitor/.env.production` sets `VITE_PINNED_GAME=dog` so `http://187.124.95.45:8891/` shows ONLY greyhound-6. `?gameType=…` still overrides. Lobby untouched.
+2. **Bare URL had no pin** (`PINNED=null` → auto across dog6+dog8). Fix: `App.tsx` now falls back to `import.meta.env.VITE_PINNED_GAME`, and `tvbox-online/.env.production` sets `VITE_PINNED_GAME=dog` so `http://187.124.95.45:8891/` shows ONLY greyhound-6. `?gameType=…` still overrides. Lobby untouched.
 
-tv-monitor `.env.production` (it had NO env files — rebuilding without these reverts WS to localhost + video to CloudFront):
+tvbox-online `.env.production` (it had NO env files — rebuilding without these reverts WS to localhost + video to CloudFront):
 ```
 VITE_WS_URL=ws://187.124.95.45:4099/web-ds
 VITE_VIDEO_OVERRIDE_BASE=/videos
 VITE_PINNED_GAME=dog
 ```
-Also replaced tv-monitor's per-file symlink farm (`dist/videos/{dog6,dog8}` file-level, missing horse7) with **directory** symlinks `dist/videos/{dog6,dog8,horse7} → ds_assets/<type>` (uses the new `_h` aliases). Playwright on the bare URL verified: only dog6 ever requested, video plays HD (R0950 cur 3→43s, W=1920), no dog8 leak. New bundle hash → users must hard-refresh (Ctrl+Shift+R) to drop the old cached bundle.
+Also replaced tvbox-online's per-file symlink farm (`dist/videos/{dog6,dog8}` file-level, missing horse7) with **directory** symlinks `dist/videos/{dog6,dog8,horse7} → ds_assets/<type>` (uses the new `_h` aliases). Playwright on the bare URL verified: only dog6 ever requested, video plays HD (R0950 cur 3→43s, W=1920), no dog8 leak. New bundle hash → users must hard-refresh (Ctrl+Shift+R) to drop the old cached bundle.
 
 ## salida-missed FIXED + lobby WATCH pin made strict (2026-05-23 PM, option A variant)
 
-Applied to BOTH `web-lobby` and `tv-monitor` `LiveMonitor.tsx` (identical copies):
+Applied to BOTH `web-lobby` and `tvbox-online` `LiveMonitor.tsx` (identical copies):
 
 1. **VideoPlayer no longer blindly seeks to elapsed.** Captures elapsed-at-mount once per clip (`joinRef`, keyed on url). On `loadedmetadata`: if elapsed-at-mount > `LATE_JOIN_THRESHOLD_SEC` (10s) → genuine mid-race join → seek to live elapsed; otherwise leave `currentTime=0` → **play from the salida**. Fixes "shows poster/black then video already started". Verified: race caught at start plays from cur≈0; a race already running when picked seeks to live.
 2. **Pinned game is now strict** (both files): steps 2 (sticky) + 3 (auto) are guarded with `!pinnedGame`, so WATCH/`?gameType` shows ONLY that game and never leaks the other during a cycle gap. Lobby WATCH wires `pinnedGame` via `App.tsx` `setPinnedGame`.
 
-Playwright (8889, logged in) end-to-end of WATCH=dog6: label WATCH→WATCHING, only dog6 requested, next fresh race plays from cur=0.58s. tv-monitor (8891) bare URL: only dog6, cur≈0.2s.
+Playwright (8889, logged in) end-to-end of WATCH=dog6: label WATCH→WATCHING, only dog6 requested, next fresh race plays from cur=0.58s. tvbox-online (8891) bare URL: only dog6, cur≈0.2s.
 
 Behavior note (default no-pin lobby = "most recent event"): auto-pick still joins overlapping live races in sync (can't show two salidas at once); shows the salida when it catches a race at its start. This is by design, not a bug.
+
+## tvbox-online overlay — v2: REAL RaceBarDog ported (pixel-perfect, 2026-05-24)
+
+Jorge wanted the overlays to look EXACTLY like the TV-box, not approximate. So we ported the real streaming_kit `RaceBarDog` (race number + in-race timer) UNMODIFIED into tvbox-online, driven by a shim `Logic`.
+
+- Coordinate system proven identical: streaming_kit stage is **1280×720, `_s()` = identity** (`settings.scaleFactor` never reassigned = 1; PIXI app created at 720-tall, CSS-stretched). Our overlay already used 1280×720 → matches.
+- Vendored UNMODIFIED under `tvbox-online/src/tvkit/` (preserving `client/`, `common/`, `settings/`, `assets/fonts/` layout) with Vite + tsconfig path aliases (`client/*`,`common/*`,`settings/*`,`assets/*` → `src/tvkit/*`, prefix-scoped so they don't touch tvbox-online's own code): `RaceBarDog.ts`, `Group.ts`, `Anim.ts`, `MultiStyleText.ts`, `ChangeAbleText.ts`, `LogicDefinitions.ts`, `Definitions.ts`, `FadeDurations.ts`, `OddsAlwaysOnSettings.ts`, DIN `.otf` fonts (5 faces).
+- **Shim** `src/tvkit/client/Logic/Logic.ts` — exploits race-only (no intro): `getIntroLength()=0`, `getState()=Race`, `isInIntro()=false`, `fadeX=1`, `isFading=false`, time from live `<video>.currentTime` via `Logic.setTimeProvider`, `getInGameRaceTime=time-1.0`, race length from `max(finish.time)`. Replicated `getAnim`/`autoSize`/`createPixiText`/`formatTime`/`formatRound`.
+- **Stubbed** (invisible, no-op Group): `AnimatedBonusTopDog`, `BonusAnnotationRaceBarDog` (bonus number + x2/x3 badge). Trimmed `Util`/`Logger`/`GamesModel`/`DynamicMesh` to avoid dragging the chalk/dateformat/Engine graph.
+- DIN `@font-face` in `src/tvkit/fonts.css` (imported in main.tsx); overlay awaits `document.fonts.load(...)` before booting. PIXI app creation wrapped in try/catch (graceful no-op if no WebGL).
+- `RaceOverlay.tsx` rewritten: boots PIXI 1280×720, instantiates `RaceBarDog('dog6',240,'en',false,true)` placed as VideoScreenDog does (w185 h61, top-right, 8px margin), feeds `fill`/`fillRace` from our props (race number = `id.split('_').pop().slice(-4)`), drives `update(dt)`. The lightweight winner-name path is kept layered under it.
+- Build OK (`npx vite build`, bundle ~726kB). Playwright on 8891 over a LIVE dog6 race: real RaceBarDog renders top-right (number pill + track-oval icon + DIN timer) — pixel-faithful. Screenshot `/tmp/racebar_live.png`.
+
+KNOWN GAPs / next: bonus badge stubbed; only RaceBarDog ported (winners still our lightweight text — could later port WinnerDog the same way); not yet committed.
+
+## tvbox-online PIXI race overlay — v1 (2026-05-24)
+
+`tvbox-online/src/components/RaceOverlay.tsx` — transparent PIXI 7.4.3 canvas (1280×720 design space, CSS-stretched) layered over `.lm-video` via `.lm-overlay` (absolute, inset 0, pointer-events none, z-index 5). Mounted in `LiveMonitor` whenever there's a picked race. Driven entirely by the web-ds data we already have — no streaming_kit Logic/SendPlan/assets pulled in. Reference values (positions/fonts/timing) mined from streaming_kit `RaceBarDog.ts` / `WinnerDog.ts` / `VideoScreenDog.ts`.
+
+Elements (verified via Playwright screenshots on 8891):
+- **Race number** top-left `RACE #NNNN` (from `id.split('_').pop().slice(-4)`), during `live`.
+- **Countdown** centred mm:ss, during `pre` (from `useTimer` remainingSec).
+- **Winners** top-right `WINNERS / 1.NAME …` (top 3 of `finish`, `competitorIndex`→`competitors[idx|idx+1].name`), revealed at `elapsed ≥ max(finish.time)+1.5s`.
+
+Mid-race running order intentionally skipped (Jorge: "deja lo de los intermedios") — wire has no per-interval positions, only final `finish`.
+
+KNOWN GAPs / next: (1) the pre-countdown may visually duplicate the existing `.lm-video-pre` `.lm-video-countdown` text — decide whether to drop the DOM one. (2) positions/fonts are a first pass, not yet pixel-matched to the TV-box. (3) overlay only added to tvbox-online, not the lobby.
 
 ## The "salida missed" problem (was PENDING — see section above, now FIXED)
 
@@ -156,10 +183,10 @@ Playwright with Google Chrome (`channel: "chrome"`) on Xvfb because Chromium's b
 ```
 
 Test scripts that proved current state:
-- `/tmp/test_sxs_auth.js` — side-by-side lobby (logged in) + tv-monitor, captures WS frames and video state on both
+- `/tmp/test_sxs_auth.js` — side-by-side lobby (logged in) + tvbox-online, captures WS frames and video state on both
 - `/tmp/test_side_by_side.js` — same idea without lobby login
 
-Last test confirmed: both connect to the SAME WS (`ws://187.124.95.45:4099/web-ds`), receive `gameResult` at the SAME millisecond, but the lobby's `<video>` stays W=0 because CloudFront is unreachable from the VPS Playwright network, while tv-monitor plays correctly via local symlinks.
+Last test confirmed: both connect to the SAME WS (`ws://187.124.95.45:4099/web-ds`), receive `gameResult` at the SAME millisecond, but the lobby's `<video>` stays W=0 because CloudFront is unreachable from the VPS Playwright network, while tvbox-online plays correctly via local symlinks.
 
 ## Pending tasks
 
@@ -168,8 +195,8 @@ Last test confirmed: both connect to the SAME WS (`ws://187.124.95.45:4099/web-d
 | 1 | Decide salida-fix path (A or B above) | Needs Jorge's call |
 | 2 | If B: implement `videoname` early delivery in `internal/protocol/protocol.go:116-120` + add `expert-review` agent pass before commit | Touches the locked TV-DS protocol — see `feedback_tv_ds_protocol_locked` memory; needs explicit confirmation |
 | 3 | Integrate PIXI overlays (RaceBarDog + WinnerDog) on top of the video | Source: `../streaming_kit_webapp/` repo; needs render-on-top div over `<video>` |
-| 4 | Optionally rebuild `web-lobby/dist` with `VITE_VIDEO_OVERRIDE_BASE=/videos` so it matches tv-monitor + production behaviour on this VPS | One-line vite build command |
-| 5 | Once stable, consider promoting tv-monitor's approach to the canonical lobby video player (replace pass-through CloudFront logic for VPS-hosted deployments) | Bigger architectural choice |
+| 4 | Optionally rebuild `web-lobby/dist` with `VITE_VIDEO_OVERRIDE_BASE=/videos` so it matches tvbox-online + production behaviour on this VPS | One-line vite build command |
+| 5 | Once stable, consider promoting tvbox-online's approach to the canonical lobby video player (replace pass-through CloudFront logic for VPS-hosted deployments) | Bigger architectural choice |
 
 ## How to resume in a fresh session
 
@@ -180,9 +207,80 @@ cat /home/claude/projects/virtuales-online/docs/SESSION_STATE_2026-05-23.md
 # 2. Verify the four servers are still up
 ss -ltnp 2>/dev/null | grep -E ":(4099|8888|8889|8890|8891)"
 
-# 3. Quick smoke test of tv-monitor
+# 3. Quick smoke test of tvbox-online
 curl -sI http://187.124.95.45:8891/ | head -3
 curl -sI http://187.124.95.45:8891/videos/dog6/R0001_h.mp4 | head -3
 ```
 
 If a server died: re-launch from `virtuales-online/` with `python3 /home/claude/projects/virtuales-go/tools/playwright/serve_webapp.py <port> <docroot>`.
+
+---
+
+## 2026-05-24 — RaceIntervalsDog ported into tvbox-online RaceOverlay
+
+Second real streaming_kit component ported the same way as RaceBarDog (vendored UNMODIFIED under `src/tvkit/`, fed by a shim + adapter).
+
+**Vendored UNMODIFIED (src/tvkit/):**
+- `client/VideoScreen/dog/Race/RaceIntervalsDog.ts`
+- `client/VideoScreen/dog/Race/RaceIntervalItemDog.ts`
+- `settings/RaceElementsSettings.ts` (exports RaceElementPositions, RaceElementAnimTimings)
+
+All transitive deps (Group, Anim, LogicDefinitions, Definitions) were already vendored. No new leaf files needed. `IRaceInterval`/`IIntervalDriver`/`IDriver`/`ITrack` already existed in the vendored LogicDefinitions.
+
+**Shim addition (`src/tvkit/client/Logic/Logic.ts`):**
+- `Logic.createPixiMask(xOffset,yOffset,width,height,debug)` — replicated verbatim from real Logic (white-fill PIXI.Graphics rect, alpha 0 / 0.5 if debug, cacheAsBitmap). No other Logic methods were missing (autoSize/createPixiText/getAnim/getRaceVideoTime already present).
+
+**Data model:**
+- `Race.interval?: Record<string, Record<string, {competitorIndex:number; time:number}>>` added to `src/types/websocket.ts`. Merged onto the Race automatically by `useRaceFeed.mergeRace` (generic non-null-key copy) — same path `finish` uses; no explicit per-field code needed.
+- Threaded through LiveMonitor → RaceOverlay (`interval={pickedRace.interval}`).
+
+**Adapter (in RaceOverlay.tsx):**
+- Inlined base templates `raceIntervalsDog6`/`raceIntervalsDog8` (verbatim from ModelDog.ts).
+- `toRaceIntervals(gameType, interval)` replicates the GamesModel DOG branch (~L1641-1711): copies template, fills raceIntervals[1] & [2] drivers (competitorIndex-1) + startTime (interval[N][1].time + offset; dog6 offset 0.92/0.92). NOTE: the REAL code uses only splits "1" and "2" (2 interval reveals + a title-only "START POSITIONS"), NOT 3 — followed the real code, not the loose "3 splits" in the brief. Time formatted via Logic.implementation.formatTime({minutes:false,seconds:true,hundredth:true}).
+- `toDrivers(competitors)` builds IDriver[] indexed 0-based by post position. RaceIntervalItemDog.fill only reads `driver.firstName` → mapped competitor name → firstName; other IDriver fields filled with safe empties.
+- EMPTY_TRACK passed as ITrack (fill stores it; nothing read from it).
+
+**Wire-up:** RaceIntervalsDog('dog6') at x=_s(1008) y=_s(44) w=_s(253) h=_s(202); fill() on round-change OR when interval data first arrives (sig includes interval presence); update(dt) each tick driven by Logic.getRaceVideoTime(); visible only while phase==='live'. RaceBarDog unchanged.
+
+**Build:** `npx vite build` OK → `dist/assets/index-NhSRqjiu.js` (731 kB). Symlinks recreated. NOTE: `npm run build` (tsc -b) would error — vendored RaceIntervalsDog calls AnimHelper.animateInOut with 10 args (original quirk); the embed builds via `npx vite build` (esbuild, no typecheck), same as RaceBarDog.
+
+**Playwright sanity (Xvfb/Chrome swiftshader, :8891):** `.lm-overlay canvas` present, 0 pageerrors, 0 404s (a transient 404 on first run did not recur). RaceBar still renders ("02:02" timer over live dog video). Screenshot /tmp/intervals_boot.png. Interval box not visible in short capture — only appears mid-race with interval data present.
+
+**Fidelity caveats:** IDriver only needs firstName (verified); color/lastName/driverInfos stubbed empty. ITrack fully empty (unused by these components).
+
+## WinnerDog port (2026-05-24)
+
+Vendored the REAL `WinnerDog` + `WinnerDogLine` (final winners panel: BOX + NAME + TIME) into `tvbox-online/src/tvkit/`, UNMODIFIED, mounted in `RaceOverlay.tsx`.
+
+### Files vendored / trimmed / stubbed
+- `client/VideoScreen/dog/Race/WinnerDog.ts`, `WinnerDogLine.ts` — verbatim copies.
+- `client/VideoScreen/UIHelper.ts` — verbatim (pure PIXI geometry helpers).
+- `client/VideoScreen/common/DrawHelper.ts` — vendored verbatim EXCEPT the one Engine-dependent method (`createCustomSkewedRoundedRectangleTexture`, unused by WinnerDog) was dropped to avoid pulling in `Engine`. The webpack `module.hot` dispose hook was guarded (`typeof module !== "undefined"`) so it doesn't ReferenceError under Vite/ESM.
+- `client/VideoScreen/horse/HorseHelper.ts` — TRIMMED to just `getWhiteColor()` → `"white"` (the only thing WinnerDog uses; the real one delegates to DogHelper which returns the "white" constant for all non-BDR-MSA users). Avoids the full HorseHelper/DogHelper graph.
+- `common/Util.ts` — added `rgbToHex(argb)` (inline channel extraction; real impl routed through Color.fillARGB). Used by DrawHelper.drawPatternTexture for driver colours.
+- DriverPattern enum already present in vendored LogicDefinitions.
+
+### Shim additions (client/Logic/Logic.ts)
+- `Logic.getOddsForDriver(odds, first, second, racerCount)` = `odds[first*racerCount+second]` (verbatim).
+- `Logic.getOddsForDriverDigits(...)` = returns `null` (real impl only overrides for Italian MODERN_ODDS_ALWAYS_ON skin; we are not that skin → original falls through to null).
+- `implementation.formatOdds(n, comma=1)` = `n.toFixed(comma)` (LogicBase.formatOdds → Util.formatValue, commaSymbol "." for non-IT).
+- `implementation.getGameInfo()` = `{ gameLength: Logic.gameLength, gameType: "dog6" }` (WinnerDog only reads `.gameLength` for the `===300` long-race branch; our 240 → non-300 branch, matching the TV-box).
+- TEXTS keys added: winner=GANADOR, forcastBet=EXACTA, first=PRIMERO, second=SEGUNDO, sec=SEG.
+
+### Data mapping (RaceOverlay.tsx)
+- `toResult` now builds real `first`/`second` from `finish["1"]`/`["2"]`: `driverIndex = competitorIndex - 1`, `time = formatTime(t,{minutes:false,seconds:true,hundredth:true})`. WinnerDogLine shows `winnerNumber = driverIndex+1` (box) + `driver.firstName` (name) + time.
+- `odds` threaded: `Race.odds` → LiveMonitor → RaceOverlay prop → WinnerDog.fill.
+- WinnerDog filled only once `finish["1"]` is present; round signature extended to `raceId|interval|finish` so it re-fills when late finish/interval data lands.
+
+### WinnerDog instances (from VideoScreenDog, verbatim)
+- 3 instances, types `["winner","winner","firstTwo"]`.
+- anims: `[{32.0,7.5}]`, `[{40.5,getRaceLength()}]`, `[{40.5,getRaceLength()}]` (the `isRight` flag is VideoScreenDog-internal, not read by WinnerDog → omitted).
+- settings (x,y,w,h, scaled via _s): `[62,152,648,296]`, `[62,152,648,296]`, `[485,208.5,566,274]`.
+
+### Verify
+- `npx vite build` OK → bundle `dist/assets/index-CjB29_Sc.js` (761 kB). Symlinks recreated (dog6/dog8/horse7 → ds_assets).
+- Playwright (Chrome/Xvfb, swiftshader): clean boot, `.lm-overlay canvas` present, 0 pageerrors, RaceBar renders. Screenshot `/tmp/winner_boot.png`. WinnerDog only reveals ~32s into playback with finish data, so not visible in short boot run (expected).
+
+### Known gaps / fidelity notes
+- `getGameInfo().gameType` hardcoded "dog6" in shim — WinnerDog only uses gameLength, so no effect; but if dog8 forecast digit overrides were ever needed, the IT branch isn't wired (we're not the IT skin anyway).
+- `useOverlays=false` (WinnerDog default) → the non-overlay layout branch is used, matching the standard TV-box dog skin.

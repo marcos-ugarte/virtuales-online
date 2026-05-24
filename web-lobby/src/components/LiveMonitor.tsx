@@ -88,50 +88,53 @@ function VideoPlayer({
   clockOffsetMs: number;
 }) {
   const ref = useRef<HTMLVideoElement | null>(null);
-  // Elapsed-at-mount captured once per clip (keyed on url), so a periodic
-  // clockOffsetMs update doesn't make us think we joined late.
-  const joinRef = useRef<{ url: string; elapsed: number } | null>(null);
+  // Decide once per clip (keyed on url) whether we caught the race at its
+  // start. Cached in a ref so a periodic clockOffsetMs update doesn't flip it.
+  const joinRef = useRef<{ url: string; fromStart: boolean } | null>(null);
+  if (!joinRef.current || joinRef.current.url !== url) {
+    const startMs = parseVendorTs(videoStartDt);
+    const elapsed =
+      startMs === undefined
+        ? 0
+        : Math.max(0, (Date.now() + clockOffsetMs - startMs) / 1000);
+    joinRef.current = { url, fromStart: elapsed <= LATE_JOIN_THRESHOLD_SEC };
+  }
+  const fromStart = joinRef.current.fromStart;
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const startMs = parseVendorTs(videoStartDt);
-    if (
-      startMs !== undefined &&
-      (!joinRef.current || joinRef.current.url !== url)
-    ) {
-      joinRef.current = {
-        url,
-        elapsed: Math.max(0, (Date.now() + clockOffsetMs - startMs) / 1000),
-      };
-    }
     const handleLoaded = () => {
-      const joinedLate =
-        (joinRef.current?.elapsed ?? 0) > LATE_JOIN_THRESHOLD_SEC;
-      if (joinedLate && startMs !== undefined) {
-        const elapsedSec = Math.max(
-          0,
-          (Date.now() + clockOffsetMs - startMs) / 1000,
-        );
-        if (elapsedSec < el.duration) {
-          el.currentTime = elapsedSec;
+      if (!fromStart) {
+        const startMs = parseVendorTs(videoStartDt);
+        if (startMs !== undefined) {
+          const elapsedSec = Math.max(
+            0,
+            (Date.now() + clockOffsetMs - startMs) / 1000,
+          );
+          if (elapsedSec < el.duration) {
+            el.currentTime = elapsedSec;
+          }
         }
       }
-      // else: leave currentTime at 0 → play from the salida.
+      // else: from the salida → leave currentTime at 0.
       el.play().catch(() => {
         /* autoplay might be blocked; user has to interact */
       });
     };
     el.addEventListener('loadedmetadata', handleLoaded);
     return () => el.removeEventListener('loadedmetadata', handleLoaded);
-  }, [url, videoStartDt, clockOffsetMs]);
+  }, [url, videoStartDt, clockOffsetMs, fromStart]);
 
   return (
     <video
       ref={ref}
       className="lm-video-el"
       src={url}
-      poster={poster}
+      // The poster is the race's start frame, so only show it when we play
+      // from the salida. On a mid-race join we seek ahead — showing the start
+      // frame would flash a wrong image for a few tenths of a second.
+      poster={fromStart ? poster : undefined}
       autoPlay
       muted
       playsInline

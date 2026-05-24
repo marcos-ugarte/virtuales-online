@@ -1,0 +1,50 @@
+/*
+ * DIN web-fonts used by the vendored streaming_kit RaceBarDog overlay.
+ * Family names match the `fontFamily` strings hard-coded in RaceBarDog.ts.
+ * The .otf files are vendored under src/tvkit/assets/fonts/ and Vite rewrites
+ * these relative url()s to hashed asset URLs at build time.
+ */
+@font-face {
+  font-family: "DIN-UltraLightItalic";
+  src: url("./assets/fonts/DINNextLTPro-UltraLightItalic.otf") format("opentype");
+  font-display: block;
+}
+@font-face {
+  font-family: "DIN-BoldItalic";
+  src: url("./assets/fonts/DINNextLTPro-BoldItalic.otf") format("opentype");
+  font-display: block;
+}
+@font-face {
+  font-family: "DIN-LightItalic";
+  src: url("./assets/fonts/DINNextLTPro-LightItalic.otf") format("opentype");
+  font-display: block;
+}
+@font-face {
+  font-family: "DIN-Medium";
+  src: url("./assets/fonts/DINNextLTPro-Medium.otf") format("opentype");
+  font-display: block;
+}
+/* RaceBarDog also references "DIN-Light" (debug text); fall back to LightItalic. */
+@font-face {
+  font-family: "DIN-Light";
+  src: url("./assets/fonts/DINNextLTPro-Light.otf") format("opentype");
+  font-display: block;
+}
+/* With odds-always-on (our skin) the race NUMBER (lapText) is DIN-Regular and
+   the countdown is DIN-RegularItalic; the bonus uses DIN-Bold. These were
+   missing — without them PIXI fell back to a default face (wrong glyphs/size). */
+@font-face {
+  font-family: "DIN-Regular";
+  src: url("./assets/fonts/DINNextLTPro-Regular.otf") format("opentype");
+  font-display: block;
+}
+@font-face {
+  font-family: "DIN-RegularItalic";
+  src: url("./assets/fonts/DINNextLTPro-Italic.otf") format("opentype");
+  font-display: block;
+}
+@font-face {
+  font-family: "DIN-Bold";
+  src: url("./assets/fonts/DINNextLTPro-Bold.otf") format("opentype");
+  font-display: block;
+}
