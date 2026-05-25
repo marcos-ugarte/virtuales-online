@@ -309,6 +309,7 @@ export function LiveMonitor({
             interval={pickedRace.interval}
             odds={pickedRace.odds}
             videoStartDt={pickedRace.videoStartDt}
+            videoEndDt={pickedRace.videoEndDt}
             clockOffsetMs={clockOffsetMs}
             phase={pickedTimer.phase}
             remainingSec={pickedTimer.remainingSec}

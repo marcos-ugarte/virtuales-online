@@ -61,6 +61,7 @@ export interface RaceOverlayProps {
   /** Flat odds matrix — WinnerDog indexes it via Logic.getOddsForDriver. */
   odds?: number[];
   videoStartDt: string;
+  videoEndDt: string;
   clockOffsetMs: number;
   phase: 'pre' | 'live' | 'idle';
   remainingSec: number;
@@ -341,10 +342,18 @@ export function RaceOverlay(props: RaceOverlayProps) {
       const tick = () => {
         const p = propsRef.current;
 
-        // Keep RaceBarDog fed; set race length from the finish times, re-fill on
-        // round change.
+        // Keep RaceBarDog fed. NOTE: getRaceLength() drives how long the race
+        // bar (number + timer) STAYS VISIBLE — it must span the whole video
+        // (incl. the winners phase at ~32s/40.5s), so we set it from the VIDEO
+        // duration (videoEndDt - videoStartDt), NOT the finish time. The timer's
+        // frozen value (00:29 = finish) is the SEPARATE `totalRaceTime` cap set
+        // by fillRace(result.clockEndTime). Using the finish time here made the
+        // bar fade ~28s, hiding the race number + timer during the winners.
         const result = toResult(p);
-        Logic.setRaceLength(result.clockEndTime && result.clockEndTime > 0 ? result.clockEndTime : 30);
+        const vStart = parseVendorTs(p.videoStartDt);
+        const vEnd = parseVendorTs(p.videoEndDt);
+        const videoLen = vStart !== undefined && vEnd !== undefined ? (vEnd - vStart) / 1000 : 0;
+        Logic.setRaceLength(videoLen > 0 ? videoLen : 48);
 
         // Re-fill on round change (raceId changes) AND when interval/finish
         // data first arrives for the same round (both land AFTER the round
