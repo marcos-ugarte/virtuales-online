@@ -108,6 +108,20 @@ The race **video is served from your local disk** (via the dev plugin) while the
 - **web-lobby** does NOT have the PIXI overlays (only tvbox-online does) — decide if it should.
 - **tickets.ts** TS errors in web-lobby block `tsc -b` (build via `npx vite build`).
 
+## NEXT FEATURE (PLANNED, not started): premium inter-race "intro" presentation
+During the wait between race videos, show an optional **premium animated presentation** (console-sports-broadcast quality), built **FROM SCRATCH** with our own data — NOT a port of the streaming_kit intro overlays, NOT playing the real intro MP4. (Decision "B".)
+
+- **Target duration ≈ 180s** (3 min): we broadcast every **4 min (round 240s)**; the real intro for that round is `intro_4_oao` (≈179.7s). NOT the 1-min `intro_2_oao` (that's for round 120; the 60s clip loops ~2× in shorter rounds). Verified durations via ffprobe in `ds_assets`.
+- **Optional toggle** (`VITE_WAIT_MODE` / `?wait=`): `image` (current static hero+countdown) vs `premium`.
+- **Tech:** PIXI 7 (already installed) + **GSAP** (`npm i gsap @pixi/filter-glow @pixi/filter-advanced-bloom`, not yet installed) for timelines/easing; bloom, parallax, animated odds counters. Framer Motion is NOT the tool (DOM-based; stutters with broadcast graphics).
+- **Reference (what the real intro does, for inspiration only):** the `intro_N_oao` MP4 is cinematic venue footage + EMPTY 3D odds boards (WIN tiles + 8×8 EXACTA matrix); the webview overlays live odds/names on top, timed to the video. We are NOT replicating that pipeline — building our own.
+- **All data is available** on the web-ds wire (confirmed): `competitors[].{name,strikeRate,bestLap,last5,resultHistory,trend,numberOfWins,…}`, `odds[]` (WIN+EXACTA), `resultHistory`, `jackpotInfo.bonusHistory`, `weather/temperature/wind/courseConditions`, `videoStartDt`.
+- **Proposed storyboard (~180s):** 0–15s opening/brand + weather → 15–70s runner presentation (one by one) → 70–120s odds matrix (WIN+EXACTA, animated counters) → 120–160s history/jackpot → 160–180s countdown to start.
+- **Next concrete step:** run `ui-ux-pro-max` for the visual direction (palette/type/effects), then PoC the **runner-presentation** panel with PIXI+GSAP fed by real data; verify locally (fast), then extend to the full sequence.
+
+## Also done since the overlay milestone
+- **Winner-phase race bar fix** (`RaceOverlay.tsx` + `LiveMonitor.tsx`, commit 4d10ba1): the race number + timer stayed hidden during the winners panel because `getRaceLength()` (bar visibility window) was set from the finish time (~29s) so the bar faded before WinnerDog (32s/40.5s). Now `getRaceLength` = VIDEO duration (`videoEndDt-videoStartDt`); the timer's frozen value stays the finish time (`totalRaceTime=clockEndTime`) → race number + "00:29" stay visible during winners. Also: overlays hidden when the video isn't actively playing (winner no longer lingers into the next countdown).
+
 ## Working-style notes (carry these)
 - Document findings/changes in the same step as the work (this repo's docs are the memory).
 - Pixel-perfect = port the REAL component (camino A), don't approximate. Verify visually with Playwright screenshots (Chrome channel + Xvfb + swiftshader flags on the VPS; locally just a normal browser).
