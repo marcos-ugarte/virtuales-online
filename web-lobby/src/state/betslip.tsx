@@ -23,16 +23,20 @@ import type { GameKey } from '../types/websocket';
 import { getStakeLimits, type StakeLimits } from '../services/stakeLimits';
 import { useWallet } from './wallet';
 
-export type BetType = 'win';
+export type BetType = 'win' | 'forecast';
 
 export interface BetSelection {
-  /** Stable id derived from raceId + type + runnerPos so toggling is idempotent. */
+  /** Stable id derived from raceId + type + runners so toggling is idempotent. */
   id: string;
   raceId: string;
   raceLabel: string;
   gameType: GameKey;
+  /** For 'win': the runner. For 'forecast': the 1st-place runner. */
   runnerPos: number;
   runnerName: string;
+  /** Forecast only: the 2nd-place runner (dorsal + name). */
+  second?: number;
+  runnerName2?: string;
   type: BetType;
   odds: number;
   /** Per-tip stake. Default on add: DEFAULT_STAKE. */
@@ -42,6 +46,14 @@ export interface BetSelection {
 interface BetslipCtx {
   selections: BetSelection[];
   toggleWin: (sel: Omit<BetSelection, 'id' | 'type' | 'stake'>) => void;
+  /** Add the runner with an explicit stake, or update its stake if already in
+   *  the slip (never removes — used by the tap-to-pick-amount popover). */
+  upsertWin: (sel: Omit<BetSelection, 'id' | 'type' | 'stake'>, stake: number) => void;
+  /** Add/update a forecast (1st→2nd) selection with an explicit stake. */
+  upsertForecast: (
+    sel: Omit<BetSelection, 'id' | 'type' | 'stake'> & { second: number; runnerName2: string },
+    stake: number,
+  ) => void;
   removeSelection: (id: string) => void;
   clearAll: () => void;
   pruneToActiveRaces: (activeRaceIds: readonly string[]) => void;
@@ -66,8 +78,10 @@ interface BetslipCtx {
 
 const Ctx = createContext<BetslipCtx | null>(null);
 
-function makeId(raceId: string, type: BetType, runnerPos: number): string {
-  return `${raceId}:${type}:${runnerPos}`;
+function makeId(raceId: string, type: BetType, runnerPos: number, second?: number): string {
+  return type === 'forecast'
+    ? `${raceId}:forecast:${runnerPos}-${second}`
+    : `${raceId}:${type}:${runnerPos}`;
 }
 
 function clampStake(value: number, limits: StakeLimits): number {
@@ -113,6 +127,39 @@ export function BetslipProvider({ children }: { children: ReactNode }) {
       setSelectedId(id);
     },
     [limits.default],
+  );
+
+  const upsertWin = useCallback(
+    (sel: Omit<BetSelection, 'id' | 'type' | 'stake'>, stake: number) => {
+      const id = makeId(sel.raceId, 'win', sel.runnerPos);
+      const clamped = clampStake(stake, limits);
+      setSelections((prev) => {
+        if (prev.some((s) => s.id === id)) {
+          return prev.map((s) => (s.id === id ? { ...s, stake: clamped } : s));
+        }
+        return [...prev, { ...sel, id, type: 'win', stake: clamped }];
+      });
+      setSelectedId(id);
+    },
+    [limits],
+  );
+
+  const upsertForecast = useCallback(
+    (
+      sel: Omit<BetSelection, 'id' | 'type' | 'stake'> & { second: number; runnerName2: string },
+      stake: number,
+    ) => {
+      const id = makeId(sel.raceId, 'forecast', sel.runnerPos, sel.second);
+      const clamped = clampStake(stake, limits);
+      setSelections((prev) => {
+        if (prev.some((s) => s.id === id)) {
+          return prev.map((s) => (s.id === id ? { ...s, stake: clamped } : s));
+        }
+        return [...prev, { ...sel, id, type: 'forecast', stake: clamped }];
+      });
+      setSelectedId(id);
+    },
+    [limits],
   );
 
   const removeSelection = useCallback(
@@ -183,6 +230,8 @@ export function BetslipProvider({ children }: { children: ReactNode }) {
     () => ({
       selections,
       toggleWin,
+      upsertWin,
+      upsertForecast,
       removeSelection,
       clearAll,
       pruneToActiveRaces,
@@ -197,6 +246,8 @@ export function BetslipProvider({ children }: { children: ReactNode }) {
     [
       selections,
       toggleWin,
+      upsertWin,
+      upsertForecast,
       removeSelection,
       clearAll,
       pruneToActiveRaces,

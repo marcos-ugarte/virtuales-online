@@ -31,7 +31,7 @@ export function Navbar() {
   const displayName = user?.displayName ?? user?.username ?? '—';
   return (
     <nav
-      className="navbar navbar-expand-lg navbar-dark bg-dark"
+      className="navbar navbar-dark bg-dark"
       role="navigation"
       aria-label="Main navigation"
     >
@@ -39,42 +39,30 @@ export function Navbar() {
         <img src="/assets/virtualrace_logo.png" alt="Virtual Race" height="28" />
       </a>
 
-      <button
-        className="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#main-menu"
-        aria-controls="main-menu"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span className="navbar-toggler-icon"></span>
-      </button>
-
-      <div className="collapse navbar-collapse" id="main-menu">
-        <ul className="navbar-nav mr-auto" role="list"></ul>
-
-        {/* Mock user info + language and currency toggles */}
-        <div className="navbar-user">
-          <LangToggle />
+      {/* User info + balance — ALWAYS visible (not behind a collapse), so it
+          shows on mobile too. Compacted via CSS on narrow screens. */}
+      <div className="navbar-user">
+        <LangToggle />
+        <span className="navbar-user-id">
           <span className="fa fa-user" aria-hidden="true"></span>
           <span className="user-name">{displayName}</span>
-          <span
-            className={`user-balance${balanceLoading ? ' user-balance--loading' : ''}`}
-            title={t('nav.balance')}
-            aria-label={`${t('nav.balance')}: ${balance} ${currency}`}
-          >
-            {balance}
-          </span>
-          <button
-            className="btn btn-outline-light btn-sm"
-            type="button"
-            aria-label={t('nav.signout')}
-            onClick={() => { void logout(); }}
-          >
-            {t('nav.signout')}&nbsp;<span className="fa fa-sign-out" aria-hidden="true"></span>
-          </button>
-        </div>
+        </span>
+        <span
+          className={`user-balance${balanceLoading ? ' user-balance--loading' : ''}`}
+          title={t('nav.balance')}
+          aria-label={`${t('nav.balance')}: ${balance} ${currency}`}
+        >
+          {balance}
+        </span>
+        <button
+          className="btn btn-outline-light btn-sm navbar-signout"
+          type="button"
+          aria-label={t('nav.signout')}
+          onClick={() => { void logout(); }}
+        >
+          <span className="navbar-signout-text">{t('nav.signout')}&nbsp;</span>
+          <span className="fa fa-sign-out" aria-hidden="true"></span>
+        </button>
       </div>
     </nav>
   );

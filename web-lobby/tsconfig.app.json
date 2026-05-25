@@ -9,6 +9,14 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "client/assets/*": ["./src/tvkit/assets/*"],
+      "client/*": ["./src/tvkit/client/*"],
+      "common/*": ["./src/tvkit/common/*"],
+      "settings/*": ["./src/tvkit/settings/*"],
+      "assets/*": ["./src/tvkit/assets/*"]
+    },
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",

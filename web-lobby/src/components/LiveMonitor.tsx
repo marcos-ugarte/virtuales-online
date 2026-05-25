@@ -15,7 +15,19 @@ import type { AllGames, GameKey, Race } from '../types/websocket';
 import { useTimer } from '../hooks/useTimer';
 import { useLang } from '../i18n';
 import { JackpotDisplay } from './JackpotDisplay';
+import { RaceOverlay, type OverlayGameType } from './RaceOverlay';
 import { resolveVideoUrl, resolveVideoPoster } from '../services/videoUrl';
+
+/**
+ * Map the lobby GameKey to the streaming_kit dog game type the ported overlay
+ * understands. Only the dog games have vendored overlay components, so horsec
+ * resolves to null and simply renders no overlay (it also has no video yet).
+ */
+const OVERLAY_GAME_TYPE: Record<GameKey, OverlayGameType | null> = {
+  dog: 'dog6',
+  dog8: 'dog8',
+  horsec: null,
+};
 
 /** Game types the LiveMonitor will render video for. Horsec is on the
  *  roadmap but excluded for now — video assets aren't ready. The cards
@@ -295,6 +307,25 @@ export function LiveMonitor({
           </div>
         ) : (
           <div className="lm-video-empty">{t('monitor.waiting')}</div>
+        )}
+
+        {/* PIXI race overlay — number / timer / mid-race leaders / winners,
+            drawn on top of the video. Mounted only for game types that have
+            vendored overlay components (dog6 / dog8). */}
+        {pickedRace && pickedTimer && pickedKey && OVERLAY_GAME_TYPE[pickedKey] && (
+          <RaceOverlay
+            gameType={OVERLAY_GAME_TYPE[pickedKey]!}
+            raceId={pickedRace.id}
+            competitors={pickedRace.competitors}
+            finish={pickedRace.finish}
+            interval={pickedRace.interval}
+            odds={pickedRace.odds}
+            videoStartDt={pickedRace.videoStartDt}
+            videoEndDt={pickedRace.videoEndDt}
+            clockOffsetMs={clockOffsetMs}
+            phase={pickedTimer.phase}
+            remainingSec={pickedTimer.remainingSec}
+          />
         )}
       </div>
 

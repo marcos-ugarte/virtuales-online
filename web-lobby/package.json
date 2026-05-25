@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:vps": "tsc -b && vite build && ./scripts/relink-videos.sh",
+    "relink-videos": "./scripts/relink-videos.sh",
     "preview": "vite preview",
     "test": "playwright test",
     "test:headed": "playwright test --headed",
@@ -13,6 +15,7 @@
   },
   "dependencies": {
     "odometer": "^0.4.8",
+    "pixi.js": "^7.4.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

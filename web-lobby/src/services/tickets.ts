@@ -99,7 +99,10 @@ interface TicketsListDTO {
 
 export interface BetSlipLine {
   betType: BetType;
+  /** win: the runner. forecast: the 1st-place runner. */
   runnerPos: number;
+  /** forecast: the 2nd-place runner. */
+  second?: number;
   odds: number;
   stake: number;
 }
@@ -254,7 +257,10 @@ export async function placeTicket(input: {
     currency: input.currency,
     selections: input.selections.map((s) => ({
       betType: s.betType,
-      selection: { runner: s.runnerPos },
+      selection:
+        s.betType === 'forecast'
+          ? { first: s.runnerPos, second: s.second ?? 0 }
+          : { runner: s.runnerPos },
       odds: s.odds,
       stake: formatMoneyWire(s.stake),
     })),

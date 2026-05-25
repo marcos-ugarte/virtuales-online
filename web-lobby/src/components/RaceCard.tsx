@@ -11,11 +11,22 @@
  * separate panel, not as a per-runner column.
  */
 
+import { useState, type MouseEvent as ReactMouseEvent } from 'react';
 import type { GameKey, Race, Competitor } from '../types/websocket';
 import { useTimer } from '../hooks/useTimer';
 import { CountdownOverlay } from './CountdownOverlay';
+import { StakePopover } from './StakePopover';
+import { ForecastMatrix, type ForecastPick } from './ForecastMatrix';
 import { useLang } from '../i18n';
-import { useBetslip, useIsSelected } from '../state/betslip';
+import { useBetslip, useIsSelected, type BetSelection } from '../state/betslip';
+
+/** The runner identity passed to the stake popover / betslip upsert. */
+type WinPick = Omit<BetSelection, 'id' | 'type' | 'stake'>;
+
+/** Which thing the stake popover is currently pricing. */
+type Picker =
+  | { kind: 'win'; sel: WinPick; rect: DOMRect }
+  | { kind: 'forecast'; pick: ForecastPick; rect: DOMRect };
 
 // ---------------------------------------------------------------------------
 // Per-game theme constants
@@ -149,7 +160,7 @@ function WinOddCell({
   tooltip,
 }: {
   value: string;
-  onClick: () => void;
+  onClick: (e: ReactMouseEvent<HTMLButtonElement>) => void;
   selected: boolean;
   disabled: boolean;
   ariaLabel: string;
@@ -268,12 +279,40 @@ interface RaceCardProps {
 export function RaceCard({ gameType, race, clockOffsetMs, isWatching, onWatch }: RaceCardProps) {
   const theme = THEMES[gameType];
   const { t } = useLang();
-  const { toggleWin } = useBetslip();
+  const { upsertWin, upsertForecast, selections, limits } = useBetslip();
   const { remainingSec, phase } = useTimer(race?.videoStartDt, clockOffsetMs);
+
+  // Tap-to-pick-amount popover (WIN runner or FORECAST pair) + its anchor.
+  const [picker, setPicker] = useState<Picker | null>(null);
+  // Forecast odds matrix accordion (expands the card downward).
+  const [forecastOpen, setForecastOpen] = useState(false);
 
   if (!race) {
     return <SkeletonCard theme={theme} />;
   }
+
+  // Current stake if the thing being priced is already in the slip.
+  const pickerExisting = !picker
+    ? undefined
+    : picker.kind === 'win'
+      ? selections.find(
+          (s) => s.raceId === race.id && s.type === 'win' && s.runnerPos === picker.sel.runnerPos,
+        )
+      : selections.find(
+          (s) =>
+            s.raceId === race.id &&
+            s.type === 'forecast' &&
+            s.runnerPos === picker.pick.first &&
+            s.second === picker.pick.second,
+        );
+
+  // Label + odds shown in the stake popover for the current pick.
+  const pickerLabel = !picker
+    ? ''
+    : picker.kind === 'win'
+      ? picker.sel.runnerName
+      : `${picker.pick.first} → ${picker.pick.second}`;
+  const pickerOdds = !picker ? 0 : picker.kind === 'win' ? picker.sel.odds : picker.pick.odds;
 
   // Convert competitors Record → sorted array by post position (key is 1-based string)
   const sortedEntries: Array<{ pos: number; comp: Competitor }> = Object.entries(
@@ -385,7 +424,7 @@ export function RaceCard({ gameType, race, clockOffsetMs, isWatching, onWatch }:
                   raceId={race.id}
                   raceLabel={titleText}
                   gameType={gameType}
-                  onToggleWin={toggleWin}
+                  onPick={(sel, rect) => setPicker({ kind: 'win', sel, rect })}
                   bettingClosed={phase === 'live'}
                   t={t}
                 />
@@ -394,6 +433,62 @@ export function RaceCard({ gameType, race, clockOffsetMs, isWatching, onWatch }:
           </tbody>
         </table>
       </div>
+
+      {/* Forecast/EXACTA odds matrix — accordion that expands the card down. */}
+      {race.odds.length >= sortedEntries.length * sortedEntries.length && (
+        <>
+          <button
+            type="button"
+            className={`fc-toggle${forecastOpen ? ' fc-toggle--open' : ''}`}
+            onClick={() => setForecastOpen((v) => !v)}
+            aria-expanded={forecastOpen}
+          >
+            <span>{t('forecast.toggle')}</span>
+            <span className="fc-toggle-chevron" aria-hidden="true">▾</span>
+          </button>
+          {forecastOpen && (
+            <ForecastMatrix
+              raceId={race.id}
+              competitors={race.competitors}
+              odds={race.odds}
+              bettingClosed={phase === 'live'}
+              onPickPair={(pick, rect) => setPicker({ kind: 'forecast', pick, rect })}
+            />
+          )}
+        </>
+      )}
+
+      {picker && (
+        <StakePopover
+          anchorRect={picker.rect}
+          runnerName={pickerLabel}
+          odds={pickerOdds}
+          initialStake={pickerExisting?.stake ?? limits.default}
+          alreadyInSlip={!!pickerExisting}
+          onConfirm={(stake) => {
+            if (picker.kind === 'win') {
+              upsertWin(picker.sel, stake);
+            } else {
+              const p = picker.pick;
+              upsertForecast(
+                {
+                  raceId: race.id,
+                  raceLabel: titleText,
+                  gameType,
+                  runnerPos: p.first,
+                  runnerName: p.firstName,
+                  second: p.second,
+                  runnerName2: p.secondName,
+                  odds: p.odds,
+                },
+                stake,
+              );
+            }
+            setPicker(null);
+          }}
+          onClose={() => setPicker(null)}
+        />
+      )}
     </div>
   );
 }
@@ -411,7 +506,7 @@ function ParticipantRow({
   raceId,
   raceLabel,
   gameType,
-  onToggleWin,
+  onPick,
   bettingClosed,
   t,
 }: {
@@ -423,21 +518,24 @@ function ParticipantRow({
   raceId: string;
   raceLabel: string;
   gameType: GameKey;
-  onToggleWin: ReturnType<typeof useBetslip>['toggleWin'];
+  onPick: (sel: WinPick, rect: DOMRect) => void;
   bettingClosed: boolean;
   t: (k: string) => string;
 }) {
   const selected = useIsSelected(raceId, pos, 'win');
-  const handleClick = () => {
+  const handleClick = (e: ReactMouseEvent<HTMLButtonElement>) => {
     if (bettingClosed) return;
-    onToggleWin({
-      raceId,
-      raceLabel,
-      gameType,
-      runnerPos: pos,
-      runnerName: comp.name,
-      odds: winOdd,
-    });
+    onPick(
+      {
+        raceId,
+        raceLabel,
+        gameType,
+        runnerPos: pos,
+        runnerName: comp.name,
+        odds: winOdd,
+      },
+      e.currentTarget.getBoundingClientRect(),
+    );
   };
 
   return (
@@ -480,11 +578,7 @@ function ParticipantRow({
         disabled={bettingClosed}
         ariaLabel={`${comp.name} ${t('betslip.win')} @ ${winOdd.toFixed(2)}`}
         tooltip={
-          bettingClosed
-            ? t('countdown.liveNow')
-            : selected
-              ? t('betslip.tooltipRemove')
-              : t('betslip.tooltipAdd')
+          bettingClosed ? t('countdown.liveNow') : t('betslip.tooltipAdd')
         }
       />
     </tr>

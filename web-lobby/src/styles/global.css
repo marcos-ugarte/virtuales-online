@@ -75,6 +75,27 @@ body {
   border-bottom: 2px solid var(--color-primary);
   background-color: #111111 !important;
   box-shadow: 0 2px 14px rgba(0,0,0,0.65);
+  /* Deterministic layout at all sizes (no Bootstrap collapse): brand left,
+     user info right. The user area used to hide on mobile behind the
+     never-opening hamburger; now it's always shown. */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 10px;
+}
+
+.navbar-user-id {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.navbar-user-id .user-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 22vw;
 }
 
 .navbar-brand {
@@ -279,15 +300,18 @@ main {
   align-items: start;
 }
 
-/* Tablet-ish: drop the right panel to its own row below the lobby. */
+/* Tablet-ish: two columns (cards + monitor). The sticky sidebar betslip does
+   not behave below this width, so the inline RightPanel is hidden and reached
+   through the floating button + drawer (MobileBetslip / .bsd-*). The `>` keeps
+   the drawer's own RightPanel (not a child of .lobby-shell) visible. */
 @media (max-width: 1280px) {
   .lobby-shell {
     grid-template-columns:
       minmax(0, 1fr)
       minmax(280px, 320px);
   }
-  .rp {
-    grid-column: 1 / -1;
+  .lobby-shell > .rp {
+    display: none;
   }
 }
 
@@ -463,6 +487,11 @@ main {
    ============================================================ */
 .participants-table {
   flex: 1;
+  /* Allow the table to shrink to the card width on narrow screens. Without
+     this the fixed-layout table kept its ~550px content width and overflowed
+     the (overflow:hidden) card on phones, clipping the right-hand columns
+     (PERFORMANCE / rating / win) so the perf bars "disappeared". */
+  min-width: 0;
 }
 
 .participants-table table {
@@ -482,6 +511,36 @@ main {
 .col-perf     { width: 130px; }
 .col-rating   { width: 88px;  }
 .col-win      { width: 80px;  }
+
+/* Narrow / portrait screens: with table-layout:fixed the table width is the
+   GREATER of width:100% and the sum of the <col> px widths (~550px), so on a
+   phone the table kept 550px and overflowed the (overflow:hidden) card —
+   clipping the right-hand columns, including the PERFORMANCE bars. Switching
+   the columns to percentages (summing 100%) makes the table always fit the
+   card at any width, so every column (perf included) stays visible. */
+@media (max-width: 680px) {
+  .col-hat      { width: 10%; }
+  .col-name     { width: 24%; }
+  .col-forecast { width: 16%; }
+  .col-perf     { width: 26%; }
+  .col-rating   { width: 12%; }
+  .col-win      { width: 12%; }
+
+  /* Header user area compacted so balance + player stay visible on phones,
+     and the sign-out button is never clipped at the right edge. */
+  .navbar { padding: 0 8px; gap: 6px; }
+  .navbar-brand { margin-right: 0; }
+  .navbar-brand img { height: 24px; }
+  .navbar-user { gap: 6px; font-size: 12px; min-width: 0; }
+  .navbar-user .btn-outline-light { padding: 4px 7px; }
+  .navbar-signout-text { display: none; }          /* icon-only sign out */
+  .lang-toggle .flag-svg { display: none; }         /* code-only language */
+  /* The name truncates; balance + sign-out stay fixed so they never get cut. */
+  .navbar-user-id { min-width: 0; flex-shrink: 1; }
+  .navbar-user-id .user-name { max-width: 24vw; }
+  .user-balance { flex-shrink: 0; }
+  .navbar-signout { flex-shrink: 0; }
+}
 
 /* ============================================================
    3. COLUMN HEADER ROW
@@ -891,6 +950,14 @@ button.odd-box {
   height: 100%;
   object-fit: contain;
   display: block;
+}
+
+/* PIXI race overlay — transparent canvas stretched over the whole video box. */
+.lm-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
 }
 
 .lm-video-empty,
@@ -1935,6 +2002,239 @@ button.odd-box {
   to   { transform: translateX(0);   opacity: 1; }
 }
 
+/* ============================================================
+   MOBILE BETSLIP · FAB + drawer (responsive ≤1280px)
+   The sidebar RightPanel is hidden below 1280px; the betslip /
+   tickets are reached through a floating button that slides the
+   same panel in from the right over a dark backdrop.
+   ============================================================ */
+.bsd-fab {
+  display: none;            /* desktop: hidden — the sidebar is shown instead */
+}
+
+@media (max-width: 1280px) {
+  .bsd-fab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 1090;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    background: linear-gradient(180deg, var(--accent-gold) 0%, #d18d12 100%);
+    color: #1a1206;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+  }
+  .bsd-fab-icon { font-size: 18px; line-height: 1; }
+  .bsd-fab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background: #1a1206;
+    color: var(--accent-gold);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+  }
+}
+
+/* Backdrop + drawer reuse the My-Bets drawer look (right-anchored). */
+.bsd-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1100;
+}
+
+.bsd-drawer {
+  position: relative;
+  width: min(420px, 92vw);
+  height: 100%;
+  background: var(--surface-dark);
+  border-left: 1px solid var(--border-subtle);
+  box-shadow: -20px 0 60px rgba(0,0,0,0.55);
+  animation: mb-slide-in 0.18s ease-out;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* The RightPanel inside the drawer fills it (drop its sticky sidebar frame). */
+.bsd-drawer .rp {
+  position: static;
+  top: auto;
+  max-height: none;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.bsd-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.4);
+  color: var(--text-secondary);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bsd-close:hover { color: #fff; background: rgba(0,0,0,0.6); }
+
+/* Keep the tab row clear of the close button. */
+.bsd-drawer .rp-tabs { padding-right: 40px; }
+
+/* ============================================================
+   STAKE POPOVER · pick the bet amount when tapping a runner
+   ============================================================ */
+.sp-popover {
+  position: fixed;
+  z-index: 1200;
+  background: var(--surface-dark);
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: cardFadeIn 0.12s ease both;
+}
+
+.sp-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.sp-runner {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sp-odds {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--accent-gold);
+  flex-shrink: 0;
+}
+
+.sp-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.sp-chips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.sp-chip {
+  appearance: none;
+  border: 1px solid var(--cell-border);
+  background: var(--surface-mid);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  padding: 8px 4px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.12s, border-color 0.12s, color 0.12s;
+}
+.sp-chip:hover { background: var(--surface-light); }
+.sp-chip--active {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  background: rgba(245,166,35,0.10);
+}
+
+/* Free-type amount field — clearly an editable input (not another chip):
+   a labelled box with a left-aligned value and a focus ring. */
+.sp-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-darkest);
+  border: 1px solid var(--cell-border);
+  border-radius: 6px;
+  padding: 7px 10px;
+}
+.sp-custom:focus-within {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 2px rgba(245,166,35,0.18);
+}
+.sp-custom-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.sp-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  text-align: right;
+}
+.sp-input::placeholder { color: var(--text-muted); font-weight: 400; }
+.sp-input:focus { outline: none; }
+
+.sp-add {
+  appearance: none;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  background: linear-gradient(180deg, var(--accent-gold) 0%, #d18d12 100%);
+  color: #1a1206;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.sp-add:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .mb-header {
   display: flex;
   align-items: center;
@@ -2671,3 +2971,141 @@ button.odd-box {
   text-align: right;
   width: 64px;
 }
+
+/* ============================================================
+   FORECAST / EXACTA odds matrix (accordion in the race card)
+   ============================================================ */
+.fc-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  appearance: none;
+  border: 0;
+  border-top: 1px solid var(--cell-border);
+  background: var(--surface-mid);
+  color: var(--accent-gold);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+.fc-toggle:hover { background: var(--surface-light); }
+.fc-toggle-chevron { transition: transform 0.2s ease; }
+.fc-toggle--open .fc-toggle-chevron { transform: rotate(180deg); }
+
+.fc {
+  padding: 10px 12px 14px;
+  background: var(--surface-darkest);
+  border-top: 1px solid var(--border-subtle);
+  animation: fc-reveal 0.2s ease both;
+}
+@keyframes fc-reveal {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fc, .fc-toggle-chevron { animation: none; transition: none; }
+}
+
+.fc-legend {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+/* WIDE: full grid */
+.fc-grid {
+  --fc-head: 30px;
+  display: grid;
+  gap: 3px;
+}
+.fc-corner,
+.fc-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.fc-corner { font-size: 9px; color: var(--text-muted); }
+.fc-head { color: var(--accent-gold); }
+
+.fc-cell {
+  appearance: none;
+  border: 1px solid var(--cell-border);
+  background: var(--surface-dark);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  min-height: 30px;
+  padding: 4px 2px;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background-color 0.12s, border-color 0.12s, color 0.12s;
+}
+.fc-cell:hover:not(:disabled) { background: var(--surface-mid); color: #fff; }
+.fc-cell:disabled { opacity: 0.5; cursor: not-allowed; }
+.fc-cell-active {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  background: rgba(245,166,35,0.10);
+}
+.fc-cell-blocked {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  background: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.04) 4px, rgba(255,255,255,0.04) 8px);
+  border-radius: 4px;
+  min-height: 30px;
+}
+
+/* NARROW: 2-step chips */
+.fc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.fc-chip {
+  appearance: none;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--cell-border);
+  background: var(--surface-mid);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.fc-chip:disabled { opacity: 0.5; cursor: not-allowed; }
+.fc-chip-active {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  background: rgba(245,166,35,0.12);
+}
+.fc-chip-pos { font-size: 15px; }
+.fc-chip-odd .fc-chip-val {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+.fc-chip-active .fc-chip-val { color: var(--accent-gold); }

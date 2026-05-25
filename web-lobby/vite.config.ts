@@ -39,9 +39,14 @@ const PATH_REWRITES: Array<[string, string]> = [
 const ENCODING_PREFERENCE = ['crf27', 'h50', 'h'] as const;
 
 function localRaceVideosPlugin(rootDir: string | undefined): Plugin {
-  return {
-    name: 'local-race-videos',
-    configureServer(server) {
+  // Registers the /videos static middleware. Shared by configureServer (dev)
+  // AND configurePreviewServer (the production preview of `vite build`) — we
+  // verify the overlay on the built bundle because the vendored streaming_kit
+  // files use type-only imports that Vite's per-file dev transform can't elide
+  // (only rollup's build does), so dev fails to load them; preview works.
+  const register = (
+    server: import('vite').ViteDevServer | import('vite').PreviewServer,
+  ) => {
       if (!rootDir) {
         server.config.logger.info(
           '[local-race-videos] LOCAL_VIDEOS_DIR not set, plugin disabled',
@@ -112,7 +117,11 @@ function localRaceVideosPlugin(rootDir: string | undefined): Plugin {
           });
         });
       });
-    },
+  };
+  return {
+    name: 'local-race-videos',
+    configureServer: register,
+    configurePreviewServer: register,
   };
 }
 
@@ -166,6 +175,14 @@ function mimeFor(p: string): string {
   }
 }
 
+// Vendored streaming_kit tree lives under src/tvkit/. These aliases let the
+// UNMODIFIED streaming_kit files (RaceBarDog & co.) resolve their original
+// `client/*`, `common/*`, `settings/*`, `assets/*` imports against the vendored
+// layout. They are prefix-scoped so the lobby's own code (which never imports
+// from these bare prefixes) is unaffected. `client/assets/*` is listed before
+// `client/*` so the more-specific prefix wins. Copied verbatim from tvbox-online.
+const tvkit = (p: string) => path.resolve(__dirname, 'src/tvkit', p);
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
@@ -174,6 +191,15 @@ export default defineConfig(({ mode }) => {
       localRaceVideosPlugin(env.LOCAL_VIDEOS_DIR),
     ],
     base: './',
+    resolve: {
+      alias: [
+        { find: /^client\/assets\//, replacement: tvkit('assets') + '/' },
+        { find: /^client\//, replacement: tvkit('client') + '/' },
+        { find: /^common\//, replacement: tvkit('common') + '/' },
+        { find: /^settings\//, replacement: tvkit('settings') + '/' },
+        { find: /^assets\//, replacement: tvkit('assets') + '/' },
+      ],
+    },
     server: { port: 5173, host: '0.0.0.0' },
   };
 });

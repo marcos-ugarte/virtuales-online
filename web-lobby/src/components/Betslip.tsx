@@ -108,6 +108,7 @@ export function Betslip() {
         selections: selections.map((s) => ({
           betType: s.type,
           runnerPos: s.runnerPos,
+          second: s.second,
           odds: s.odds,
           stake: s.stake,
         })),
@@ -254,6 +255,15 @@ export function Betslip() {
                     />
                     <span className="bs-shield-sup">1ˢᵗ</span>
                   </span>
+                  {s.type === 'forecast' && s.second != null && (
+                    <span className="bs-item-shield">
+                      <img
+                        src={`${SHIELD_DIR[s.gameType]}${s.second}.svg`}
+                        alt={`Runner ${s.second}`}
+                      />
+                      <span className="bs-shield-sup">2ⁿᵈ</span>
+                    </span>
+                  )}
                 </span>
               </button>
               <button

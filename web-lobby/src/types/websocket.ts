@@ -110,6 +110,13 @@ export interface Race {
   jackpotInfo?: JackpotInfo | null;
   /** Finish data — only set after gameResult arrives. */
   finish?: Record<string, { competitorIndex: number; time?: number }>;
+  /**
+   * Mid-race split data (vendor `interval` block). Keyed by split number
+   * ("1","2"), then rank ("1","2") → { competitorIndex, time }. Arrives in the
+   * raw gamepool payload and rides through the `...payload` spread in
+   * useRaceFeed; drives the ported RaceIntervalsDog leaders box.
+   */
+  interval?: Record<string, Record<string, { competitorIndex: number; time: number }>>;
 }
 
 /**

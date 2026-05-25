@@ -22,10 +22,18 @@ export interface StakeLimits {
   max: number;
   default: number;
   step: number;
+  /** Quick-amount presets shown in the tap-to-pick-amount popover. */
+  presets: number[];
 }
 
-const USD_DEFAULTS: StakeLimits = { min: 1, max: 1000, default: 1, step: 1 };
-const DOP_DEFAULTS: StakeLimits = { min: 25, max: 25000, default: 25, step: 25 };
+const USD_DEFAULTS: StakeLimits = {
+  min: 1, max: 1000, default: 1, step: 1,
+  presets: [1, 5, 10, 25, 50, 100],
+};
+const DOP_DEFAULTS: StakeLimits = {
+  min: 25, max: 25000, default: 25, step: 25,
+  presets: [25, 50, 100, 200, 500, 1000],
+};
 
 export function getStakeLimits(currency: string | undefined): StakeLimits {
   switch (currency) {

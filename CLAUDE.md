@@ -13,6 +13,13 @@ Self-contained bootstraps (chat memory does NOT travel with the repo — these d
 
 ## Apps
 - `web-lobby/` — full betting lobby (cards, auth/wallet/tickets, WATCH, LiveMonitor).
+  The LiveMonitor now carries the SAME PIXI overlays as tvbox-online (RaceBar /
+  RaceIntervals / Winner), driven by the real gameType (dog6/dog8). `src/tvkit/**`
+  is a VERBATIM copy of tvbox-online's; only `RaceOverlay.tsx`, the vite/tsconfig
+  aliases, the `fonts.css` import and the `interval` field on the `Race` type are
+  ours. Verify via `vite build` + `vite preview` (dev server can't load the
+  vendored type-only imports — same as tvbox-online); preview serves `/videos`
+  too (`configurePreviewServer`). Login: mock `demo-player-01` / `demo-pass-01`.
 - `tvbox-online/` — standalone single-game race viewer with pixel-perfect PIXI
   overlays (RaceBar / RaceIntervals / Winner) ported UNMODIFIED from
   `streaming_kit_webapp` and driven by a shim `Logic` (`src/tvkit/`).

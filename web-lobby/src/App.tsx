@@ -3,6 +3,7 @@ import { Navbar } from './components/Navbar';
 import { RaceCard } from './components/RaceCard';
 import { LiveMonitor } from './components/LiveMonitor';
 import { RightPanel } from './components/RightPanel';
+import { MobileBetslip } from './components/MobileBetslip';
 import { LoginScreen } from './components/LoginScreen';
 import { RecentResults } from './components/RecentResults';
 import { useRaceFeed } from './hooks/useRaceFeed';
@@ -133,6 +134,9 @@ function Lobby() {
           </div>
           <RightPanel />
         </div>
+        {/* Responsive (≤1280px): the sidebar RightPanel is hidden via CSS and
+            the betslip/tickets are reached through this FAB + drawer instead. */}
+        <MobileBetslip />
       </main>
       <footer className="lobby-footer" role="contentinfo">
         <div className="footer-left">
