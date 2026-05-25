@@ -1,0 +1,60 @@
+/* Numpad SVG Styles */
+.numpadSvg {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.numpadBtn {
+  fill: #fff;
+  transition: fill 0.15s ease;
+}
+
+.numpadBtn:hover {
+  fill: #e0e0e0;
+}
+
+.numpadBtn:active {
+  fill: #c0c0c0;
+}
+
+.numpadDel {
+  fill: url(#SVGID_1_);
+  transition: fill 0.15s ease;
+}
+
+.numpadDel:hover {
+  fill: #c41a12;
+}
+
+.numpadDel:active {
+  fill: #7a0c08;
+}
+
+.numpadDelArrow {
+  fill: #fff;
+  pointer-events: none;
+}
+
+.numpadAccent {
+  fill: #024a8a;
+  pointer-events: none;
+}
+
+.numpadText {
+  fill: #0a1628;
+  pointer-events: none;
+}
+
+/* Disabled state */
+.numpadDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.numpadDisabled .numpadBtn:hover,
+.numpadDisabled .numpadBtn:active,
+.numpadDisabled .numpadDel:hover,
+.numpadDisabled .numpadDel:active {
+  fill: inherit;
+}

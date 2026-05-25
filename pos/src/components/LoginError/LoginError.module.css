@@ -1,0 +1,47 @@
+/* Login Error Message */
+.loginError {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 4cqi;
+  padding: 0.5cqi 2cqi;
+  margin-top: 1cqi;
+  margin-left: auto;
+  margin-right: calc(9cqi - 12px);
+  float: right;
+  clear: both;
+  opacity: 0;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.loginError.visible {
+  opacity: 1;
+}
+
+/* Red skewed background */
+.loginErrorBg {
+  background-color: #a8120d;
+  border-bottom-right-radius: 0.8vh;
+  border-top-left-radius: 0.8vh;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transform: skewX(-10deg);
+  width: 100%;
+  z-index: -1;
+}
+
+/* Error text */
+.loginErrorText {
+  position: relative;
+  color: #fff;
+  font-family: var(--font-family-din-italic), Helvetica, sans-serif;
+  font-size: 1.5vw;
+  font-style: italic;
+  text-align: center;
+  white-space: nowrap;
+}

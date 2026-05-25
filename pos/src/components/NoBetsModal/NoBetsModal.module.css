@@ -1,0 +1,10 @@
+.contentText {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: calc(50px * var(--modal-scale, 1));
+  font-style: normal;
+  font-weight: 400;
+  color: #000000;
+  line-height: normal;
+  margin: 0;
+  text-align: left;
+}

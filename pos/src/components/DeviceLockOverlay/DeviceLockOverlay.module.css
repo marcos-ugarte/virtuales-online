@@ -1,0 +1,84 @@
+/* Fullscreen lock overlay — no escape, no interaction */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2cqb;
+  padding: 5cqb 6cqi;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.5cqi;
+}
+
+.iconCircle {
+  width: 8cqi;
+  height: 8cqi;
+  border-radius: 50%;
+  background: rgba(247, 0, 0, 0.15);
+  border: 2px solid rgba(247, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lockIcon {
+  width: 4cqi;
+  height: 4cqi;
+  color: #f70000;
+}
+
+.title {
+  font-family: var(--font-family-din), 'DIN Next LT Pro', Helvetica, sans-serif;
+  font-size: 2cqi;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.2cqi;
+  margin: 0;
+}
+
+.reason {
+  font-family: var(--font-family-din), 'DIN Next LT Pro', Helvetica, sans-serif;
+  font-size: 1.3cqi;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  margin: 0;
+  max-width: 40cqi;
+  line-height: 1.5;
+}
+
+.lockedBy {
+  font-family: var(--font-family-din), 'DIN Next LT Pro', Helvetica, sans-serif;
+  font-size: 0.9cqi;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+.hint {
+  font-family: var(--font-family-din), 'DIN Next LT Pro', Helvetica, sans-serif;
+  font-size: 0.8cqi;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.35);
+  margin: 1cqb 0 0 0;
+  font-style: italic;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

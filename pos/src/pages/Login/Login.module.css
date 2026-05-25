@@ -1,0 +1,299 @@
+/* Login Background - Now relative to ScaleWrapper container */
+.loginBg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Login Form - Positioned right side using container query units */
+.loginForm {
+  position: absolute;
+  right: 12.49cqi;
+  top: 12cqb;
+  z-index: 10;
+}
+
+/* Login Container - Flex row */
+.loginCont {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+/* Login Element - Column wrapper */
+.loginElem {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Login Input Row */
+.loginInput {
+  margin-bottom: 1.4cqi;
+  width: 29cqi;
+}
+
+.loginInput:nth-child(2) {
+  transform: translateX(-1.5cqi);
+}
+
+.loginInput:nth-child(3) {
+  transform: translateX(-2.6cqi);
+}
+
+/* Login Input Field - Contains input and background */
+.loginInputField {
+  display: inline-block;
+  height: 5.1cqi;
+  position: relative;
+}
+
+.loginInputField img {
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: -1;
+}
+
+.loginInputField input {
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  font-family: var(--font-family-din-italic), Helvetica, sans-serif;
+  font-style: italic;
+  font-size: 2.5cqi;
+  height: 3cqi;
+  margin-top: 0.7cqi;
+  padding-left: 1.6cqi;
+  width: 20.5cqi;
+  color: #333;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.loginInputField input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
+
+.loginInputField input:-webkit-autofill,
+.loginInputField input:-webkit-autofill:hover,
+.loginInputField input:-webkit-autofill:focus,
+.loginInputField input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #d5d8df inset !important;
+  -webkit-text-fill-color: #333 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.loginInputField input::placeholder {
+  color: #666;
+  opacity: 1;
+}
+
+/* Input Background - Skewed parallelogram */
+.inpBack {
+  background: linear-gradient(
+    180deg,
+    #b4bac5 0%,
+    #c8cbd4 5%,
+    #d2d5dc 9%,
+    #d9dce3 14%,
+    #dbdee3 18%,
+    #d8dbe1 39%,
+    #cccfd8 76%,
+    #cdd0d8 100%
+  );
+  border-bottom-right-radius: 1cqb;
+  border-top-left-radius: 1cqb;
+  box-shadow: inset 7px 0 15px -7px #8c929d;
+  height: 4.32cqi;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transform: skewX(-10deg);
+  width: 21.3cqi;
+  z-index: -1;
+}
+
+/* Clear Button */
+.clearButton {
+  display: inline-block;
+  margin-left: 3.25cqi;
+  position: relative;
+  top: -1.5cqi;
+  width: 4cqi;
+  cursor: pointer;
+}
+
+/* Login Button */
+.loginButton {
+  cursor: pointer;
+  width: 22.3cqi;
+}
+
+.loginButtonText {
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-din-italic), Helvetica, sans-serif;
+  font-style: italic;
+  font-size: 2.3cqi;
+  letter-spacing: 0.25cqi;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: -0.1cqi;
+  left: 0;
+  z-index: 2;
+}
+
+.loginButtonHov {
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  background-size: 22.3cqi auto;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+.loginButtonHov:hover {
+  background-image: url('../../assets/login/butt_login_hov.svg');
+}
+
+.loginButtonHov:active {
+  background-image: url('../../assets/login/butt_login_act.svg');
+}
+
+/* Numpad Container */
+.numPadCont {
+  margin-left: -3.2cqi;
+}
+
+.numPadIcon {
+  height: 22.36cqi;
+  width: 23.4cqi;
+}
+
+/* Numpad SVG Styles */
+.numpadSvg {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.numpadBtn {
+  fill: #fff;
+  transition: fill 0.15s ease;
+}
+
+.numpadBtn:hover {
+  fill: #e0e0e0;
+}
+
+.numpadBtn:active {
+  fill: #c0c0c0;
+}
+
+.numpadDel {
+  fill: url(#SVGID_1_);
+  transition: fill 0.15s ease;
+}
+
+.numpadDel:hover {
+  fill: #c41a12;
+}
+
+.numpadDel:active {
+  fill: #7a0c08;
+}
+
+.numpadDelArrow {
+  fill: #fff;
+  pointer-events: none;
+}
+
+.numpadAccent {
+  fill: #024a8a;
+  pointer-events: none;
+}
+
+.numpadText {
+  fill: #0a1628;
+  pointer-events: none;
+}
+
+/* Background Images */
+.gamesImgContainer {
+  align-items: flex-end;
+  bottom: 6.9cqb;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  width: 100%;
+}
+
+.gamesImg {
+  width: 100%;
+}
+
+.dsLogo {
+  padding: 1cqi 1.3cqi 1cqi 1cqi;
+  width: 12.25cqi;
+}
+
+/* Version */
+.version {
+  bottom: 2.05cqb;
+  color: #fff;
+  font-family: var(--font-family-din-italic), Helvetica, sans-serif;
+  font-style: italic;
+  font-size: 2cqb;
+  left: 0.5cqi;
+  opacity: 0.3;
+  position: absolute;
+}
+
+/* Status Bar */
+.statusBar {
+  position: absolute;
+  top: 1.5cqb;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 0.8cqb 2cqi;
+  border-radius: 0.5cqb;
+}
+
+.statusText {
+  color: #fff;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.8cqb;
+  text-transform: uppercase;
+  letter-spacing: 0.05cqi;
+}
+
+/* Login Button Disabled State */
+.loginButtonDisabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.loginButtonDisabled .loginButtonHov:hover,
+.loginButtonDisabled .loginButtonHov:active {
+  background-image: none;
+}
+
+/* Disabled Input State */
+.loginInputField input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}

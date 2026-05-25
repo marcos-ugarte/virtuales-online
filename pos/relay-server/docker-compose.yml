@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  relay-server:
+    build: .
+    container_name: virtual-racing-relay
+    restart: always
+    ports:
+      - "4081:8765"   # WebSocket relay (mapped to external port 4081)
+      - "4082:8766"   # HTTP control API
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8766/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  races-sync:
+    build:
+      context: .
+      dockerfile: Dockerfile.sync
+    container_name: virtual-racing-sync
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - RELAY_URL=ws://88.223.95.55:4081
+      - API_URL=https://api.virtuales.bet
+      - API_KEY=${API_KEY}
+      - FLUSH_INTERVAL=1000
+      - LOG_LEVEL=info
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

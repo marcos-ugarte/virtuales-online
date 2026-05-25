@@ -39,6 +39,15 @@ The overlay wrapper is `tvbox-online/src/components/RaceOverlay.tsx` (our code) 
 - Build wipes `dist/`; on the VPS the video symlinks must be recreated after each build:
   `mkdir -p dist/videos && for t in dog6 dog8 horse7; do ln -sfn /home/claude/projects/ds_assets/$t dist/videos/$t; done`
 
+### Overlay visibility (important)
+Overlays render ONLY while the race video is actively playing — gated in
+`RaceOverlay.tsx` on `phase==='live' && <video> exists && !video.ended`, and when
+not playing we force every overlay `visible=false` AND skip its `update()`
+(calling `update()` re-asserts visibility via `Logic.getAnim`). Needed because
+phase stays 'live' for a moment on the frozen last frame and WinnerDog's forecast
+anim window extends past the clip — otherwise the winners panel lingered into the
+next-race countdown.
+
 ### Stubbed (not needed yet)
 - Bonus number + x2/x3 badge (`AnimatedBonusTopDog`, `BonusAnnotationRaceBarDog`) are no-op stubs.
 - Italian (`it`) odds-digit override path (we're not that skin).

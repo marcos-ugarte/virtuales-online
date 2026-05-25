@@ -1,0 +1,69 @@
+/* Overlay - covers entire parent container, blocks interactions */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.773);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Fade out animation when exiting */
+.overlayExiting {
+  animation: fadeOut 2s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  60% { opacity: 0.8; }
+  100% { opacity: 0; }
+}
+
+/* Dog running sprite — skip frames 0-1 (partial), use frames 2-32 (31 steps) */
+.dogRunning {
+  position: absolute;
+  top: 28%;
+  width: 180px;
+  height: 90px;
+  background-image: url('../../assets/dog-running-sprite.png');
+  background-size: 5940px 90px;
+  background-position: -360px 0;
+  animation: spriteRunDog 0.62s steps(31) infinite, moveDog 38s linear forwards;
+}
+
+@keyframes spriteRunDog {
+  from { background-position: -360px 0; }
+  to { background-position: -5940px 0; }
+}
+
+@keyframes moveDog {
+  from { left: 5%; }
+  to { left: calc(95% - 180px); }
+}
+
+/* Horse running sprite — 65 frames horizontal (360x180 each) */
+.horseRunning {
+  position: absolute;
+  top: 30%;
+  width: 360px;
+  height: 180px;
+  background-image: url('../../assets/horse-running-sprite.png');
+  background-size: 23400px 180px;
+  animation: spriteRunHorse 0.62s steps(65) infinite, moveHorse 38s linear forwards;
+}
+
+@keyframes spriteRunHorse {
+  from { background-position: 0 0; }
+  to { background-position: -23400px 0; }
+}
+
+@keyframes moveHorse {
+  from { left: 5%; }
+  to { left: calc(95% - 360px); }
+}

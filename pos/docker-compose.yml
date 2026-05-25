@@ -1,0 +1,61 @@
+# Virtual Racing POS - Docker Compose
+# Runs on port 4069 (HTTPS via nginx), persists after SSH disconnect
+
+services:
+  # WebSocket Relay - captures race data from VG original system
+  relay-server:
+    build:
+      context: ./server-ws
+      dockerfile: Dockerfile
+    container_name: virtual-racing-relay-ws
+    environment:
+      - NODE_ENV=production
+      - DEVICE_ID=${DEVICE_ID:-5fd76331325cc0c7b0ba3883ae3d491d}
+      - OPERATOR_ID=${OPERATOR_ID:-001-001-002-001}
+      - PIN=${PIN:-989900}
+      - BACKEND_API_URL=${BACKEND_API_URL:-https://api.virtuales.bet}
+      - INGEST_API_URL=${INGEST_API_URL:-https://api.virtuales.bet}
+      - INGEST_API_KEY=${INGEST_API_KEY:-}
+      - ELASTICSEARCH_URL=${ELASTICSEARCH_URL:-}
+      - ELASTICSEARCH_API_KEY=${ELASTICSEARCH_API_KEY:-}
+      - ELASTICSEARCH_INDEX=${ELASTICSEARCH_INDEX:-vg-pos-messages}
+    restart: unless-stopped
+
+  # React POS application (Development - HTTP)
+  virtual-racing-pos:
+    build:
+      context: .
+      target: development
+    container_name: virtual-racing-pos
+    ports:
+      - "4069:4069"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - relay-server
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+  # Production service (HTTPS via nginx + self-signed cert)
+  # nginx proxies /relay → relay-server:4081 as WSS
+  # Use with: docker compose --profile prod up -d virtual-racing-pos-prod
+  virtual-racing-pos-prod:
+    build:
+      context: .
+      target: production
+    container_name: virtual-racing-pos-prod
+    ports:
+      - "4069:4069"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - relay-server
+    restart: unless-stopped
+    profiles:
+      - prod

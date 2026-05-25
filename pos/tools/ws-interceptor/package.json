@@ -1,0 +1,12 @@
+{
+  "name": "ws-interceptor",
+  "version": "1.0.0",
+  "description": "WebSocket interceptor for Virtual Racing POS - captures all WS messages including ticket creation",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ws": "^8.14.2"
+  }
+}

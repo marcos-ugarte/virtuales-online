@@ -3,10 +3,10 @@
 Front-ends for a virtual greyhound/horse racing product.
 
 ## 👉 Start here
-**Read `docs/HANDOFF_TVBOX_ONLINE.md` first** — it's the self-contained bootstrap
-(the two apps, the ported PIXI overlay architecture, data shapes, environment
-facts, how to run, git state, next steps). Deeper running log:
-`docs/SESSION_STATE_2026-05-23.md`.
+Self-contained bootstraps (chat memory does NOT travel with the repo — these docs are the source of truth):
+- **`docs/HANDOFF_TVBOX_ONLINE.md`** — tvbox-online PIXI race overlays (RaceBar/Intervals/Winner).
+- **`docs/HANDOFF_POS.md`** — the cashier POS adapted to virtuales-go's `/pos-go-ds` WebSocket (login + race feed working; ticketing = next phase).
+- Deeper running log: `docs/SESSION_STATE_2026-05-23.md`.
 
 > The assistant's chat memory does NOT travel with the repo. These docs are the
 > source of truth for continuing the work in a new session.
@@ -16,6 +16,10 @@ facts, how to run, git state, next steps). Deeper running log:
 - `tvbox-online/` — standalone single-game race viewer with pixel-perfect PIXI
   overlays (RaceBar / RaceIntervals / Winner) ported UNMODIFIED from
   `streaming_kit_webapp` and driven by a shim `Logic` (`src/tvkit/`).
+- `pos/` — cashier POS (fork of virteon-platform `apps/pos`), transport swapped
+  from SignalR/.NET to virtuales-go `/pos-go-ds` WebSocket. Login + race feed
+  work; tickets/balance pending. See `docs/HANDOFF_POS.md`. (FORK — do not
+  subtree-sync; we diverge on protocol.)
 
 ## Hard rules (details in the handoff)
 - Vendored `tvbox-online/src/tvkit/**` streaming_kit files are copied VERBATIM —

@@ -1,0 +1,352 @@
+/* Ventas Component Styles */
+/* Matches original POS VENTAS structure */
+/* Viewport reference: 1760x858 */
+
+.ventasContainer {
+  position: absolute;
+  top: 17.02cqb;  /* 146px / 858 * 100 */
+  left: 1.68cqi;  /* Moved left 20px more */
+  width: 90cqi;
+  height: 83cqb;
+  overflow: visible;  /* Allow background to extend outside */
+  pointer-events: auto;
+}
+
+/* Background image - positioned relative to container */
+/* SVG already has parallelogram shape with rounded corner and yellow banner */
+.ventasBg {
+  position: absolute;
+  top: -7.6cqb;    /* Subido 6px más */
+  left: -1.48cqi;  /* Original position */
+  width: 72cqi;    /* Extended to the right */
+  height: 100.6cqb; /* Altura original */
+  z-index: 0;
+  transform: scale(1.01);
+  transform-origin: top left;
+}
+
+/* Main ventas panel - positioned inside the background, clipped to parallelogram */
+.ventasPanel {
+  position: absolute;
+  top: 5.5cqb;   /* Bajado más */
+  left: -3cqi; /* Moved further left */
+  width: 76cqi;   /* Más ancho para extender fondos */
+  height: 82cqb;  /* Match background height */
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  overflow: hidden;
+  clip-path: url(#ventas-clip);
+}
+
+/* Table header */
+.tableHeader {
+  display: flex;
+  align-items: center;
+  height: 4.71cqb;  /* +5px más */
+  padding: 0 1cqi 0 2.25cqi;  /* Moved right 0.25cqi */
+  flex-shrink: 0;
+  gap: 0;  /* No spacing between columns */
+  background: rgba(255, 255, 255, 0.15);  /* Fondo gris claro */
+}
+
+.headerCell {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.18cqi;  /* +4px */
+  font-weight: 300;
+  color: #fff;
+  text-align: left;
+  white-space: nowrap;
+  display: inline-block;
+  padding-top: 0.2cqb;  /* Subido más */
+}
+
+/* Right-align numeric columns (Jugadas, Monto, Inversión, Pagar, Balance) */
+.headerCell.colJugadas,
+.headerCell.colMonto,
+.headerCell.colInversion,
+.headerCell.colPagar,
+.headerCell.colBalance {
+  text-align: right;
+  display: block;
+}
+
+.salesCell.colJugadas,
+.salesCell.colMonto,
+.salesCell.colInversion,
+.salesCell.colPagar,
+.salesCell.colBalance {
+  text-align: right;
+}
+
+/* All summary cells move up */
+.summaryCell {
+  margin-top: -17px;  /* Move up 17px */
+}
+
+/* Right-align numeric summary cells */
+.summaryCell.colJugadas,
+.summaryCell.colMonto,
+.summaryCell.colInversion,
+.summaryCell.colPagar,
+.summaryCell.colBalance {
+  align-items: flex-end;
+  text-align: right;
+}
+
+/* Column widths - based on original POS (viewport 1760px) */
+/* Nu.: 136px, Fecha/Hora: 229px, Jugadas: 76px, Monto: 137px, Inversión: 137px, Pagar: 137px, Balance: 137px, Juego: 92px */
+
+.colNu { width: 3.5cqi; flex-shrink: 0; text-align: right; } /* Right aligned */
+.headerCell.colNu { transform: translateX(-1.09cqi); } /* -5px más */
+.colPrint { width: 3.5cqi; flex-shrink: 0; margin-left: -0.5cqi; } /* Acercado a Nu. */
+.colFechaHora { width: 11cqi; flex-shrink: 0; margin-left: 1.25cqi; } /* -8px */
+.headerCell.colFechaHora { padding-left: 2.28cqi; } /* +15px más */
+.colJugadas { width: 3.5cqi; flex-shrink: 0; margin-left: 1.42cqi; } /* +15px más */
+.headerCell.colJugadas { /* right-aligned */ }
+.colMonto { width: 5.5cqi; flex-shrink: 0; margin-left: 1.6cqi; } /* +20px más */
+.headerCell.colMonto { /* right-aligned */ }
+.colInversion { width: 5.5cqi; flex-shrink: 0; margin-left: 3.12cqi; } /* +15px más */
+.headerCell.colInversion { /* right-aligned */ }
+.colPagar { width: 5.5cqi; flex-shrink: 0; margin-left: 2.85cqi; } /* -10px */
+.headerCell.colPagar { /* right-aligned */ }
+.colBalance { width: 5.5cqi; flex-shrink: 0; margin-left: 2.56cqi; } /* +25px */
+.headerCell.colBalance { /* right-aligned */ }
+.colJuego { width: 4cqi; flex-shrink: 0; margin-left: 2.57cqi; } /* +25px */
+.headerCell.colJuego { transform: translateX(-0.32cqi); } /* -5px más */
+.colEstado { width: 4cqi; flex-shrink: 0; margin-left: 1.14cqi; } /* -20px */
+.headerCell.colEstado { transform: translateX(-0.21cqi); } /* -5px más */
+
+/* Print button in each row */
+.printButton {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.printButton:hover {
+  transform: scale(1.1);
+}
+
+.printIcon {
+  width: 3.5cqi;  /* +40% más grande */
+  height: auto;
+  display: block;
+}
+
+.printSpinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  width: 2.2cqi;
+  height: 2.2cqi;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-top: 2px solid #000;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Game icon in Juego column */
+.gameIcon {
+  width: 2.01cqi;  /* +5px más */
+  height: auto;
+  display: block;
+  filter: brightness(2);
+}
+
+/* Status icon in Estado column */
+.statusIcon {
+  width: 2.46cqi;  /* +4px más */
+  height: auto;
+  display: block;
+  filter: brightness(1.3);
+}
+
+/* Sales list - scrollable area */
+.salesList {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: visible;
+  padding: 0 1cqi 0 2.25cqi;  /* Moved right 0.25cqi */
+}
+
+/* Reset direction for content inside */
+.salesListContent {
+  padding-bottom: 10cqb;
+}
+
+/* Hide native scrollbar */
+.salesList {
+  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  /* IE/Edge */
+}
+
+.salesList::-webkit-scrollbar {
+  display: none;  /* Chrome/Safari/Opera */
+}
+
+/* Custom scrollbar - positioned OUTSIDE clip-path */
+.customScrollbar {
+  position: absolute;
+  top: 10.4cqb;  /* +20px */
+  left: -1.48cqi;  /* -29px */
+  width: 0.3cqi;  /* thin scrollbar */
+  height: 60.2cqb;  /* -50px total */
+  z-index: 10;
+}
+
+.scrollbarTrack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 1px;
+  cursor: pointer;
+}
+
+.scrollbarThumb {
+  position: absolute;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 1px;
+  min-height: 2cqb;
+  cursor: grab;
+}
+
+.scrollbarThumb:active {
+  cursor: grabbing;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Individual sales row */
+.salesRow {
+  display: flex;
+  align-items: center;
+  height: 6.3cqb;  /* Más alto */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 0;  /* No spacing between columns */
+  margin-left: -2.36cqi;
+  margin-right: -13.61cqi;
+  padding-left: 2.36cqi;
+  padding-right: 13.61cqi;
+}
+
+.salesRowOdd {
+  background: rgba(255, 255, 255, 0.08);  /* Gris más claro */
+}
+
+.salesRowEven {
+  background: rgba(0, 20, 60, 0.5);  /* Azul oscuro */
+}
+
+.salesCell {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.18cqi;  /* +4px */
+  font-weight: 400;
+  color: #fff;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Summary footer - positioned absolutely over yellow bar of SVG */
+.summaryFooter {
+  position: absolute;
+  bottom: 3.4cqb;  /* Subido 2px más */
+  left: -2.96cqi;  /* -26px */
+  width: 72cqi;  /* Match background width */
+  height: 9cqb;  /* Match yellow bar height */
+  display: flex;
+  align-items: center;
+  padding: 0 1cqi 0 2.25cqi;  /* Moved right 0.25cqi */
+  gap: 0;  /* No spacing between columns */
+  z-index: 2;
+}
+
+.summaryCell {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 0.93cqi;  /* 16.3px / 1760 * 100 */
+  font-weight: 500;
+  color: #000;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2cqb;
+}
+
+.summaryTitle {
+  font-size: 0.9cqi;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.summaryValue {
+  font-size: 1.1cqi;
+  font-weight: 600;
+  color: #000;
+}
+
+/* Footer uses same column classes as header/data rows for perfect alignment */
+
+/* Balance button - large yellow parallelogram */
+/* Size: 396.875px × 175.0625px (22.55vw × 20.40vh) */
+/* Position: left: 76.45vw, top: 78.86vh (relative to viewport) */
+.balanceButton {
+  position: absolute;
+  left: 74.77cqi;  /* 76.45 - 1.68 (container offset) */
+  top: 61.84cqb;   /* 78.86 - 17.02 (container offset) */
+  width: 22.55cqi;
+  height: 20.40cqb;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: transform 0.1s ease;
+}
+
+.balanceButton:hover {
+  transform: scale(1.02);
+}
+
+.balanceButton:active {
+  transform: scale(0.98);
+}
+
+.balanceButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.balanceButtonBg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+.balanceButtonText {
+  position: relative;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 2.7cqi;  /* 47.52px / 1760 * 100 */
+  font-weight: 600;
+  color: #000;
+  z-index: 1;
+}

@@ -1,0 +1,333 @@
+/* ============================================================
+   ORDENAR TICKET — Pixel-perfect clone of original POS
+   Viewport reference: 1746x851 → all positions in cqi/cqb
+   ============================================================ */
+
+/* Fullscreen overlay */
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+  background: rgb(21, 27, 40);
+}
+
+/* ---- Header Left: DS logo + title ---- */
+.headerLeft {
+  position: absolute;
+  top: 7cqb;
+  left: 2cqi;
+  display: flex;
+  align-items: baseline;
+  gap: 0.8cqi;
+  z-index: 2;
+}
+
+.dsLogo {
+  font-family: var(--font-family-din), 'DIN Next LT Pro', Helvetica, sans-serif;
+  font-size: 3.2cqi;
+  font-weight: 700;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.05cqi;
+}
+
+.headerTitle {
+  font-family: var(--font-family-din), 'DIN Next LT Pro', Helvetica, sans-serif;
+  font-size: 1.1cqi;
+  font-weight: 200;
+  color: rgb(210, 211, 212);
+  letter-spacing: 0.12cqi;
+  text-transform: uppercase;
+}
+
+/* ---- Close button (center top, skewed red) ---- */
+.closeButton {
+  position: absolute;
+  left: 44.95cqi;
+  top: 1.33cqb;
+  width: 15.11cqi;
+  height: 11.98cqb;
+  background: rgb(127, 13, 30);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3cqb;
+  z-index: 3;
+  /* Skewed shape matching original */
+  clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+  transition: background 0.15s;
+}
+
+.closeButton:hover {
+  filter: brightness(1.1);
+}
+
+.closeButtonPending {
+  background: rgb(247, 0, 0);
+}
+
+.closeButtonText {
+  font-family: var(--font-family-din), 'DIN Next LT Pro', Helvetica, sans-serif;
+  font-size: 1.2cqi;
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: 0.05cqi;
+  white-space: nowrap;
+}
+
+.pendingInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.3cqi;
+  font-family: var(--font-family-din), 'DIN Next LT Pro', Helvetica, sans-serif;
+  font-size: 0.8cqi;
+  color: rgba(255, 255, 255, 0.9);
+  transition: opacity 0.2s;
+}
+
+.pendingHidden {
+  opacity: 0;
+}
+
+.pendingNumber {
+  font-weight: 600;
+}
+
+.pendingLabel {
+  font-weight: 300;
+}
+
+/* ---- Time section (right) ---- */
+.timeSection {
+  position: absolute;
+  right: 30cqi;
+  top: 5.74cqb;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 2;
+}
+
+.timeLabel {
+  font-family: var(--font-family-din), 'DIN Next LT Pro', Helvetica, sans-serif;
+  font-size: 0.9cqi;
+  font-weight: 200;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.08cqi;
+  text-transform: uppercase;
+}
+
+.timeValue {
+  font-family: var(--font-family-din), 'DIN Next LT Pro', Helvetica, sans-serif;
+  font-size: 1.2cqi;
+  font-weight: 400;
+  color: #fff;
+}
+
+/* ---- Panel background ---- */
+.panelWrapper {
+  position: absolute;
+  left: -3.47cqi;
+  top: 22.84cqb;
+  width: 73.32cqi;
+  height: 75.87cqb;
+  z-index: 1;
+}
+
+.panelBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+/* ---- Table header bar ---- */
+.tableHeaderBar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 4.55cqb;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 2;
+}
+
+.tableColumns {
+  position: absolute;
+  left: 3.47cqi;
+  top: 0;
+  width: 68.41cqi;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+}
+
+/* ---- Column headers ---- */
+.colHeader {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family-din), 'DIN Next LT Pro', Helvetica, sans-serif;
+  font-size: 0.85cqi;
+  font-weight: 300;
+  color: #fff;
+  text-align: left;
+  padding: 0 0.4cqi;
+  display: flex;
+  align-items: center;
+  gap: 0.3cqi;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.colHeader:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.colHeaderActive {
+  background: rgb(247, 0, 0);
+}
+
+.colHeaderActive:hover {
+  background: rgb(247, 0, 0);
+  filter: brightness(1.1);
+}
+
+/* ---- Sort arrow (CSS triangle) ---- */
+.sortArrow {
+  display: inline-block;
+  width: 0.6cqi;
+  height: 0.6cqi;
+  background: #fff;
+  clip-path: polygon(100% 0, 0 0, 50% 100%);
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.sortArrowVisible {
+  opacity: 1;
+}
+
+.sortArrow[data-dir="asc"] {
+  transform: rotate(180deg);
+}
+
+/* ---- Table body (scrollable) ---- */
+.tableBody {
+  position: absolute;
+  left: 3.47cqi;
+  top: 4.55cqb;
+  width: 68.41cqi;
+  height: calc(100% - 4.55cqb);
+  overflow-y: auto;
+  z-index: 2;
+}
+
+.tableBody::-webkit-scrollbar {
+  width: 4px;
+}
+
+.tableBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tableBody::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+/* ---- Table row ---- */
+.tableRow {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.1s;
+}
+
+.tableRow:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ---- Cell ---- */
+.cell {
+  flex: 1;
+  font-family: var(--font-family-din), 'DIN Next LT Pro', Helvetica, sans-serif;
+  font-size: 0.82cqi;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 0.8cqb 0.4cqi;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Status colors ---- */
+.status_pending { color: #ffd600; }
+.status_accepted { color: #4caf50; }
+.status_rejected { color: #f44336; }
+.status_expired { color: rgba(255, 255, 255, 0.3); }
+
+/* ---- Bottom buttons ---- */
+.trashButton {
+  position: absolute;
+  right: 18cqi;
+  bottom: 2cqb;
+  width: 11cqi;
+  height: 15.4cqb;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 3;
+  transition: filter 0.15s;
+}
+
+.trashButton:hover {
+  filter: brightness(1.15);
+}
+
+.trashButton:active {
+  filter: brightness(0.9);
+}
+
+.trashImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.printButton {
+  position: absolute;
+  right: 1cqi;
+  bottom: 2cqb;
+  width: 16.1cqi;
+  height: 20.76cqb;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 3;
+  transition: filter 0.15s;
+}
+
+.printButton:hover {
+  filter: brightness(1.15);
+}
+
+.printButton:active {
+  filter: brightness(0.9);
+}
+
+.printImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

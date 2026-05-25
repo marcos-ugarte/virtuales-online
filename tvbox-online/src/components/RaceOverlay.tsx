@@ -366,21 +366,26 @@ export function RaceOverlay(props: RaceOverlayProps) {
           }
         }
 
-        // RaceBarDog visible while the race video plays.
-        raceBar.visible = p.phase === 'live';
-        raceBar.update(app.ticker.deltaMS / 1000);
-
-        // RaceIntervalsDog drives its own visibility via Logic.getAnim; only
-        // run it while the race video plays. update(dt) reads getRaceVideoTime.
-        raceIntervals.visible = p.phase === 'live';
-        raceIntervals.update(app.ticker.deltaMS / 1000);
-
-        // WinnerDog drives its own visibility via Logic.getAnim + the 32s/40.5s
-        // anim windows; only run it while the race video plays.
+        // Overlays show ONLY while the race video is actively playing. Gate on
+        // a real, non-ended <video>: phase stays 'live' for a moment after the
+        // clip ends (frozen on the last frame), and the WinnerDog forecast anim
+        // window extends past the clip — without the `!ended` guard the winners
+        // panel lingered into the countdown to the next race. When not playing
+        // we force every overlay hidden AND skip update() (update() re-asserts
+        // visibility via Logic.getAnim, which would override the force-hide).
         const dt = app.ticker.deltaMS / 1000;
-        for (const w of winnerDogs) {
-          if (p.phase !== 'live') w.visible = false;
-          w.update(dt);
+        const v = host.parentElement?.querySelector<HTMLVideoElement>('.lm-video-el');
+        const racePlaying = p.phase === 'live' && !!v && !v.ended;
+
+        if (racePlaying) {
+          raceBar.visible = true;
+          raceBar.update(dt);
+          raceIntervals.update(dt); // self-gates visibility via its anim
+          for (const w of winnerDogs) w.update(dt); // self-gate @32s/40.5s
+        } else {
+          raceBar.visible = false;
+          raceIntervals.visible = false;
+          for (const w of winnerDogs) w.visible = false;
         }
       };
       app.ticker.add(tick);

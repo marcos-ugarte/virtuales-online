@@ -1,0 +1,76 @@
+/* WinnerButtons Component - Uses original POS SVG asset */
+/* SVG viewBox: 0 0 227 58 */
+
+.winnerButtons {
+  position: relative;
+  width: 100%;
+  /* Aspect ratio matches SVG viewBox (227:58 ≈ 3.91:1) */
+  aspect-ratio: 227 / 58;
+}
+
+.svgContainer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.svgContainer svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Hover effects for buttons */
+.svgContainer :global(.winner-btn):hover {
+  filter: brightness(1.3);
+  transition: filter 0.15s ease;
+}
+
+.svgContainer :global(.winner-btn):active {
+  filter: brightness(0.9);
+  transition: filter 0.05s ease;
+}
+
+/* Text labels overlay */
+.labelsContainer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  pointer-events: none;
+}
+
+.label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Original POS font (1760×858): "DIN Next LT Pro", 18.09px, weight 400, skewX(-10deg) */
+  /* 18.09/858*100 = 2.11cqb, but parent is the button not viewport */
+  /* Using em relative to button height: 18.09/47.92 ≈ 0.378 of button height */
+  font-family: 'DIN Next LT Pro', var(--font-family-din, 'DIN Condensed'), Helvetica, sans-serif;
+  font-size: 1.03cqi;     /* 18.09/1760*100 = 1.03cqi to match original */
+  font-weight: 400;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  user-select: none;
+  transform: skewX(-10deg);
+}
+
+/* Adjust positions to match parallelogram shape */
+.labelLeft {
+  /* Left button center is around 25% from left */
+  margin-right: 2%;
+}
+
+.labelRight {
+  /* Right button center is around 75% from left */
+  margin-left: 2%;
+}
+
+.labelActive {
+  color: #4de8ff;
+  text-shadow: 0 0 8px rgba(77, 232, 255, 0.6);
+}

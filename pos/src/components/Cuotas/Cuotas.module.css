@@ -1,0 +1,325 @@
+/* Cuotas Component Styles */
+/* Based on original POS measurements: 1760x858 viewport */
+/* Table: width=1290px (73.30vw), height=641px */
+
+.cuotasContainer {
+  position: absolute;
+  top: 17cqb;
+  left: 0;
+  width: 100cqi;
+  height: 83cqb;
+  display: flex;
+  pointer-events: auto;
+}
+
+/* BetsZone background - similar to Results, extended to the right */
+.betsZoneBg {
+  position: absolute;
+  top: 6.9cqb;
+  left: -3cqi;
+  width: 67.66cqi;  /* +160px */
+  height: 71.00cqb;  /* -30px */
+  z-index: 0;
+  opacity: 0.8;
+  transform: scale(1.05);
+  transform-origin: top left;
+}
+
+/* Main cuotas panel - aligned with background, clipped to SVG shape */
+/* Original: x=0, y=196, width=1290, height=641 */
+.cuotasPanel {
+  position: relative;
+  left: -0.7cqi;
+  top: 7cqb;
+  width: 80.74cqi;  /* +200px more to the right */
+  height: 85cqb;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  transform: scale(0.85);
+  transform-origin: top left;
+  overflow: hidden;
+  clip-path: url(#cuotas-clip);
+}
+
+/* Table header - height=39px (4.55vh) */
+.tableHeader {
+  display: flex;
+  align-items: center;
+  height: 5.4cqb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(100, 100, 100, 0.3);
+  padding-left: 1.14cqi;  /* +20px */
+}
+
+/* "CARRERAS Nu." header column - width=198px (11.25vw) */
+.headerRaceNum {
+  flex: 0 0 11.25cqi;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.33cqi;  /* +4px */
+  font-weight: 300;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* Header odds icons container */
+.headerOdds {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1.14cqi;  /* +20px spacing */
+}
+
+/* Each header icon - width=109px (6.19vw), height=47px */
+.headerOddsIcon {
+  flex: 0 0 6.19cqi;
+  height: 5.48cqb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.headerOddsIcon img {
+  width: 90%;  /* +4px */
+  height: 90%;
+  object-fit: contain;
+}
+
+/* Odds list - scrollable area */
+.oddsList {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Hide native scrollbar */
+.oddsList {
+  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  /* IE/Edge */
+}
+
+.oddsList::-webkit-scrollbar {
+  display: none;  /* Chrome/Safari/Opera */
+}
+
+/* Custom scrollbar - positioned OUTSIDE clip-path */
+.customScrollbar {
+  position: absolute;
+  top: 12cqb;
+  left: 1.31cqi;  /* +20px */
+  width: 0.3cqi;
+  height: 66cqb;
+  z-index: 10;
+}
+
+.scrollbarTrack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 1px;
+  cursor: pointer;
+}
+
+.scrollbarThumb {
+  position: absolute;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 1px;
+  min-height: 2cqb;
+  cursor: grab;
+}
+
+.scrollbarThumb:active {
+  cursor: grabbing;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Individual odds row - height=53px (6.18vh) */
+.oddsRow {
+  display: flex;
+  align-items: center;
+  height: 7.35cqb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-left: 1.14cqi;  /* +20px */
+}
+
+.oddsRowOdd {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* Race number cell - width=198px (11.25vw) */
+.raceNumberCell {
+  flex: 0 0 11.25cqi;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.53cqi;  /* +4px */
+  font-weight: 400;
+  color: #fff;
+  text-align: center;
+}
+
+/* Odds values container */
+.oddsValues {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1.14cqi;  /* +20px spacing */
+}
+
+/* Individual odds cell - width=109px (6.19vw) */
+.oddsCell {
+  flex: 0 0 6.19cqi;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.48cqi;  /* +4px */
+  font-weight: 400;
+  color: #fff;
+  text-align: center;
+}
+
+/* Pagination container - staggered buttons layout matching original POS */
+.paginationContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Pagination button - same dimensions as Results: 286x113.56px */
+.paginationButton {
+  position: absolute;
+  width: 16.25cqi;  /* 286px */
+  height: 13.24cqb; /* 113.56px */
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease;
+  pointer-events: auto;
+}
+
+/* Staggered button positions - moved +100px to the right */
+.paginationButton:nth-child(1) {
+  left: 68.80cqi;
+  top: 20.38cqb;
+}
+
+.paginationButton:nth-child(2) {
+  left: 67.82cqi;
+  top: 35.74cqb;
+}
+
+.paginationButton:nth-child(3) {
+  left: 66.94cqi;
+  top: 50.85cqb;
+}
+
+.paginationButton:hover .paginationBg {
+  filter: brightness(1.3) saturate(1.5);
+}
+
+.paginationButton:active .paginationBg {
+  filter: brightness(1.5) saturate(1.8);
+}
+
+.paginationBg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+/* Print icon - covers full button area */
+.paginationIcon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 1;
+}
+
+/* Button number text - same as Results: 45.76px */
+.paginationText {
+  position: absolute;
+  right: 4.5cqi;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 2.6cqi;
+  font-weight: 400;
+  color: #fff;
+  z-index: 2;
+}
+
+.paginationButtonActive {
+  opacity: 1;
+}
+
+.paginationButton:not(.paginationButtonActive) {
+  opacity: 1;
+}
+
+.printSpinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  width: 5cqi;
+  height: 5cqi;
+  border: 3px solid rgba(0, 0, 0, 0.15);
+  border-top: 3px solid #000;
+  border-right: 3px solid #000;
+  border-radius: 50%;
+  animation: cuotasSpin 0.7s linear infinite;
+  z-index: 3;
+}
+
+@keyframes cuotasSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ================================================
+   Layout variants for different runner counts
+   ================================================ */
+
+/* Layout for 6 runners (DOS/DOT) - flex to fill space */
+.layout6 .headerOddsIcon {
+  flex: 1;
+  max-width: 8.5cqi;
+}
+
+.layout6 .oddsCell {
+  flex: 1;
+  max-width: 8.5cqi;
+}
+
+/* Layout for 7 runners (HOC) - flex to fill space */
+.layout7 .headerOddsIcon {
+  flex: 1;
+  max-width: 7.5cqi;
+}
+
+.layout7 .oddsCell {
+  flex: 1;
+  max-width: 7.5cqi;
+}
+
+/* Layout for 8 runners (DOE) - narrower columns */
+.layout8 .headerOddsIcon {
+  flex: 1;
+  max-width: 6.5cqi;
+}
+
+.layout8 .oddsCell {
+  flex: 1;
+  max-width: 6.5cqi;
+}

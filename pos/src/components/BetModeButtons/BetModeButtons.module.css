@@ -1,0 +1,54 @@
+/* BetModeButtons Component */
+/* Uses original POS SVG assets */
+/* bg_458_firstSecPlc.svg (viewBox: 0 0 138 100) */
+/* bg_460_firstSecThirdPlc.svg (viewBox: 0 0 177 100) */
+/* Original POS measurements (780x493 viewport):
+ * Container: 129.53 x 40.63 px
+ * 1°2° button: 56.08 x 40.63 px (7.19cqi x 8.24cqb)
+ * 1°2°3° button: 71.91 x 40.63 px (9.22cqi x 8.24cqb)
+ */
+
+.betModeButtons {
+  display: flex;
+  flex-direction: row;  /* Side by side like original POS */
+  gap: 0;
+  width: 100%;
+  height: 100%;
+  transform: scale(1.15) translate(-6px, 2px);
+  transform-origin: left center;
+}
+
+.betModeBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  height: 100%;
+  transition: filter 0.15s ease;
+}
+
+/* 1°2° button: 56.08/129.53 = 43.3% of container */
+.betModeBtn:first-child {
+  width: 43.3%;
+}
+
+.betModeBtn svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.betModeBtn:hover {
+  filter: brightness(1.2);
+}
+
+.betModeBtn:active {
+  filter: brightness(0.9);
+}
+
+/* Trifecta button: 71.91/129.53 = 55.5% of container */
+.trifectaBtn {
+  width: 55.5%;
+  margin-left: -10px;  /* Acercar 10px al botón 1°2° */
+}
+

@@ -1,0 +1,306 @@
+/* Results Component Styles */
+/* Based on original POS measurements: 780x493 viewport */
+
+.resultsContainer {
+  position: absolute;
+  top: 17cqb;
+  left: 0;
+  width: 100cqi;
+  height: 83cqb;
+  display: flex;
+  pointer-events: auto;
+}
+
+/* BetsZone background - exact measurements from original POS */
+/* Original: width=1288.14px, height=581.91px on 1760x858 viewport */
+/* Adjusted: -50px from right = 1238px, 1238/1760 = 70.34% */
+/* Height: 581.91 / 712.125 (container height) * 100 = 81.72% */
+/* Left offset to compensate for SVG viewBox transparent padding */
+.betsZoneBg {
+  position: absolute;
+  top: 6.9cqb;
+  left: -3cqi;
+  width: 56.94cqi;  /* +9px total */
+  height: 74.5cqb;
+  z-index: 0;
+  opacity: 0.8;
+}
+
+/* Main results panel - aligned with background, clipped to SVG shape */
+.resultsPanel {
+  position: relative;
+  left: -0.7cqi;
+  top: 7cqb;
+  width: 63.81cqi;
+  height: 85cqb;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  transform: scale(0.85);
+  transform-origin: top left;
+  overflow: hidden;
+  clip-path: url(#betszone-clip);
+}
+
+/* Table header */
+.tableHeader {
+  display: flex;
+  height: 5.23cqb;  /* +8px total */
+  background: #5b6373;
+}
+
+.headerRaceNum {
+  flex: 0 0 15cqi;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.5cqi;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transform: translateX(28.84cqi);
+}
+
+.headerResult {
+  flex: 1;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.5cqi;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  padding-left: 29.84cqi;
+}
+
+/* Results list - scrollbar on right side */
+.resultsList {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Content wrapper */
+.resultsListContent {
+  /* No direction change needed */
+}
+
+/* Hide native scrollbar */
+.resultsList {
+  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;  /* IE/Edge */
+}
+
+.resultsList::-webkit-scrollbar {
+  display: none;  /* Chrome/Safari/Opera */
+}
+
+/* Custom scrollbar - positioned OUTSIDE clip-path */
+.customScrollbar {
+  position: absolute;
+  top: 12cqb;
+  left: 0.17cqi;  /* x=3px */
+  width: 0.3cqi;  /* thin scrollbar */
+  height: 66cqb;
+  z-index: 10;
+}
+
+.scrollbarTrack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 1px;
+  cursor: pointer;
+}
+
+.scrollbarThumb {
+  position: absolute;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 1px;
+  min-height: 2cqb;
+  cursor: grab;
+}
+
+.scrollbarThumb:active {
+  cursor: grabbing;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Individual result row */
+.resultRow {
+  display: flex;
+  align-items: center;
+  height: 7cqb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(55, 65, 81, 0.7);  /* Azul/slate oscuro para filas impares (índice par) */
+}
+
+.resultRowOdd {
+  background: rgba(107, 114, 128, 0.5);  /* Gris claro para filas pares (índice impar) */
+}
+
+/* Primera fila con borde izquierdo blanco */
+.resultRowFirst {
+  border-left: 4px solid rgba(255, 255, 255, 0.8);
+}
+
+/* Race number cell */
+.raceNumberCell {
+  flex: 0 0 15cqi;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.56cqi;
+  font-weight: 400;
+  color: #fff;
+  text-align: center;
+  transform: translateX(28.84cqi);
+}
+
+/* Result cell (contains position indicators) */
+.resultCell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5cqi;
+  padding-left: 29.84cqi;
+}
+
+/* Position indicator */
+.positionIndicator {
+  width: 3.42cqi;
+  height: 4.41cqb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.positionIndicatorImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Multiplier badge - matches original POS: 14.82px, weight 800, transparent bg */
+/* Note: compensating for scale(0.85) on resultsPanel */
+.multiplier {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.9cqi;  /* ~14.82px after scale compensation */
+  font-weight: 800;
+  color: #fff;
+  background: transparent;
+  padding-top: 0.73cqb;
+  margin-left: 0.5cqi;
+  text-align: center;
+}
+
+/* Pagination container - staggered buttons layout matching original POS */
+.paginationContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Pagination button - exact dimensions from original POS: 286x103.56px */
+.paginationButton {
+  position: absolute;
+  width: 16.25cqi;  /* 286px */
+  height: 13.24cqb; /* 113.56px */
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease;
+  pointer-events: auto;
+}
+
+/* Staggered button positions from original POS (viewport 1760x858) */
+/* Button 5: left=1013px, top=321px */
+/* Button 10: left=996px, top=452px */
+/* Button 20: left=980px, top=582px */
+.paginationButton:nth-child(1) {
+  left: 57.55cqi;
+  top: 20.38cqb;
+}
+
+.paginationButton:nth-child(2) {
+  left: 56.57cqi;
+  top: 35.74cqb;
+}
+
+.paginationButton:nth-child(3) {
+  left: 55.69cqi;
+  top: 50.85cqb;
+}
+
+.paginationButton:hover .paginationBg {
+  filter: brightness(1.3) saturate(1.5);
+}
+
+.paginationButton:active .paginationBg {
+  filter: brightness(1.5) saturate(1.8);
+}
+
+.paginationBg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+/* Print icon - covers full button area */
+.paginationIcon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 1;
+}
+
+/* Button number text - original font size: 45.76px */
+.paginationText {
+  position: absolute;
+  right: 4.5cqi;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 2.6cqi;
+  font-weight: 400;
+  color: #fff;
+  z-index: 2;
+}
+
+.paginationButtonActive {
+  opacity: 1;
+}
+
+.paginationButton:not(.paginationButtonActive) {
+  opacity: 1;
+}
+
+.printSpinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  width: 5cqi;
+  height: 5cqi;
+  border: 3px solid rgba(0, 0, 0, 0.15);
+  border-top: 3px solid #000;
+  border-right: 3px solid #000;
+  border-radius: 50%;
+  animation: resultsSpin 0.7s linear infinite;
+  z-index: 3;
+}
+
+@keyframes resultsSpin {
+  to { transform: rotate(360deg); }
+}

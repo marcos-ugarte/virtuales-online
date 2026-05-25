@@ -1,0 +1,106 @@
+/* Loading Wrapper */
+.loadingWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2vh;
+}
+
+.fullScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(0deg, #031d48, #023169 18%, #023169 30%, #03163d 70%);
+  z-index: 1000;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+}
+
+/* Spinner - Triple ring rotating animation */
+.loader {
+  display: block;
+  position: relative;
+  width: 32vw;
+  height: 32vw;
+  max-width: 200px;
+  max-height: 200px;
+  border: 0.5vw solid transparent;
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 2s linear infinite;
+}
+
+.loader::before {
+  content: '';
+  position: absolute;
+  top: 0.25vw;
+  left: 0.25vw;
+  right: 0.25vw;
+  bottom: 0.25vw;
+  border: 0.5vw solid transparent;
+  border-radius: 50%;
+  border-top-color: hsla(0, 0%, 100%, 0.7);
+  animation: spin 3s linear infinite;
+}
+
+.loader::after {
+  content: '';
+  position: absolute;
+  top: 1.05vw;
+  left: 1.05vw;
+  right: 1.05vw;
+  bottom: 1.05vw;
+  border: 0.5vw solid transparent;
+  border-radius: 50%;
+  border-top-color: hsla(0, 0%, 100%, 0.4);
+  animation: spin 1.5s linear infinite;
+}
+
+/* Dot loader - Progressive dots animation */
+.dotLoader {
+  width: 20vw;
+  max-width: 150px;
+  aspect-ratio: 12;
+  background: radial-gradient(circle closest-side, #fff 90%, transparent) 0 / 16.66667% 100% space;
+  clip-path: inset(0 100% 0 0);
+  animation: dotLoad 1s steps(7) infinite;
+  margin: 1.5vh auto 1vh;
+}
+
+/* Loading text */
+.loadingText {
+  font-family: var(--font-family-din-italic), Helvetica, sans-serif;
+  font-size: 1.8vw;
+  color: #fff;
+  letter-spacing: 0.55vh;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Spin animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Dot load animation */
+@keyframes dotLoad {
+  to {
+    clip-path: inset(0 -17% 0 0);
+  }
+}

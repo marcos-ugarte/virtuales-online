@@ -1,0 +1,33 @@
+/* DotNumpad Component - Uses original POS SVG asset */
+/* SVG viewBox: 0 0 408 508 */
+
+.dotNumpad {
+  width: 100%;
+  height: 100%;
+  container-type: size;
+  container-name: dotNumpad;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.dotNumpad svg {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  display: block;
+  /* Ensure SVG shows from top, scaling to fit width */
+  object-fit: contain;
+  object-position: top center;
+}
+
+/* Hover effects for buttons */
+.dotNumpad :global(.numpad-btn):hover {
+  filter: brightness(1.2);
+  transition: filter 0.15s ease;
+}
+
+.dotNumpad :global(.numpad-btn):active {
+  filter: brightness(0.9);
+  transition: filter 0.05s ease;
+}

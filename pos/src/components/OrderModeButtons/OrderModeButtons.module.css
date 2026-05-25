@@ -1,0 +1,31 @@
+/* OrderModeButtons Component */
+/* Uses original POS SVG asset */
+/* bg_461_exactAnyBut.svg (viewBox: 0 0 252 203) */
+/* Two stacked buttons with horizontal divider */
+
+.orderModeButtons {
+  position: relative;
+  width: 100%;
+  /* Aspect ratio matches SVG viewBox */
+  aspect-ratio: 252 / 203;
+  cursor: pointer;
+}
+
+.svgContainer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.svgContainer svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Hover effect on entire container */
+.orderModeButtons:hover .svgContainer {
+  filter: brightness(1.1);
+  transition: filter 0.15s ease;
+}

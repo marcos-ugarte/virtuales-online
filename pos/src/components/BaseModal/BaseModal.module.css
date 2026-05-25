@@ -1,0 +1,134 @@
+/* Overlay - Dark background centered container */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+/* Transparent overlay - no dark background */
+.overlayTransparent {
+  background: transparent;
+  pointer-events: none;
+}
+
+.overlayTransparent .modal {
+  pointer-events: auto;
+}
+
+/* Modal Container */
+.modal {
+  --modal-scale: 1;
+  --modal-height: 459px;
+  position: relative;
+  width: calc(880px * var(--modal-scale));
+  height: calc(var(--modal-height) * var(--modal-scale));
+  max-width: 90vw;
+  overflow: visible;
+}
+
+/* Hidden state — always in DOM but invisible, no mount/unmount flash */
+/* visibility:hidden blocks ALL child pointer events (unlike pointer-events:none) */
+.overlayHidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Modal Content - skewed container (inclines everything inside) */
+.modalContent {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform: skewX(-10deg);
+}
+
+/* Modal Background - Gray */
+.modalBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% + 2.5px * var(--modal-scale));
+  height: 100%;
+  background: #dddddd;
+  border-radius: calc(17.6px * var(--modal-scale)) 0 calc(17.6px * var(--modal-scale)) 0;
+  z-index: -1;
+}
+
+/* Header - Red bar, counter-skewed to straighten */
+.header {
+  position: relative;
+  height: calc(97px * var(--modal-scale));
+  width: calc(102% + 4px * var(--modal-scale));
+  left: calc(-9px * var(--modal-scale));
+  transform: skewX(10deg);
+}
+
+.headerBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.headerBackground img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+
+/* Header text - skewed again to match content inclination */
+.headerText {
+  position: absolute;
+  top: calc(-2px * var(--modal-scale));
+  left: calc(4px * var(--modal-scale));
+  height: 100%;
+  padding-left: calc(35px * var(--modal-scale));
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: calc(50px * var(--modal-scale));
+  font-weight: 400;
+  font-style: normal;
+  line-height: calc(97px * var(--modal-scale));
+  color: #ffffff;
+  z-index: 2;
+  transform: skewX(-10deg);
+}
+
+/* Content - inherits skew from modalContent */
+/* Fixed height to ensure button positioning is consistent regardless of text content */
+.content {
+  position: relative;
+  padding: calc(35.2px * var(--modal-scale));
+  padding-top: calc(37px * var(--modal-scale));
+  margin-left: calc(1px * var(--modal-scale));
+  width: calc(880px * var(--modal-scale));
+  height: calc((var(--modal-height) - 97px) * var(--modal-scale));
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+.contentText {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: calc(50px * var(--modal-scale));
+  font-style: normal;
+  font-weight: 400;
+  color: #000000;
+  line-height: normal;
+  margin: 0;
+  text-align: left;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal {
+    --modal-scale: 0.5;
+    width: 90vw;
+  }
+}

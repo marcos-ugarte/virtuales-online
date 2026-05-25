@@ -1,0 +1,2689 @@
+/* Dashboard Container - Relative to ScaleWrapper */
+.dashboard {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Prevent dragging on all images and buttons */
+.dashboard img,
+.dashboard button {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+.dashboard img {
+  pointer-events: none;
+}
+
+.dashboard button img {
+  pointer-events: none;
+}
+
+/* Background Image - Always fills entire screen */
+.backgroundImage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+
+/* =============================================
+   HEADER SECTION (y: 0-184px in 1920x1080)
+   184/1080 = 17.04% height = 17.04cqb
+============================================= */
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 17.04cqb;
+  z-index: 10;
+}
+
+/* Menu Buttons Container */
+/* Original POS: x=107.14px, y=8.58px, height=97.58px in 1760x858 viewport
+   - left: 107.14/1760*100 = 6.09cqi
+   - top: 8.58/858*100 = 1.0cqb
+*/
+.menuButtons {
+  position: absolute;
+  left: 6.09cqi;
+  top: 1.0cqb;
+  display: flex;
+  gap: 0;
+}
+
+/* Individual Menu Button */
+/* Original POS: height=97.58px in 858px viewport = 11.37cqb
+   Width varies per button - using auto width with padding
+*/
+.menuButton {
+  position: relative;
+  width: auto;
+  height: 11.37cqb;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 1.5cqi;
+  padding-top: 1cqb; /* Original: 8.58px padding-top */
+}
+
+
+/* Menu button text */
+/* Original POS: font-size=28.16px in 1760px viewport = 1.6cqi, line-height: normal */
+.menuButtonText {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-style: normal;
+  font-size: 1.6cqi;
+  color: var(--game-text-primary, #0896d4);
+  text-transform: uppercase;
+  letter-spacing: 0.05cqi;
+  line-height: normal;
+}
+
+.menuButtonActive .menuButtonText {
+  color: #fff;
+}
+
+/* Original POS: border-top: 1px solid white at position 0, padding-top: 8.58px */
+.menuButtonActive::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 1px;
+  background-color: rgb(255, 255, 255);
+}
+
+/* Button spacing - Original POS has no gaps, buttons touch each other */
+/* Individual button widths are auto based on text content */
+
+/* Order Ticket Button */
+/* Original POS measurements in 1760x858 viewport:
+   - left: 800.3px = 45.47cqi
+   - top: 11.44px = 1.33cqb
+   - width: 247.8px = 14.08cqi
+   - height: 102.78px = 11.98cqb
+   - padding-left: 35.2px = 2cqi
+*/
+/* Color: #7f0d1e (no pending) → #F70000 (has pending) */
+.orderTicketButton {
+  position: absolute;
+  left: 45.47cqi;
+  top: 1.33cqb;
+  width: 14.08cqi;
+  height: 11.98cqb;
+  background: #7f0d1e;
+  border: none;
+  cursor: pointer;
+  transform: skewX(-10deg);
+  border-radius: 1.2cqi 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-left: 2cqi;
+  padding-top: 2.5cqb;
+}
+
+/* When there are pending tickets - bright red */
+.orderTicketHasPending {
+  background: #F70000;
+}
+
+/* Main text: "ORDENAR TICKET" */
+/* Original POS: font-size: 21.12px, text-align: start, line-height: normal */
+/* 21.12px in 1760 viewport = 1.2cqi */
+.orderTicketText {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.2cqi;
+  font-style: italic;
+  font-weight: 400;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: normal;
+  text-align: start;
+  line-height: normal;
+  transform: skewX(10deg);
+}
+
+/* Secondary text: "X Tickets Pendientes" */
+/* Original: 9.75px font, padding-top: 2.34px */
+.orderTicketPending {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.2cqi;
+  font-weight: 400;
+  color: #fff;
+  padding-top: 0.3cqb;
+  letter-spacing: normal;
+  transform: skewX(10deg);
+}
+
+/* Ticket count number - bold */
+.orderTicketCount {
+  font-weight: 600;
+  padding-right: 0.4cqi;
+}
+
+/* Exit/Logout Button */
+.exitButton {
+  position: absolute;
+  right: 1cqi;
+  top: 1.11cqb;
+  width: 8cqi;
+  height: 6cqb;
+  background: linear-gradient(180deg, rgba(50, 50, 50, 0.9) 0%, rgba(30, 30, 30, 1) 100%);
+  border: none;
+  cursor: pointer;
+  transform: skewX(-10deg);
+  border-radius: 0.3cqi;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.exitButton:hover {
+  background: linear-gradient(180deg, rgba(80, 80, 80, 0.9) 0%, rgba(50, 50, 50, 1) 100%);
+}
+
+.exitButtonText {
+  font-family: var(--font-family-din-italic), Helvetica, sans-serif;
+  font-style: italic;
+  font-size: 1.4cqi;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.1cqi;
+  transform: skewX(10deg);
+}
+
+/* Race Number Display */
+/* Original POS: container at x=45.83px, y=68.41px in 1760x858 viewport
+   - left: 45.83/1760*100 = 2.60cqi
+   - top: 68.41/858*100 = 7.97cqb
+   - Label offset from container top: 17.59px = 2.05cqb
+*/
+.raceNumber {
+  position: absolute;
+  left: 2.60cqi;
+  top: 7.97cqb;
+  padding-top: 2.05cqb;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 20;
+}
+
+/* Original POS: font-size=20.416px, letter-spacing=0.616px, color=white solid */
+.raceNumberLabel {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-weight: 300;
+  font-size: 1.16cqi;
+  color: rgb(255, 255, 255);
+  text-transform: uppercase;
+  letter-spacing: 0.035cqi;
+}
+
+/* Original POS: font-size=52.8px, font-weight=600
+   Number top should be at 101.20px (11.80cqb) - adjusted margin for exact match */
+.raceNumberText {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 3.0cqi;
+  color: #fff;
+  margin-top: -1.80cqb; /* Adjusted to match original number position at 11.80cqb */
+}
+
+/* Connection Indicator - Left of CARRERA label */
+.connectionIndicator {
+  position: absolute;
+  left: -0.88cqi;
+  top: 1.4cqb;
+  width: 0.6cqi;
+  height: 0.6cqi;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.connectionIndicator.connected {
+  background-color: #00ff00;
+  box-shadow: 0 0 4px #00ff00;
+}
+
+.connectionIndicator.disconnected {
+  background-color: #ff4444;
+  box-shadow: 0 0 4px #ff4444;
+  animation: pulse 1.5s infinite;
+}
+
+.connectionIndicator.capturePausedIndicator {
+  background-color: #ff9800;
+  box-shadow: 0 0 4px #ff9800;
+  animation: pulse 1.5s infinite;
+}
+
+.connectionIndicator.connectingIndicator {
+  background-color: #2196f3;
+  box-shadow: 0 0 4px #2196f3;
+  animation: pulse 0.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Race Start Time (EMPIEZA) */
+/* Original POS: container at left=270.97px (15.40cqi), top=106.41px (12.40cqb) */
+.raceStartTime {
+  position: absolute;
+  left: 15.40cqi;
+  top: 12.40cqb;
+  padding-top: 0.64cqb;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 20;
+}
+
+/* Original POS: label at top=111.86px (13.04cqb), fontSize=14.256px, letterSpacing=0.44px */
+.raceStartLabel {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-weight: 300;
+  font-size: 0.81cqi;
+  color: rgb(255, 255, 255);
+  text-transform: uppercase;
+  letter-spacing: 0.025cqi;
+  margin-left: 0.1cqi;
+}
+
+/* Original POS: value at top=124.41px (14.50cqb), fontSize=26.136px */
+.raceStartValue {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 1.485cqi;
+  color: #fff;
+  letter-spacing: normal;
+  margin-top: -1.03cqb;
+}
+
+/* Active Time (ACTIVO) */
+/* Original POS: Container at 27.72cqi, 12.40cqb */
+/* Label: fontSize=14.256px, color=rgb(2, 154, 208), letterSpacing=0.44px */
+/* Value: fontSize=26.136px, color=rgb(2, 154, 208) */
+.activeTime {
+  position: absolute;
+  left: 27.72cqi;
+  top: 12.40cqb;
+  padding-top: 0.64cqb;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 20;
+}
+
+.activeTimeLabel {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-weight: 300;
+  font-size: 0.81cqi;
+  color: var(--game-text-primary, #029ad0);
+  text-transform: uppercase;
+  letter-spacing: 0.025cqi;
+}
+
+.activeTimeValue {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 1.485cqi;
+  color: var(--game-text-primary, #029ad0);
+  letter-spacing: normal;
+  margin-top: -1.03cqb;
+}
+
+/* Timer Bar Container */
+/* Timer Progress Bar */
+/* Original POS measurements (1760x858 viewport):
+ * left: 44.74cqi, top: 15.60cqb, width: 14.06cqi, height: 2.63cqb
+ */
+.timerBarContainer {
+  position: absolute;
+  left: 44.74cqi;
+  top: 15.15cqb; /* Adjusted: 137px target on 858px viewport */
+  width: 14.06cqi;
+  height: 2.63cqb;
+  overflow: hidden;
+}
+
+.timerBarBg {
+  width: 100%;
+  height: 100%;
+}
+
+.timerBarProgress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Timer bar line - always thick, never scales down */
+/* Width is fixed to parent container (14.06cqi), only clipped by timerBarProgress */
+.timerBarLine {
+  height: 100%;
+  width: 14.06cqi; /* Same as timerBarContainer width - never shrinks */
+  min-width: 14.06cqi; /* Prevent scaling */
+  object-fit: fill;
+}
+
+/* Timer Seconds Display */
+/* Original POS measurements (1760x858 viewport):
+ * Icon: left=40.04cqi, top=14.81cqb, width=21.11px (1.2cqi), height=21.11px (2.46cqb)
+ * SEG label: left=41.79cqi, top=13.04cqb, fontSize=14.256px (0.81cqi), fontWeight=300, color=white
+ * Value: left=41.69cqi, top=14.50cqb, fontSize=26.136px (1.485cqi), fontWeight=600, color=white
+ */
+.timerSecondsContainer {
+  position: absolute;
+  left: 40.04cqi;
+  top: 12.63cqb; /* Adjusted: 115px target on 858px viewport */
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.3cqi;
+  z-index: 15;
+}
+
+.timerIcon {
+  font-size: 1.5cqi;
+  color: #fff;
+}
+
+.timerIconImg {
+  width: 1.2cqi;
+  height: 2.46cqb;
+  object-fit: contain;
+  margin-top: 2.41cqb; /* Align icon with value: 14.81 - 12.40 = 2.41cqb */
+}
+
+.timerSecondsText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 0.25cqi; /* Fine-tune to get SEG at 41.79cqi */
+}
+
+.timerSecondsValue {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 1.485cqi;
+  color: #fff;
+  line-height: 1;
+  margin-top: 0.1cqb; /* Adjusted: top at Y=130px */
+  text-align: left;
+  transition: color 0.3s ease;
+}
+
+/* Alert state - Red color + blink when <= 10 seconds */
+/* Original POS: rgb(236, 33, 0) = #EC2100 */
+.timerSecondsValueAlert {
+  color: #EC2100 !important;
+  animation: countdownBlink 1s ease-in-out infinite;
+}
+
+@keyframes countdownBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.timerSecondsLabel {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-weight: 300;
+  font-size: 0.81cqi;
+  color: #fff;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-top: 0.87cqb; /* Adjusted: +2px to reach 115px */
+}
+
+/* Game Icon Container (Pastilla) */
+/* Original POS measurements (1760x858 viewport):
+ * gameIconHeadBa (pastilla): right=15cqi, top=1.08cqb, width=17.19cqi, height=20.41cqb
+ * gameIconHead (logo): width=211.19px=12.00cqi, height=117.03px=13.64cqb
+ */
+.gameIconContainer {
+  position: absolute;
+  right: 15cqi;
+  top: 1.08cqb;
+  width: 17.19cqi;
+  height: 20.41cqb;
+  /* Button reset for clickeable game logo */
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.gameIconBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.gameIcon {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -0.65cqb;
+  width: 12.00cqi;
+  height: 13.64cqb;
+  object-fit: contain;
+}
+
+/* =============================================
+   TOP RIGHT SECTION - Operator Info & Settings
+============================================= */
+.topRightSection {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5cqb;
+  /* Above .gameSelectorsContainer (z-index 30). At smaller viewports the
+     containers can overlap, and previously clicks on the search/ID button
+     were stolen by the horse game selector underneath it. */
+  z-index: 35;
+}
+
+/* Game Selectors - Single Row */
+/* Original POS measurements (1760x858 viewport):
+ * game_s container: right=16.80cqi, top=12.98cqb, width=14.90cqi, height=6.15cqb
+ * Individual buttons:
+ *   - dos/hoc: width=69.48px (3.95cqi), height=53.80px (6.27cqb)
+ *   - dot/doe: width=61.77px (3.51cqi), height=53.80px (6.27cqb)
+ * Icon background-size: 36.96px × 36.96px (2.1cqi)
+ * Selection indicator: ::before with border-top: 1px solid white
+ */
+.gameSelectorsContainer {
+  position: absolute;
+  position: absolute;
+  /* Centered below game icon logo (right:15cqi, width:17.19cqi → center at right:23.6cqi) */
+  right: calc(23.6cqi - (3.2cqi * var(--game-count, 4)) / 2);
+  top: 12.98cqb;
+  width: calc(3.2cqi * var(--game-count, 4));
+  height: 6.15cqb;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  z-index: 30;
+}
+
+.gameSelectorBtn {
+  position: relative;
+  width: 2.5cqi;
+  height: 6.27cqb;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  cursor: pointer;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  box-shadow: none !important;
+  --tw-ring-offset-width: 0px;
+  --tw-ring-offset-color: transparent;
+  --tw-ring-color: transparent;
+  --tw-ring-offset-shadow: none;
+  --tw-ring-shadow: none;
+}
+
+/* First and last buttons (dos, hoc) are slightly wider */
+.gameSelectorBtn:first-child,
+.gameSelectorBtn:last-child {
+  width: 2.5cqi;
+}
+
+.gameSelectorBtn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.gameSelectorBtn:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.gameSelectorBtn::-moz-focus-inner {
+  border: 0 !important;
+}
+
+.gameSelectorBtn img {
+  width: 2.1cqi;
+  height: 4.31cqb;
+  object-fit: contain;
+  filter: brightness(0.7);  /* No saturate(0) - keeps DOT red dot visible */
+  transition: filter 0.15s ease;
+}
+
+.gameSelectorActive img {
+  filter: brightness(1.2);  /* No saturate(0) - allows DOT red dot to show */
+}
+
+.gameSelectorBtn:hover img {
+  filter: brightness(1.2);  /* No saturate(0) - allows colors to show on hover */
+}
+
+.gameSelectorBtn:active {
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+}
+
+.gameSelectorActive {
+  /* No scale or shadow effect */
+  background: transparent;
+}
+
+/* Selection indicator - white line spanning the game's fraction of the container */
+/* Uses CSS var --game-count set inline by React to calculate width dynamically */
+.gameSelectorActive::before {
+  content: '';
+  position: absolute;
+  top: -0.12cqb;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3cqi;
+  height: 100%;
+  border-top: 1px solid rgb(255, 255, 255);
+  pointer-events: none;
+}
+
+.gameSelectorActive:hover {
+  /* No hover effect */
+}
+
+/* Operator Info Panel */
+/* Original POS: panel 275×159px */
+.operatorInfoPanel {
+  position: relative;
+  width: 15.63cqi;
+  height: 18.53cqb;
+  overflow: visible;
+}
+
+/* Background layers for terminal info panel - 3 layered SVGs like Original POS */
+/* Original POS has 3 overlapping pastilla shapes creating depth effect:
+   - timer2: left=1468, width=292, z-index=2 (gray-blue shadow #4a5260 @ 0.7)
+   - timer2Over: left=1468, width=292, z-index=3 (light gray highlight #6a7f93 @ 0.8)
+   - lasche_ro: left=1485, width=275, z-index=2 (dark blue main #242b33 @ 0.66) */
+
+/* Layer 1: timer2 - Background shadow layer */
+.infoPanelBgShadow {
+  position: absolute;
+  top: 1.05cqb; /* Original: 9px / 858 = 1.05cqb */
+  right: 0;
+  width: 16.59cqi; /* Original: 292px / 1760 = 16.59cqi */
+  height: 18.53cqb; /* Original: 159px / 858 = 18.53cqb */
+  object-fit: fill;
+  z-index: 2;
+}
+
+/* Layer 2: timer2Over - Middle highlight layer */
+.infoPanelBgHighlight {
+  position: absolute;
+  top: 1.05cqb;
+  right: 0;
+  width: 16.59cqi;
+  height: 12.12cqb; /* 55px shorter: (159-55)/858 = 12.12cqb */
+  object-fit: cover;
+  object-position: right top; /* Crop from bottom only */
+  z-index: 3;
+}
+
+/* Layer 3: lasche_ro - Front main layer */
+.infoPanelBg {
+  position: absolute;
+  top: 1.05cqb;
+  right: 0;
+  width: 15.63cqi; /* Original: 275px / 1760 = 15.63cqi */
+  height: 18.53cqb;
+  object-fit: fill;
+  z-index: 4; /* Above highlight layer */
+}
+
+.infoPanelContent {
+  position: absolute;
+  z-index: 10; /* Content above background */
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Right-align content */
+  padding-right: 0.5cqi; /* Original: 8.8px / 1760 = 0.5cqi */
+}
+
+/* Next game countdown info (between operator info and settings gear) */
+.nextGameInfo {
+  position: absolute;
+  right: -0.82cqi;
+  top: 11.03cqb;
+  display: flex;
+  flex-direction: column;
+  z-index: 15;
+}
+
+.nextGameRow {
+  display: flex;
+  align-items: center;
+  gap: 0.15cqi;
+  line-height: 1;
+  padding-top: 0.35cqb;
+}
+
+.nextGameSeg {
+  display: none;
+}
+
+.nextGameTimerIcon {
+  width: 0.77cqi;
+  height: 0.77cqi;
+  object-fit: contain;
+  opacity: 1;
+  filter: brightness(2);
+  transform: translateY(-0.1cqb);
+}
+
+
+.nextGameCountdown {
+  position: relative;
+  font-family: var(--font-family-din-bold), Helvetica, sans-serif;
+  font-size: 0.89cqi;
+  color: rgb(255, 255, 255);
+  font-weight: 600;
+  min-width: 1.2cqi;
+}
+
+.nextGameCountdown::before {
+  content: 'SEG';
+  position: absolute;
+  top: -0.55cqi;
+  left: 0;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 0.47cqi;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.5px;
+}
+
+.nextGameName {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 0.5cqi;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  margin-left: 0.3cqi;
+}
+
+.infoPanelIcons {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5cqi;
+  margin-top: 0.3cqb;
+}
+
+.topInfoRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5cqi;
+}
+
+.textColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Right-align text */
+}
+
+.searchButton {
+  /* Convert fixed px to container-query units so the button scales
+     with the viewport instead of overflowing the info panel on
+     smaller screens. Original 56.94x32px at 1760x858 reference. */
+  width: 3.24cqi;   /* 56.94 / 1760 * 100 */
+  height: 3.73cqb;  /* 32 / 858 * 100 */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease;
+  position: relative;
+  z-index: 20;
+  flex-shrink: 0;
+  margin-top: 5.31cqb; /* Original: top 45.53px / 858 = 5.31cqb - aligns with ticketScannAct */
+  margin-right: 0.5cqi; /* Adjusted for ID text */
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.searchIcon {
+  width: 1.88cqi;   /* 33 / 1760 * 100 — original 33x32px */
+  height: 3.73cqb;  /* 32 / 858 * 100 */
+  object-fit: contain;
+  opacity: 1;
+  filter: brightness(1.5);
+}
+
+.searchIdText {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.5cqi; /* Original: 26.4px / 1760 = 1.5cqi */
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: normal;
+  line-height: 1;
+}
+
+.searchButton:hover {
+  transform: scale(1.1);
+}
+
+.searchButton:hover .searchIcon {
+  opacity: 1;
+}
+
+/* Ticket ID Input Container - Yellow box that appears when clicking ID button */
+/* Measurements from original POS: 274.38 x 70.39px (15.59cqi x 8.20cqb) */
+/* Position: below operator info panel */
+.ticketIdInputContainer {
+  position: absolute;
+  top: 11.26cqb;  /* 96.58px / 858 = 11.26cqb */
+  right: 0;
+  width: calc(13.5cqi + 34px);  /* Extended to right edge */
+  height: 8.20cqb;  /* 70.39px / 858 = 8.20cqb */
+  background: #feed01;  /* Yellow from original */
+  display: flex;
+  align-items: center;
+  padding: 0 0.5cqi;
+  gap: 0.3cqi;
+  z-index: 100;
+  /* Parallelogram: left edge slants (top-left cuts inward, subtle angle) */
+  clip-path: polygon(4% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.ticketIdBtn {
+  width: 2.7cqi;
+  height: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.ticketIdBtn:hover {
+  opacity: 0.7;
+}
+
+/* Close button (second/last button) - move left to overlap input */
+.ticketIdBtn:last-child {
+  margin-left: calc(-1.5cqi + 2px);
+  z-index: 2;
+}
+
+.ticketIdBtnIcon {
+  width: 100%;
+  height: auto;
+  filter: brightness(0);  /* Make icon black */
+}
+
+.ticketIdInput {
+  flex: 1;
+  height: 2.69cqb;  /* 23.11px / 858 = 2.69cqb */
+  border: none;
+  background: transparent;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 0.85cqi;
+  margin-left: -6px;
+  font-weight: 400;
+  color: #000;
+  outline: none;
+}
+
+.ticketIdInput::placeholder {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.ticketIdInputError {
+  background: rgba(255, 0, 0, 0.08);
+}
+
+.ticketIdInputError::placeholder {
+  color: #c62828;
+}
+
+
+.operatorId {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.2cqi;
+  color: var(--game-text-primary, #029ad0); /* Dynamic theme color */
+  font-weight: 400;
+  text-align: right;
+  white-space: nowrap;
+  line-height: normal;
+  margin-top: 2.26cqb; /* Original: 19.38px / 858 = 2.26cqb */
+}
+
+.deviceId {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.1cqi;
+  color: #ffffff; /* Original: rgb(255, 255, 255) - white */
+  font-weight: 400;
+  text-align: right;
+  white-space: nowrap;
+  line-height: normal;
+}
+
+.versionText {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 0.9cqi; /* Original: 15.84px / 1760 = 0.9cqi */
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 400;
+  text-align: right;
+  white-space: nowrap;
+  line-height: 0.9cqi;
+}
+
+/* Next Game Info */
+.nextGameInfo {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 0.5cqi;
+  transform: translate(-5.5cqi, 4.75cqb); /* Movido 1cqi a la derecha */
+}
+
+.nextGameSecondsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  top: 1.7px;
+  left: 0.5px; /* Alinea con DOG PRO RACE */
+}
+
+.nextGameLabel {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 0.6cqi;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  margin-bottom: -0.35cqb;
+}
+
+.nextGameTimer {
+  display: flex;
+  align-items: center;
+  gap: 0.3cqi;
+}
+
+.nextGameIcon {
+  font-size: 0.9cqi;
+  color: #fff;
+}
+
+.nextGameIconImg {
+  width: 1.75cqi;
+  height: 1.75cqb;
+  object-fit: contain;
+  transform: translate(0.65cqi, -0.5cqb);
+}
+
+.nextGameSeconds {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1cqi;
+  color: #fff;
+  font-weight: 700;
+}
+
+.nextGameName {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 0.830cqi; /* Original: 14.608px / 1760 = 0.830cqi */
+  font-weight: 300; /* Original: 300 */
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+/* Settings Button */
+.settingsButton {
+  width: 5.25cqi;
+  height: 5.25cqb;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease;
+  transform: translate(0.9cqi, 2.5cqb);
+}
+
+.settingsIcon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: brightness(100) saturate(0);
+  opacity: 1;
+}
+
+.settingsButton:hover {
+  transform: translate(0.9cqi, 2.5cqb) rotate(30deg);
+}
+
+.settingsButton:hover .settingsIcon {
+  opacity: 1;
+}
+
+/* =============================================
+   SETTINGS MENU
+   Dropdown menu that slides from behind the operator panel
+   Original POS measurements (1760x858 viewport):
+   - Background SVG: 387.19px × 543.69px = 22.00cqi × 63.37cqb
+   - Text: 17.6px = 1cqi, weight 100, skewX(-12deg)
+   - Colors: Active #FEED01 (yellow), Inactive #C2DEF8 (light blue)
+============================================= */
+
+/* Wrapper to position the menu behind operator panel */
+.settingsMenuWrapper {
+  position: absolute;
+  top: 17.5cqb;  /* Below the pastillas */
+  right: 0.27cqi;  /* 4px more to the right */
+  width: 24cqi;  /* Menu width + padding */
+  height: 22cqb;  /* Shorter height - just enough for content */
+  overflow: visible;
+  z-index: 1;  /* Behind operator panel backgrounds (z-index 2-4) */
+  pointer-events: none;
+}
+
+.settingsMenuContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  overflow: visible;
+  /* Animation: slide down from hidden position */
+  animation: slideDown 0.6s ease-out forwards;
+}
+
+.settingsMenuBg {
+  position: absolute;
+  top: -2cqb;
+  right: 0;
+  width: 17.97cqi;  /* 2px narrower from left */
+  height: 16.17cqb;  /* 50px shorter from bottom */
+  background-color: var(--game-panel-bg, #0C1F46);
+  z-index: 0;
+  opacity: 0.95;
+  /* Parallelogram: both sides slanted, rounded bottom-right corner */
+  clip-path: polygon(10% 0%, 100% 0%, 100% 90%, 97% 95%, 95% 100%, 0% 100%);
+}
+
+@keyframes slideDown {
+  from {
+    /* Diagonal slide following left edge angle (~10°): up and to the right */
+    transform: translateY(-100%) translateX(15%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(0) translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%) translateX(15%);
+    opacity: 0;
+  }
+}
+
+.settingsMenuClosing {
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+.settingsMenuContent {
+  position: absolute;
+  top: 1cqb;
+  right: 0.3cqi;  /* More to the right */
+  display: flex;
+  flex-direction: column;
+  gap: 1cqb;
+  padding: 1.5cqb 1cqi;
+  z-index: 2;
+}
+
+.settingsRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.5cqb 0;
+  gap: 0.8cqi;
+}
+
+.languageRow {
+  padding-right: 5.67cqi;  /* 100px more to the left - only for flag row */
+}
+
+.flagIcon {
+  width: 2.12cqi;  /* 5.5px bigger */
+  height: auto;
+  margin-right: 1.11cqi;  /* 2px more to the left */
+  margin-top: 0.23cqb;  /* 2px down */
+  pointer-events: auto;
+  transform: skewX(-12deg);  /* Parallelogram shape */
+}
+
+.languageText {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1cqi;  /* 17.6px / 1760 * 100 = 1cqi */
+  font-weight: 100;
+  color: #feed01;  /* Yellow from original - active */
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  transform: skewX(-12deg);  /* Original POS italic/skew effect */
+}
+
+.settingsLabel {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1cqi;  /* 17.6px / 1760 * 100 = 1cqi */
+  font-weight: 100;
+  color: var(--game-text-secondary, #c2def8);  /* Dynamic theme secondary color */
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  line-height: 1.1;  /* Less space between lines */
+  transform: skewX(-12deg);  /* Original POS italic/skew effect */
+  margin-right: 0.57cqi;  /* 10px to the left */
+  margin-bottom: 1.05cqb;  /* 9px up */
+}
+
+.toggleContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5cqi;
+  margin-left: 0.23cqi;  /* 4px to the right */
+}
+
+.toggleBtn {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1cqi;  /* 17.6px / 1760 * 100 = 1cqi */
+  font-weight: 100;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--game-text-secondary, #c2def8);  /* Dynamic theme secondary color */
+  transition: color 0.15s ease;
+  transform: skewX(-12deg);  /* Original POS italic/skew effect */
+}
+
+.toggleBtn:hover {
+  color: var(--game-text-accent, #feed01);
+}
+
+.toggleActive {
+  color: var(--game-text-accent, #feed01);  /* Dynamic theme accent color */
+}
+
+/* Pill-shaped toggle slider (matches original POS) */
+.toggleSlider {
+  width: 2.5cqi;  /* ~44px / 1760 * 100 */
+  height: 1.4cqi;  /* ~25px / 1760 * 100 */
+  background: color-mix(in srgb, var(--game-text-secondary, #c2def8) 30%, transparent);
+  border-radius: 0.7cqi;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border: 1px solid color-mix(in srgb, var(--game-text-secondary, #c2def8) 50%, transparent);
+}
+
+.toggleSlider:hover {
+  background: color-mix(in srgb, var(--game-text-secondary, #c2def8) 40%, transparent);
+}
+
+/* Circular knob inside the slider */
+.toggleKnob {
+  width: 1cqi;  /* ~18px / 1760 * 100 */
+  height: 1cqi;
+  background: var(--game-text-secondary, #c2def8);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: left 0.15s ease, background 0.15s ease;
+  left: 0.2cqi;  /* Default position (Enc. active) */
+}
+
+.toggleSliderActive .toggleKnob {
+  left: calc(100% - 1.2cqi);  /* Move to right (APA. active) */
+  background: var(--game-text-accent, #feed01);
+}
+
+/* Legacy toggle indicator (kept for backwards compatibility) */
+.toggleIndicator {
+  display: none;  /* Hide old circular indicators */
+}
+
+/* =============================================
+   SELECTION AREA (y: 289-685px)
+   Selection buttons for 1° and 2° positions
+   Original POS: Row 1 starts at left=15.69cqi, top=31.36cqb
+   Row labels (1°, 2°) are at ~9.26cqi, ~7.00cqi respectively
+============================================= */
+.selectionArea {
+  position: absolute;
+  left: 9.26cqi;
+  top: 31.89cqb;
+  width: 75cqi;
+  z-index: 10;
+  overflow: visible;
+}
+
+/* Carousel container - covers the FULL dashboard area.
+   Each slide contains its own header + content — everything slides together.
+   Clips the sliding track so off-screen game panels are hidden. */
+.gameCarousel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 10;
+}
+
+/* Carousel track - flex row that slides via translateX.
+   Each child (.gameLayer) is a full-size panel with its own background,
+   selection buttons, coins, function buttons, etc.
+   Transition ~630ms matches original VG POS animation. */
+.gameCarouselTrack {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.63s cubic-bezier(0.25, 0.1, 0.25, 1);
+  /* transform set via inline style: translateX(-N * 100%) */
+}
+
+/* Game layer - flex child in carousel track.
+   Each layer is a complete game panel (background + all interactive elements). */
+.gameLayer {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 100%;
+  position: relative;
+  height: 100%;
+}
+
+/* Background image INSIDE each game layer (per-slide background) */
+.gameLayerBackground {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+
+.selectionRow {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5cqb;
+  overflow: visible;
+}
+
+/* Original POS: Row 2 is offset ~1.84cqi to the left of Row 1 */
+/* Row 2 top: 49.89cqb, Row 1 top: 31.89cqb, button height: 11.322cqb */
+/* margin-top adjusted to match exact row 2 position at 49.89cqb */
+.selectionRowSecond {
+  margin-left: -1.84cqi;
+  margin-top: 6.12cqb;
+}
+
+/* Row Label (1° or 2°) */
+/* Original POS: label width ~55px = 3.13cqi, height ~53px = 6.17cqb */
+.rowLabel {
+  width: 3.5cqi;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-right: 2.5cqi;
+  padding-top: 0.5cqb;
+}
+
+/* Original POS (1760×858): fontSize 65.12px = 3.7cqi, fontWeight 600, transform skewX(-10deg) */
+/* matrix(1, 0, -0.176327, 1, 0, 0) = skewX(-10deg) */
+.rowLabelText {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 3.7cqi;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  transform: skewX(-10deg);
+}
+
+/* Original POS: 36.96px = 2.1cqi, fontWeight 100, transform skewX(-15deg) total */
+/* Parent already has skewX(-10deg), so add skewX(-5deg) for total -15deg effect */
+/* matrix(1, 0, -0.267949, 1, 0, 0) = skewX(-15deg) */
+.degreeSymbol {
+  font-weight: 100;
+  font-size: 2.1cqi;
+  vertical-align: super;
+  transform: skewX(-5deg);
+}
+
+/* Selection Buttons Container */
+/* Original POS DOS (6 dogs) gap: 39.06px = 2.219cqi between buttons */
+.selectionButtons {
+  display: flex;
+  gap: 2.219cqi;
+  overflow: visible;
+}
+
+/* DOT 6 dogs - adjusted gap */
+.selectionButtonsDot {
+  gap: 1.74cqi;  /* +5px: 1.46 + 0.28cqi */
+}
+
+/* 8 runners layout - will be configured when implementing 8-dog layout */
+.selectionButtons8 {
+  gap: 1.85cqi;
+}
+
+/* 7 runners layout (HOC - horses) */
+/* Original POS measurements: gap ~25.5px = 1.45cqi */
+.selectionButtons7 {
+  gap: 1.45cqi;
+}
+
+/* Individual Selection Button */
+/* Original POS (DOS 6 dogs): 132px × 97.14px = 7.500cqi × 11.322cqb */
+/* Using cqi/cqb container query units (container matches viewport at 1760x858) */
+.selectionButton {
+  position: relative;
+  width: 7.500cqi;
+  height: 11.322cqb;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  overflow: visible;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* 8 runners - same dimensions as original POS */
+/* Original POS: 103px × 76px = 5.850cqi × 8.840cqb */
+.selectionButton8 {
+  width: 5.850cqi;
+  height: 8.840cqb;
+}
+
+/* 7 runners (HOC - horses) */
+/* Original POS measurements: 128.3px × 94.4px = 7.29cqi × 11.00cqb */
+.selectionButton7 {
+  width: 7.29cqi;
+  height: 11.00cqb;
+}
+
+/* DOT 6 dogs - trifecta game */
+/* 10% smaller than DOS 6 dogs */
+.selectionButtonDot {
+  width: 6.750cqi;   /* 7.500cqi * 0.9 = 6.750cqi */
+  height: 10.19cqb;  /* 11.322cqb * 0.9 = 10.19cqb */
+}
+
+/* Selection dot background - larger white icon behind */
+.selectionDotBg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.3);
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  filter: brightness(1.5);
+  animation: selectionPop 0.2s ease-out;
+}
+
+@keyframes selectionPop {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.3);
+    opacity: 1;
+  }
+}
+
+.selectionNumberImg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 3;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.selectionButton:hover {
+  /* No hover effect */
+}
+
+.selectionButtonActive {
+  transform: scale(1.05);
+}
+
+/* =============================================
+   FUNCTION BUTTONS (Right side)
+   2x2 grid positioned to the right of selection numbers
+   Original POS: buttons 9.18cqi × 14.87cqb, overlapping layout
+   Top row at 37.00cqb, bottom row at 50.33cqb
+============================================= */
+.functionButtons {
+  position: absolute;
+  right: 3.32cqi;
+  top: 37.00cqb;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  z-index: 50;
+}
+
+.funcButtonRow {
+  display: flex;
+  gap: 0;
+  margin-top: -1.54cqb;
+}
+
+.funcButtonRow:first-child {
+  margin-top: 0;
+}
+
+.funcButtonRow:last-child {
+  margin-left: -1.15cqi;
+}
+
+/* Function Button */
+/* Original POS: 161.5625px × 127.625px = 9.18cqi × 14.87cqb */
+.funcButton {
+  position: relative;
+  width: 9.18cqi;
+  height: 14.87cqb;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: -1.68cqi;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+.funcButton:first-child {
+  margin-left: 0;
+}
+
+.funcButton:active {
+  filter: brightness(2.2) drop-shadow(0 0 4px rgba(255, 255, 100, 0.6));
+}
+
+.funcButtonBg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.funcButtonIcon {
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  z-index: 2;
+  transform: translate(0%, -10%);
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.funcButton:hover {
+  filter: brightness(1.3);
+}
+
+.funcButtonActive,
+.funcButtonActive:hover {
+  filter: brightness(2.2) drop-shadow(0 0 4px rgba(255, 255, 100, 0.6));
+}
+
+/* =============================================
+   TICKET DISPLAY AREA
+   Central area for showing bet selections
+============================================= */
+.ticketDisplay {
+  position: absolute;
+  right: 4.38cqi;
+  top: 26.76cqb;
+  width: 16cqi;
+  height: 20cqb;
+  z-index: 10;
+}
+
+.ticketScreen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.ticketScreenBg {
+  width: 100%;
+  height: 100%;
+}
+
+.ticketContent {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%;
+  overflow-y: auto;
+}
+
+.ticketLine {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5cqb 0.5cqi;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.2cqi;
+  color: #333;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* =============================================
+   BOTTOM SECTION - Denomination Buttons
+   Original POS: Coins at top=78.86cqb, first coin left=14.79cqi
+   Coin size: 14.06cqi × 21.02cqb, overlapping -1.96cqi
+============================================= */
+.bottomSection {
+  position: absolute;
+  left: 14.79cqi;
+  right: 0;
+  bottom: 0;
+  top: 78.86cqb;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  z-index: 60;
+  pointer-events: auto;
+}
+
+.denominationButtons {
+  display: flex;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  justify-content: flex-start;
+}
+
+/* Action Buttons Container (Delete + Print) - flush right, no gap */
+.actionButtons {
+  margin-left: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  margin-right: 0;
+  flex-shrink: 0;
+}
+
+/* Coin Button */
+/* Original POS: 247.45px × 180.39px = 14.06cqi × 21.02cqb */
+/* Overlap: ~1.96cqi between buttons */
+.coinButton {
+  position: relative;
+  width: 14.06cqi;
+  height: 21.02cqb;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: -1.96cqi;
+  transition: transform 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+}
+
+.coinButton:first-child {
+  margin-left: 0;
+}
+
+.coinImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  transition: transform 0.15s ease;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.coinValue {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  z-index: 2;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-weight: 600;
+  font-style: italic;
+  font-size: 4.27cqi;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-align: left;
+  padding-left: 30%;
+  width: 100%;
+}
+
+/* Smaller font for 3-digit values (100, 200) */
+.coinValueSmall {
+  font-size: 3.2cqi;
+  transform: translateX(-0.1cqi) translateY(-50%);
+}
+
+.coinButton:hover .coinImage {
+  filter: brightness(1.4);
+}
+
+.coinButton:active .coinImage {
+  filter: brightness(1.6);
+}
+
+.coinButtonActive {
+}
+
+.coinButtonActive .coinImage {
+  filter: brightness(1.3) drop-shadow(0 0 10px rgba(2, 154, 208, 0.8));
+}
+
+.coinButtonActive .coinValue {
+  color: #029ad0;
+}
+
+/* Delete Button */
+.deleteButton {
+  position: relative;
+  width: 11.07cqi;
+  height: 15.33cqb;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  margin-right: -1.99cqi; /* overlap with print button like original POS */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  z-index: 101;
+}
+
+.deleteButton .buttonIcon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.deleteButton:hover {
+  filter: brightness(1.4);
+}
+
+/* Print Button */
+.printButton {
+  position: relative;
+  width: 15.15cqi;
+  height: 19.40cqb;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  z-index: 100;
+}
+
+.printButton .buttonIcon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.printButton:hover {
+  filter: brightness(1.4);
+}
+
+.printButton:disabled {
+  cursor: wait;
+}
+
+/* Printing Overlay - Spinning circles animation */
+.printingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border-radius: inherit;
+  z-index: 10;
+}
+
+.printSpinner {
+  width: 8cqi;
+  height: 8cqi;
+  border: 6px solid rgba(0, 0, 0, 0.15);
+  border-top: 6px solid #000;
+  border-right: 6px solid #000;
+  border-radius: 50%;
+  animation: printSpin 0.7s linear infinite;
+  margin-top: -1cqi;
+  margin-left: -1cqi;
+}
+
+@keyframes printSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Legacy - unused */
+.spinningCircles {
+  display: flex;
+  gap: 0.25cqi;
+  align-items: center;
+  justify-content: center;
+}
+
+.circle {
+  width: 0.5cqi;
+  height: 0.5cqi;
+  background: #fff;
+  border-radius: 50%;
+  animation: spinningCircle 1.4s ease-in-out infinite;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+}
+
+.circle:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.circle:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.circle:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes spinningCircle {
+  0%, 80%, 100% {
+    transform: scale(0.4);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* =============================================
+   GAME SELECTOR (Bottom game icons)
+============================================= */
+.gameSelector {
+  position: absolute;
+  left: 50%;
+  bottom: 0.5cqb;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1cqi;
+  z-index: 10;
+}
+
+.gameSelectorButton {
+  width: 5cqi;
+  height: 5cqb;
+  background: rgba(0, 30, 60, 0.8);
+  border: 2px solid rgba(2, 154, 208, 0.5);
+  border-radius: 0.5cqi;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.gameSelectorButton span {
+  font-family: var(--font-family-din-bold), Helvetica, sans-serif;
+  font-size: 1cqi;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.gameSelectorActive {
+  background: rgba(2, 154, 208, 0.9);
+  border-color: rgba(2, 154, 208, 1);
+}
+
+.gameSelectorActive span {
+  color: #fff;
+}
+
+.gameSelectorButton:hover {
+  border-color: rgba(2, 154, 208, 1);
+}
+
+/* =============================================
+   APUESTA PANEL - Bet Display (Collapsible)
+   Positioned at bottom-left of screen
+============================================= */
+.apuestaPanel {
+  position: absolute;
+  left: 0;
+  bottom: 4cqb;
+  width: 14.7cqi;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  overflow: visible;
+  transition: all 0.3s ease-out;
+}
+
+/* Yellow header banner - parallelogram shape */
+.apuestaHeaderBanner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1cqi;
+  padding: 0.3cqb 1cqi;
+  background: linear-gradient(180deg, #F4F500 0%, #E5D300 3%, #D6C500 100%);
+  clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%);
+}
+
+/* Gray flags area - parallelogram shape with rounded bottom-right */
+.apuestaFlagsArea {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1cqb 1cqi;
+  background: rgba(70, 80, 95, 0.9);
+  clip-path: polygon(
+    0 0,
+    95% 0,
+    92% 70%,
+    88% 85%,
+    82% 93%,
+    75% 98%,
+    68% 100%,
+    0 100%
+  );
+  min-height: 12cqb;
+}
+
+.apuestaPanelExpanded {
+  height: 86cqb;
+  width: 55cqi;
+}
+
+/* Expanded content container */
+.apuestaContent {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.2s ease, max-height 0.3s ease;
+}
+
+.apuestaPanelExpanded .apuestaContent {
+  opacity: 1;
+  max-height: 78cqb;
+}
+
+.apuestaLabel {
+  font-family: var(--font-family-din-italic), Helvetica, sans-serif;
+  font-style: italic;
+  font-size: 0.65cqi;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.05cqi;
+  margin-right: auto;
+}
+
+.apuestaTotal {
+  font-family: var(--font-family-din-bold), Helvetica, sans-serif;
+  font-size: 1.4cqi;
+  color: #000;
+  font-weight: 700;
+}
+
+.apuestaHintText {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 0.55cqi;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.05cqi;
+  margin-top: auto;
+}
+
+/* Miniature bet flags */
+.miniatureBetsInner {
+  display: flex;
+  gap: 0.8cqi;
+  padding: 0.5cqb 0;
+}
+
+.miniatureBetItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5cqb;
+  padding-right: 0.8cqi;
+  border-right: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.miniatureBetItem:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+
+.miniatureFlag {
+  width: 2cqi;
+  height: 2.5cqb;
+  object-fit: contain;
+}
+
+/* Current selection preview */
+.apuestaSelection {
+  display: flex;
+  gap: 0.5cqi;
+  margin: 0.5cqb 0;
+  justify-content: center;
+}
+
+.apuestaNumber {
+  width: 2.5cqi;
+  height: 2.5cqi;
+  border-radius: 0.3cqi;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-din-bold), Helvetica, sans-serif;
+  font-size: 1.2cqi;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Number colors matching the racing dogs */
+.number1 { background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); }
+.number2 { background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%); }
+.number3 { background: linear-gradient(135deg, #424242 0%, #212121 100%); }
+.number4 { background: linear-gradient(135deg, #616161 0%, #424242 100%); }
+.number5 { background: linear-gradient(135deg, #f9a825 0%, #f57f17 100%); }
+.number6 { background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%); border: 2px solid #424242; }
+
+/* Ticket list */
+.ticketList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5cqb;
+}
+
+.ticketHeader {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1.5fr;
+  gap: 0.3cqi;
+  padding: 0.3cqb 0.2cqi;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0.2cqi;
+  margin-bottom: 0.3cqb;
+}
+
+.ticketHeader span {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 0.8cqi;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.ticketItems {
+  flex: 1;
+  max-height: 8cqb;
+  overflow-y: auto;
+}
+
+.ticketItem {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1.5fr;
+  gap: 0.3cqi;
+  padding: 0.3cqb 0.2cqi;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ticketItem span {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 0.9cqi;
+  color: #fff;
+  text-align: center;
+}
+
+.ticketTotal {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5cqb 0.2cqi;
+  margin-top: 0.3cqb;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.ticketTotal span {
+  font-family: var(--font-family-din-bold), Helvetica, sans-serif;
+  font-size: 1cqi;
+  color: #fff;
+  font-weight: 700;
+}
+
+.ticketTotal span:last-child {
+  color: #4caf50;
+}
+
+/* =============================================
+   TICKET NOTIFICATION
+   Toast notification when ticket is created
+============================================= */
+.ticketNotification {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  animation: notificationFadeIn 0.3s ease-out;
+}
+
+.ticketNotificationHidden {
+  opacity: 0;
+  pointer-events: none;
+  animation: none;
+}
+
+@keyframes notificationFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.ticketNotificationContent {
+  display: flex;
+  align-items: center;
+  gap: 2cqi;
+  background: linear-gradient(135deg, rgba(0, 100, 0, 0.95) 0%, rgba(0, 60, 0, 0.98) 100%);
+  border: 3px solid #4caf50;
+  border-radius: 1.5cqi;
+  padding: 3cqb 4cqi;
+  box-shadow: 0 0 30px rgba(76, 175, 80, 0.5), 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.ticketNotificationIcon {
+  width: 8cqi;
+  height: 8cqi;
+  max-width: 100px;
+  max-height: 100px;
+  background: #4caf50;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4cqi;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+}
+
+.ticketNotificationText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8cqb;
+}
+
+.ticketNotificationTitle {
+  font-family: var(--font-family-din-bold), Helvetica, sans-serif;
+  font-size: 3cqi;
+  color: #4caf50;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2cqi;
+}
+
+.ticketNotificationId {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.5cqi;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ticketNotificationTotal {
+  font-family: var(--font-family-din-bold), Helvetica, sans-serif;
+  font-size: 2cqi;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Error state for notifications */
+.ticketNotificationError .ticketNotificationContent {
+  background: linear-gradient(135deg, rgba(139, 0, 0, 0.95) 0%, rgba(80, 0, 0, 0.98) 100%);
+  border-color: #f44336;
+  box-shadow: 0 0 30px rgba(244, 67, 54, 0.5), 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.ticketNotificationError .ticketNotificationIcon {
+  background: #f44336;
+  box-shadow: 0 0 20px rgba(244, 67, 54, 0.6);
+}
+
+.ticketNotificationError .ticketNotificationTitle {
+  color: #f44336;
+}
+
+/* =============================================
+   CAPTURE TOGGLE BUTTON
+   Toggle to pause/resume capture service
+============================================= */
+.captureToggleButton {
+  position: absolute;
+  left: 75.98cqi;
+  top: 93.07cqb;
+  width: 6cqi;
+  height: 5cqb;
+  background: linear-gradient(180deg, rgba(50, 50, 50, 0.95) 0%, rgba(30, 30, 30, 1) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5cqi;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3cqb;
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.captureToggleButton:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.captureToggleIcon {
+  font-size: 1.5cqi;
+  line-height: 1;
+}
+
+.captureToggleText {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 0.6cqi;
+  text-transform: uppercase;
+  letter-spacing: 0.05cqi;
+}
+
+/* Active state - green */
+.captureActive {
+  border-color: rgba(76, 175, 80, 0.6);
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+.captureActive .captureToggleIcon {
+  color: #4caf50;
+}
+
+.captureActive .captureToggleText {
+  color: #4caf50;
+}
+
+.captureActive:hover {
+  border-color: rgba(76, 175, 80, 0.8);
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+}
+
+/* Paused state - orange */
+.capturePaused {
+  border-color: rgba(255, 152, 0, 0.6);
+  box-shadow: 0 0 10px rgba(255, 152, 0, 0.3);
+  animation: capturePausedPulse 2s infinite;
+}
+
+.capturePaused .captureToggleIcon {
+  color: #ff9800;
+}
+
+.capturePaused .captureToggleText {
+  color: #ff9800;
+}
+
+.capturePaused:hover {
+  border-color: rgba(255, 152, 0, 0.8);
+  box-shadow: 0 0 15px rgba(255, 152, 0, 0.4);
+}
+
+@keyframes capturePausedPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Connecting state - blue */
+.captureConnecting {
+  border-color: rgba(33, 150, 243, 0.6);
+  box-shadow: 0 0 10px rgba(33, 150, 243, 0.3);
+  animation: capturePausedPulse 0.5s infinite;
+  cursor: wait;
+}
+
+.captureConnecting .captureToggleIcon {
+  color: #2196f3;
+}
+
+.captureConnecting .captureToggleText {
+  color: #2196f3;
+}
+
+/* Error state - red */
+.captureError {
+  border-color: rgba(244, 67, 54, 0.6);
+  box-shadow: 0 0 10px rgba(244, 67, 54, 0.3);
+  animation: capturePausedPulse 1s infinite;
+}
+
+.captureError .captureToggleIcon {
+  color: #f44336;
+}
+
+.captureError .captureToggleText {
+  color: #f44336;
+}
+
+.captureError:hover {
+  border-color: rgba(244, 67, 54, 0.8);
+  box-shadow: 0 0 15px rgba(244, 67, 54, 0.4);
+}
+
+/* =============================================
+   DOT GAME - Trifecta Betting Components
+   Original POS measurements (780x493 viewport)
+   Converted to cqi/cqb percentages
+============================================= */
+
+/* DOT Left Panel - Bet Type Selection */
+/* Position: Left side of screen, below header */
+/* Original POS: bet mode starts at x=16.77, y=112.63 */
+.dotLeftPanel {
+  position: absolute;
+  left: 2.15cqi;   /* 16.77/780*100 = 2.15cqi */
+  top: 22.85cqb;   /* 112.63/493*100 = 22.85cqb */
+  display: flex;
+  flex-direction: column;
+  z-index: 30;
+}
+
+/* Bet Mode Selector (1°2° / 1°2°3°) */
+/* Uses BetModeButtons component with bg_458_firstSecPlc.svg and bg_460_firstSecThirdPlc.svg */
+/* Original: container width=129.53px, height=40.63px */
+.betModeSelector {
+  display: flex;
+  gap: 0;
+  width: 16.61cqi;  /* 129.53/780*100 */
+  height: 8.24cqb;  /* 40.63/493*100 */
+}
+
+/* Order Mode Selector (EN ORDEN / CUALQUIER ORDEN) */
+/* Uses OrderModeButtons component with bg_461_exactAnyBut.svg */
+/* Original: x=32.75, y=171.20, w=102.38, h=82.44 */
+/* Offset from bet mode: x+16, y+58.57 (after bet mode ends) */
+.orderModeSelector {
+  margin-top: 3.64cqb;  /* Gap: (171.20 - 112.63 - 40.63)/493*100 */
+  margin-left: 2.05cqi; /* 16/780*100 - shift right slightly */
+  width: 11.81cqi;      /* 13.12 * 0.9 = 11.81cqi (-10%) */
+  height: 15.05cqb;     /* 16.72 * 0.9 = 15.05cqb (-10%) */
+}
+
+/* Winner Section (GANADOR, IMPAR/PAR, MENOS/MÁS) */
+/* Uses WinnerButtons component with bg_457_bg.svg (viewBox 227x58) */
+/* Original POS (1760×858 viewport) - Playwright measurements:
+ * - IMPAR/PAR button: left=47.92, top=525.17, width=187.61, height=47.92
+ * - MENOS/MÁS button: left=39.05, top=577.05, width=187.61, height=47.92
+ * - GANADOR label: left=49.26, top=503.00
+ * - Button width: 187.61/1760*100 = 10.66cqi
+ * - Button height: 47.92/858*100 = 5.59cqb
+ * - Gap between rows: (577.05 - 525.17 - 47.92)/858*100 = 0.46cqb
+ */
+.winnerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.46cqb;           /* Gap: (577.05-525.17-47.92)/858*100 */
+  margin-top: 6.90cqb;    /* Increased: move section down to match original top position */
+  margin-left: 0;         /* MENOS/MÁS left: 39.05/1760*100 = 2.22cqi (handled by parent) */
+  width: 10.66cqi;        /* 187.61/1760*100 - button width */
+}
+
+.winnerLabel {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.1cqi;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.05cqi;
+  padding-left: 0.5cqi;
+  line-height: 1;
+  margin-bottom: 0.4cqb;  /* Space before first button row */
+}
+
+/* WinnerButtons height override - Original POS (1760×858): 47.92/858*100 = 5.59cqb */
+/* Cannot use aspect-ratio because viewport aspect ratios differ */
+.winnerSection > div:not(:first-child) {
+  height: 5.59cqb;
+}
+
+/* IMPAR/PAR row horizontal offset - Original POS (1760×858): (47.92-39.05)/1760*100 = 0.50cqi */
+.winnerSection > div:nth-child(2) {
+  margin-left: 0.50cqi;
+}
+
+.winnerButtonRow {
+  display: flex;
+  gap: 0.5cqi;
+}
+
+.winnerBtn {
+  width: 5.68cqi;
+  height: 5.59cqb;
+  background: rgba(0, 30, 60, 0.85);
+  border: 2px solid rgba(2, 154, 208, 0.4);
+  border-radius: 0.3cqi;
+  cursor: pointer;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 0.9cqi;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+}
+
+.winnerBtn:hover {
+  border-color: rgba(2, 154, 208, 0.8);
+  background: rgba(0, 50, 100, 0.9);
+  color: #fff;
+}
+
+/* Third Row (3°) for DOT trifecta */
+/* Original POS (780x493): Row 3 staggered 12px left from row 2 */
+.selectionRowThird {
+  margin-left: -1.54cqi;  /* 12/780*100 = 1.54cqi stagger */
+  margin-top: 1.22cqb;    /* Gap between rows */
+}
+
+/* DOT-specific Selection Area positioning */
+/* Original POS DOT measurements (780×493 viewport) - Playwright DevTools:
+ * Row 1: relX=161.45 (20.70%), relY=106.67 (21.64%)
+ * Row 2: relX=148.97 (19.10%), relY=186.80 (37.89%) - stagger 12.48px = 1.60cqi
+ * Row 3: relX=136.80 (17.54%), relY=266.11 (53.98%) - stagger 12.17px = 1.56cqi
+ * Button size: 68.63 × 72.67 px = 8.80cqi × 14.74cqb
+ * Label size: 43.44 × 19.02 px = 5.57cqi × 3.86cqb
+ * Gap: 0 (buttons touch)
+ */
+.selectionAreaDot {
+  left: 21.82cqi !important;  /* +30px total: +1.14cqi */
+  top: 25.14cqb !important;   /* +30px total: +2.33cqb */
+}
+
+/* DOT game layer - NO transform on the full layer since it now contains
+   background, coins, etc. The DOT offset only applies to selectionArea. */
+.gameLayerDot {
+  /* No transform here - full panel should not be offset */
+}
+
+/* DOT selection area offset - shifts selection content to DOT-specific position */
+.gameLayerDot .selectionArea {
+  left: 21.82cqi;
+  top: 25.14cqb;
+}
+
+/* DOT Row label - Same as DOS for consistent layout */
+.gameLayerDot .rowLabel {
+  width: 3.5cqi;       /* Same as DOS */
+  margin-right: 2.5cqi; /* Same as DOS */
+}
+
+/* DOT Row 2 positioning - adjusted vertical spacing */
+.gameLayerDot .selectionRowSecond {
+  margin-left: -1.84cqi;   /* Same stagger as DOS */
+  margin-top: 4.62cqb;     /* +5px: 4.04 + 0.58cqb */
+}
+
+/* DOT Row 3 positioning - adjusted vertical spacing */
+.gameLayerDot .selectionRowThird {
+  margin-left: -3.68cqi;   /* Cumulative: 2 × 1.84cqi stagger */
+  margin-top: 4.62cqb;     /* +5px: 4.04 + 0.58cqb */
+}
+
+/* =============================================
+   DOT Right Panel - GEMELA, TRIO, SUMA, Keypad
+   Original POS measurements (1762x861 viewport) - Playwright DevTools
+============================================= */
+
+/* DOT Right Panel Container */
+/* Original POS measurements (1762×861):
+ * sumBetsContain: x=1404.80, y=208.66, w=339.59, h=422.89
+ * right edge from viewport: 1762 - 1744.39 = 17.61px = 1.0cqi
+ * Conversion: cqi = px/1762*100, cqb = px/861*100
+ */
+.dotRightPanel {
+  position: absolute;
+  right: 1.0cqi;     /* 17.61/1762*100 = 1.0cqi */
+  top: 24.23cqb;     /* 208.66/861*100 = 24.23cqb */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 30;
+  width: 19.27cqi;   /* 339.59/1762*100 = 19.27cqi */
+  height: 49.12cqb;  /* 422.89/861*100 = 49.12cqb */
+}
+
+/* Special Bet Buttons (GEMELA, TRÍO) */
+/* Original POS measurements (1762×861):
+ * GEMELA: x=1468.65, width=142.10, height=52.56
+ * TRÍO: x=1601.48, width=142.10, height=52.56
+ * relX GEMELA: 63.85px from container left
+ * relX TRÍO: 196.68px from container left
+ * Button width: 142.10/1762*100 = 8.06cqi
+ * Button height: 52.56/861*100 = 6.10cqb
+ */
+.specialBetButtons {
+  display: flex;
+  gap: 0.8cqi;
+  width: 100%;
+}
+
+.specialBetBtn {
+  flex: 1;
+  height: 6.10cqb;   /* 52.56/861*100 = 6.10cqb */
+  background: rgba(0, 30, 60, 0.85);
+  border: 2px solid rgba(2, 154, 208, 0.4);
+  border-radius: 0.5cqi;
+  cursor: pointer;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.4cqi;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+}
+
+.specialBetBtn:hover {
+  border-color: rgba(2, 154, 208, 0.8);
+  background: rgba(0, 50, 100, 0.9);
+  color: #fff;
+}
+
+/* DotNumpad Container - Uses original POS SVG asset */
+/* SVG viewBox: 0 0 408 508 */
+/* Position below special bet buttons */
+.dotNumpadContainer {
+  width: 100%;
+  /* Use flex-grow to take remaining vertical space */
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+/* SUMA Input Section */
+/* Original POS measurements (1762×861):
+ * SUMA label: x=1402.47, y=269.11, w=156.60, h=30px
+ * SUMA input: x=1552.04, y=262.81, w=173.80, h=46.19
+ * Input width: 173.80/1762*100 = 9.86cqi
+ * Input height: 46.19/861*100 = 5.36cqb
+ * Vertical offset from GEMELA/TRIO: 54.16px = 6.29cqb
+ */
+.sumaSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5cqb;
+  width: 100%;
+  margin-top: 0.5cqb;  /* Tighter to GEMELA/TRIO buttons */
+}
+
+.sumaLabel {
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 1.2cqi;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.1cqi;
+}
+
+.sumaInput {
+  width: 9.86cqi;     /* 173.80/1762*100 = 9.86cqi */
+  height: 5.36cqb;    /* 46.19/861*100 = 5.36cqb */
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid rgba(2, 154, 208, 0.5);
+  border-radius: 0.3cqi;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 2cqi;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  outline: none;
+}
+
+.sumaInput:focus {
+  border-color: rgba(2, 154, 208, 1);
+  box-shadow: 0 0 10px rgba(2, 154, 208, 0.3);
+}
+
+/* Numeric Keypad */
+/* Original POS measurements (1762×861):
+ * Button size: 96.33 × 70.61 px
+ * Button width: 96.33/1762*100 = 5.47cqi
+ * Button height: 70.61/861*100 = 8.20cqb
+ * Row 1 (1,2,3): relY = 110.36px from container top
+ * Row 2 (4,5,6): relY = 190.72px
+ * Row 3 (7,8,9): relY = 268.53px
+ * Row 4 (del,0,clear): relY = 348.08px
+ */
+.numericKeypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4cqi;
+  width: 100%;
+  margin-top: 0.8cqb;
+}
+
+.keypadBtn {
+  width: 5.47cqi;     /* 96.33/1762*100 = 5.47cqi */
+  height: 8.20cqb;    /* 70.61/861*100 = 8.20cqb */
+  background: rgba(0, 30, 60, 0.85);
+  border: 2px solid rgba(2, 154, 208, 0.4);
+  border-radius: 0.3cqi;
+  cursor: pointer;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-size: 2cqi;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  transition: all 0.15s ease;
+}
+
+.keypadBtn:hover {
+  border-color: rgba(2, 154, 208, 0.8);
+  background: rgba(0, 50, 100, 0.9);
+  color: #fff;
+}
+
+.keypadBtn:active {
+  background: rgba(2, 154, 208, 0.9);
+  transform: scale(0.95);
+}
+
+/* Action buttons (C, ←) - different styling */
+.keypadBtnAction {
+  background: rgba(127, 13, 30, 0.85);
+  border-color: rgba(247, 0, 0, 0.4);
+}
+
+.keypadBtnAction:hover {
+  background: rgba(180, 20, 40, 0.9);
+  border-color: rgba(247, 0, 0, 0.8);
+}
+
+/* Race Active Overlay Container */
+/* Covers from below game selectors & operator panel to bottom */
+/* Game selectors bottom: ~19cqb, operator panel bottom: ~19cqb */
+.raceOverlayContainer {
+  position: absolute;
+  left: 0;
+  top: 20cqb;
+  width: 100%;
+  height: 80cqb; /* 100 - 20 = 80cqb to cover rest of screen */
+  z-index: 100;
+  /* Blocks interactions - no pointer-events: none */
+}
+
+/* Source Mode Badge - shown when simulator is in test mode */
+.sourceModeBadge {
+  position: absolute;
+  top: 1cqb;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 140, 0, 0.85);
+  color: white;
+  font-size: 1.2cqi;
+  font-weight: 700;
+  padding: 0.3cqb 1.5cqi;
+  border-radius: 0.4cqi;
+  z-index: 9999;
+  pointer-events: none;
+  letter-spacing: 0.15cqi;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Tip Limit Overlay — slide-up dark panel over coins area */
+.tipLimitOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 22cqb;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: tipLimitSlideUp 0.3s ease-out;
+  pointer-events: none;
+}
+
+.tipLimitText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3cqb;
+  font-family: var(--font-family-din), 'DIN Next LT Pro', Helvetica, sans-serif;
+  font-style: italic;
+  color: #fff;
+  text-align: center;
+}
+
+.tipLimitText span:first-child {
+  font-size: 1.8cqi;
+  font-weight: 700;
+}
+
+.tipLimitText span:last-child {
+  font-size: 1.5cqi;
+  font-weight: 400;
+}
+
+@keyframes tipLimitSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
