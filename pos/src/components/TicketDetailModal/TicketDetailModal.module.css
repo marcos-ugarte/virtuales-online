@@ -71,7 +71,7 @@
 
 .statusPaid {
   background: #bbdefb;
-  color: #1565c0;
+  color: var(--skin-link);
 }
 
 /* Info grid */

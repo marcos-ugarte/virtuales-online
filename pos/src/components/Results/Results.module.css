@@ -46,7 +46,7 @@
 .tableHeader {
   display: flex;
   height: 5.23cqb;  /* +8px total */
-  background: #5b6373;
+  background: var(--skin-surface-3);
 }
 
 .headerRaceNum {

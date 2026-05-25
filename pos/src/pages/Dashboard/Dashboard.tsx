@@ -3,7 +3,8 @@ import ScaleWrapper from '@/components/ScaleWrapper/ScaleWrapper'
 import { useRaceData, type GamePrefix } from '@/hooks/useRaceData'
 import { useNumberSelection } from '@/hooks/useNumberSelection'
 import { useBetManagement } from '@/hooks/useBetManagement'
-import { useGameTheme, getGameTheme, getThemeCSSVariables, type GameType } from '@/hooks/useGameTheme'
+import { getGameTheme, getGameThemeForSkin, getThemeCSSVariables, type GameType } from '@/hooks/useGameTheme'
+import { useSkin } from '@/contexts/SkinContext'
 import { getGameAssets } from '@/hooks/useGameAssets'
 import { useImagePreload } from '@/hooks/useImagePreload'
 import { useRealRaceData, type FormattedRaceResult } from '@/hooks/useRealRaceData'
@@ -513,8 +514,13 @@ export default function Dashboard({ onLogout, onReady }: DashboardProps) {
   // Background for current game - still needed for ScaleWrapper
   const currentBackground = useMemo(() => BACKGROUND_IMAGES[gameKey], [gameKey])
 
-  // Game theme and assets based on active game
-  const gameTheme = useGameTheme(activeGame as GameType)
+  // Game theme and assets based on active game, adjusted for the active skin
+  // ('web' skin returns a unified corporate palette but keeps runnerCount).
+  const { skin } = useSkin()
+  const gameTheme = useMemo(
+    () => getGameThemeForSkin(activeGame as GameType, skin),
+    [activeGame, skin],
+  )
 
   const [activeMenu, setActiveMenu] = useState('JUGADA')
   const [ticketNotification, setTicketNotification] = useState<{ show: boolean; ticketId: string; total: number } | null>(null)

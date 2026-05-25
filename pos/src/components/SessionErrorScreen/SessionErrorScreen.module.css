@@ -25,6 +25,11 @@
   width: 12.25cqi;
 }
 
+/* Web skin (online version): hide the "DS VIRTUAL GAMING" logo. */
+:global(html[data-skin="web"]) .dsLogo {
+  display: none;
+}
+
 /* Dark Overlay */
 .darkOverlay {
   position: absolute;

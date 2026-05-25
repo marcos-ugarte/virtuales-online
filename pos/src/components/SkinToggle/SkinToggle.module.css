@@ -1,0 +1,101 @@
+/* Fixed settings control for switching the visual skin. Rendered at the App
+   root (outside the container-query layout) so it uses px/rem safely and never
+   disturbs the cqi/cqb-positioned dashboard. */
+.root {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 2147483000; /* above modals/overlays */
+  font-family: var(--skin-font-body, sans-serif);
+}
+
+.gear {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--skin-border, rgba(255, 255, 255, 0.16));
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--skin-text, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.15s linear, transform 0.15s ease;
+}
+.gear:hover,
+.gear.open {
+  opacity: 1;
+}
+.gear svg {
+  width: 22px;
+  height: 22px;
+}
+
+.panel {
+  position: absolute;
+  left: 0;
+  bottom: 52px;
+  min-width: 200px;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--skin-surface, #023169);
+  border: 1px solid var(--skin-border, rgba(255, 255, 255, 0.16));
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--skin-text-dim, #b8b8b8);
+  margin-bottom: 2px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--skin-border, rgba(255, 255, 255, 0.16));
+  background: transparent;
+  color: var(--skin-text, #fff);
+  font-size: 15px;
+  cursor: pointer;
+  text-align: left;
+}
+.option:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.option.active {
+  border-color: var(--skin-accent, #f5a623);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Color swatch previewing each skin's accent. */
+.swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.swatchClassic {
+  background: linear-gradient(135deg, #023169 50%, #7f0d1e 50%);
+}
+.swatchWeb {
+  background: linear-gradient(135deg, #4a4a4a 50%, #f5a623 50%);
+}
+
+.label {
+  flex: 1;
+}
+.check {
+  color: var(--skin-accent, #f5a623);
+  font-weight: 700;
+}

@@ -141,3 +141,112 @@ body {
 @keyframes logoutSpin {
   to { transform: rotate(360deg); }
 }
+
+/* ===================================================================== *
+ *  SKIN SYSTEM — two switchable visual skins (see SkinContext.tsx)
+ *  -------------------------------------------------------------------
+ *  `:root` holds the CLASSIC values (the original navy/maroon POS look),
+ *  so with no `data-skin` (or data-skin="classic") nothing changes.
+ *  `html[data-skin="web"]` overrides the same tokens with the web-lobby
+ *  corporate palette (charcoal surfaces + gold accent) and fonts.
+ *
+ *  Components should consume the semantic `--skin-*` tokens. As a force
+ *  multiplier the web skin ALSO re-maps the base `--color-pos-*` vars and
+ *  the per-game `--game-*` vars (the latter via Dashboard, skin-aware), so
+ *  the bulk of the UI recolours without per-component edits.
+ * ===================================================================== */
+:root {
+  /* --- Semantic tokens (used by new components like SkinToggle) ---------- */
+  --skin-text:        #ffffff;
+  --skin-text-dim:    #c2def8;
+  --skin-border:      rgba(255,255,255,0.12);
+  --skin-accent-ink:  #ffffff;   /* text/icon on the accent color */
+  --skin-font-body:    var(--font-family-din);
+  --skin-font-display: var(--font-family-din);
+
+  /* --- Brand color map (CLASSIC values = the original POS hexes) ---------
+   * Each token's :root value is EXACTLY the hardcoded hex it replaces, so the
+   * classic skin is pixel-identical. Only brand/chrome colors are tokenized;
+   * status colors (green/red/amber) and neutrals (white/black/gray) are left
+   * hardcoded on purpose so error/success states never get recolored.
+   * The conversion map (original hex -> token) lives in docs/POS_SKINS.md. */
+  /* Dark blue surfaces */
+  --skin-bg:          #03163d;   /* page background (= --color-pos-dark) */
+  --skin-surface:     #023169;   /* panels / cards */
+  --skin-surface-2:   #031d48;   /* raised / headers */
+  --skin-panel:       #0c1f46;   /* dos panel background */
+  --skin-panel-deep:  #0a1628;   /* deepest panel / numpad text bg */
+  /* Blue-grays (chrome) */
+  --skin-surface-3:   #5b6373;   /* table header (Results) */
+  --skin-chrome:      #6a7f93;
+  --skin-chrome-2:    #4a5260;
+  --skin-chrome-3:    #242b33;
+  /* Accent blues / cyans -> become gold in web */
+  --skin-accent:      #7f0d1e;   /* primary action / brand (maroon) */
+  --skin-accent-strong: #F70000; /* strong CTA (pending order) */
+  --skin-accent-dark: #7a0c08;   /* darker brand */
+  --skin-blue:        #024a8a;   /* numpad accent blue */
+  --skin-cyan:        #029ad0;   /* dos text / info cyan */
+  --skin-cyan-2:      #0896d4;
+  --skin-cyan-bright: #4de8ff;   /* winner-button cyan */
+  --skin-link:        #1565c0;
+  --skin-link-2:      #1976d2;
+  --skin-link-deep:   #0d47a1;
+  /* Light blue text */
+  --skin-text-soft:   #c2def8;
+  /* Yellow "active" highlight -> gold in web */
+  --skin-highlight:   #feed01;
+  --skin-highlight-2: #f4f500;
+  --skin-highlight-3: #e5d300;
+  --skin-highlight-4: #d6c500;
+}
+
+html[data-skin="web"] {
+  /* web-lobby palette (src/styles/global.css): charcoal surfaces + gold accent */
+  --skin-text:        #ffffff;
+  --skin-text-dim:    #b8b8b8;
+  --skin-border:      rgba(255,255,255,0.16);
+  --skin-accent-ink:  #2a2118;   /* dark ink on gold */
+
+  /* Surfaces -> charcoal */
+  --skin-bg:          #3a3a3a;
+  --skin-surface:     #4a4a4a;
+  --skin-surface-2:   #585858;
+  --skin-panel:       #444444;
+  --skin-panel-deep:  #333333;
+  --skin-surface-3:   #585858;
+  --skin-chrome:      #6e6e6e;
+  --skin-chrome-2:    #4a4a4a;
+  --skin-chrome-3:    #333333;
+  /* Accents -> gold */
+  --skin-accent:      #f5a623;
+  --skin-accent-strong: #d4891a;
+  --skin-accent-dark: #d4891a;
+  --skin-blue:        #f5a623;
+  --skin-cyan:        #f5a623;
+  --skin-cyan-2:      #d4891a;
+  --skin-cyan-bright: #f5a623;
+  --skin-link:        #f5a623;
+  --skin-link-2:      #f5a623;
+  --skin-link-deep:   #d4891a;
+  /* Soft text -> light gray */
+  --skin-text-soft:   #e2e2e2;
+  /* Highlights -> gold */
+  --skin-highlight:   #f5a623;
+  --skin-highlight-2: #f5a623;
+  --skin-highlight-3: #d4891a;
+  --skin-highlight-4: #d4891a;
+
+  /* Web fonts (loaded via <link> in index.html). Barlow Condensed is a
+     condensed face like DIN, so re-mapping the broad --font-family-din to it
+     keeps container-query layouts intact while adopting the web typeface. */
+  --skin-font-body:    "Open Sans", sans-serif;
+  --skin-font-display: "Barlow Condensed", "DIN Next LT Pro", sans-serif;
+  --font-family-din:   "Barlow Condensed", "DIN Next LT Pro", sans-serif;
+
+  /* Force multiplier: re-map the base POS color vars so everything that uses
+     bg-pos-* utilities or var(--color-pos-*) recolours to the web surfaces. */
+  --color-pos-dark:   #3a3a3a;
+  --color-pos-blue:   #4a4a4a;
+  --color-pos-light:  #585858;
+}

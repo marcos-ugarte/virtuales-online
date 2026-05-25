@@ -28,7 +28,7 @@
 }
 
 .numpadDel:active {
-  fill: #7a0c08;
+  fill: var(--skin-accent-dark);
 }
 
 .numpadDelArrow {
@@ -37,12 +37,12 @@
 }
 
 .numpadAccent {
-  fill: #024a8a;
+  fill: var(--skin-blue);
   pointer-events: none;
 }
 
 .numpadText {
-  fill: #0a1628;
+  fill: var(--skin-panel-deep);
   pointer-events: none;
 }
 

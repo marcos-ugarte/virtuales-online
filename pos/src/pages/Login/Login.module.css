@@ -177,6 +177,12 @@
   margin-left: -3.2cqi;
 }
 
+/* Web skin (online version): hide the on-screen numeric keypad — online
+   terminals use a physical keyboard to enter the operator ID / PIN. */
+:global(html[data-skin="web"]) .numPadCont {
+  display: none;
+}
+
 .numPadIcon {
   height: 22.36cqi;
   width: 23.4cqi;
@@ -212,7 +218,7 @@
 }
 
 .numpadDel:active {
-  fill: #7a0c08;
+  fill: var(--skin-accent-dark);
 }
 
 .numpadDelArrow {
@@ -221,12 +227,12 @@
 }
 
 .numpadAccent {
-  fill: #024a8a;
+  fill: var(--skin-blue);
   pointer-events: none;
 }
 
 .numpadText {
-  fill: #0a1628;
+  fill: var(--skin-panel-deep);
   pointer-events: none;
 }
 
@@ -247,6 +253,11 @@
 .dsLogo {
   padding: 1cqi 1.3cqi 1cqi 1cqi;
   width: 12.25cqi;
+}
+
+/* Web skin (online version): hide the "DS VIRTUAL GAMING" logo. */
+:global(html[data-skin="web"]) .dsLogo {
+  display: none;
 }
 
 /* Version */
@@ -297,3 +308,82 @@
   opacity: 0.7;
   cursor: not-allowed;
 }
+
+/* ============================================================
+   Web skin (modern) — clean card login, like tvbox-online.
+   Inside the ScaleWrapper container → container-query units.
+   ============================================================ */
+.webLogin {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.webCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6cqi;
+  width: clamp(280px, 30cqi, 560px);
+  padding: 2.6cqi 2.4cqi;
+  background: var(--skin-surface, #4a4a4a);
+  border: 1px solid var(--skin-border, rgba(255, 255, 255, 0.16));
+  border-radius: 1.2cqi;
+  box-shadow: 0 1.5cqi 4cqi rgba(0, 0, 0, 0.55);
+}
+
+.webTitle {
+  margin: 0 0 0.6cqi;
+  text-align: center;
+  font-family: var(--skin-font-display, 'Barlow Condensed', sans-serif);
+  font-weight: 800;
+  font-size: 2.6cqi;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--skin-accent, #f5a623);
+}
+
+.webInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1.2cqi 1.4cqi;
+  border-radius: 0.7cqi;
+  border: 1px solid var(--skin-border, rgba(255, 255, 255, 0.16));
+  background: var(--skin-bg, #3a3a3a);
+  color: var(--skin-text, #fff);
+  font-family: var(--skin-font-body, 'Open Sans', sans-serif);
+  font-size: 1.9cqi;
+  text-align: center;
+  letter-spacing: 0.04em;
+  outline: none;
+}
+.webInput::placeholder { color: var(--skin-text-dim, #b8b8b8); letter-spacing: 0.06em; }
+.webInput:focus {
+  border-color: var(--skin-accent, #f5a623);
+  box-shadow: 0 0 0 0.2cqi rgba(245, 166, 35, 0.18);
+}
+
+.webError {
+  text-align: center;
+  color: #ff6b6b;
+  font-family: var(--skin-font-body, 'Open Sans', sans-serif);
+  font-size: 1.5cqi;
+}
+
+.webButton {
+  margin-top: 0.6cqi;
+  padding: 1.3cqi;
+  border: none;
+  border-radius: 0.7cqi;
+  cursor: pointer;
+  background: linear-gradient(180deg, var(--skin-accent, #f5a623) 0%, #d18d12 100%);
+  color: #1a1206;
+  font-family: var(--skin-font-display, 'Barlow Condensed', sans-serif);
+  font-weight: 800;
+  font-size: 2cqi;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.webButton:disabled { opacity: 0.55; cursor: not-allowed; }

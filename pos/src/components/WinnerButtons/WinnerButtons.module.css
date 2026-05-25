@@ -71,6 +71,6 @@
 }
 
 .labelActive {
-  color: #4de8ff;
+  color: var(--skin-cyan-bright);
   text-shadow: 0 0 8px rgba(77, 232, 255, 0.6);
 }

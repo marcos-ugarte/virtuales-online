@@ -95,10 +95,44 @@ const themes: Record<GameType, GameTheme> = {
 }
 
 /**
+ * Web skin color palette (matches web-lobby corporate identity: charcoal
+ * surfaces + gold accent). Applied UNIFORMLY across all game types when the
+ * 'web' skin is active — the per-game color variations (blue/green/brown) are
+ * intentionally dropped, only the color fields are overridden. Non-color fields
+ * (id, name, runnerCount) are kept from the real game theme.
+ */
+const WEB_SKIN_COLORS: Omit<GameTheme, 'id' | 'name' | 'runnerCount'> = {
+  primaryGradient: {
+    start: '#f5a623',  // gold
+    end: '#d18d12',
+  },
+  textPrimary: '#f5a623',    // gold accent
+  textSecondary: '#e2e2e2',  // light gray
+  textAccent: '#f5a623',     // gold (active)
+  panelBackground: '#4a4a4a',
+  buttonBackground: '#585858',
+}
+
+/** Overlay the web palette on a game theme, preserving runnerCount/id/name. */
+function applyWebSkin(theme: GameTheme): GameTheme {
+  return { ...theme, ...WEB_SKIN_COLORS }
+}
+
+/**
  * Get theme for a specific game
  */
 export function getGameTheme(gameType: GameType): GameTheme {
   return themes[gameType] || dosTheme
+}
+
+/**
+ * Get the game theme adjusted for the active skin. 'classic' returns the
+ * per-game palette; 'web' returns the unified corporate palette but keeps the
+ * game's runnerCount/id/name.
+ */
+export function getGameThemeForSkin(gameType: GameType, skin: 'classic' | 'web'): GameTheme {
+  const base = getGameTheme(gameType)
+  return skin === 'web' ? applyWebSkin(base) : base
 }
 
 /**

@@ -8,7 +8,7 @@
   height: 100vh;
   overflow: hidden;
   /* Fallback gradient only visible if no backgroundImage prop */
-  background-color: #023169;
+  background-color: var(--skin-surface);
   /* Background image set via inline style — CSS backgrounds don't flicker */
   background-size: cover;
   background-position: center 4%;
@@ -32,4 +32,16 @@
   /* Enable container queries for children */
   container-type: size;
   container-name: app;
+}
+
+/*
+ * Web skin: replace the per-game background PHOTO (set via inline style) with a
+ * neutral charcoal gradient matching web-lobby. A stylesheet `!important`
+ * overrides the inline background-image (the one case where it beats inline).
+ */
+:global(html[data-skin="web"]) .viewport {
+  background-image:
+    radial-gradient(ellipse 120% 60% at 50% -10%, rgba(245, 166, 35, 0.10) 0%, transparent 55%),
+    linear-gradient(180deg, #3f3f3f 0%, #2f2f2f 100%) !important;
+  background-color: #3a3a3a;
 }

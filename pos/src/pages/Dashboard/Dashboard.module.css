@@ -88,7 +88,7 @@
   font-family: var(--font-family-din), Helvetica, sans-serif;
   font-style: normal;
   font-size: 1.6cqi;
-  color: var(--game-text-primary, #0896d4);
+  color: var(--game-text-primary, var(--skin-cyan-2));
   text-transform: uppercase;
   letter-spacing: 0.05cqi;
   line-height: normal;
@@ -121,14 +121,14 @@
    - height: 102.78px = 11.98cqb
    - padding-left: 35.2px = 2cqi
 */
-/* Color: #7f0d1e (no pending) → #F70000 (has pending) */
+/* Color: var(--skin-accent) (no pending) → var(--skin-accent-strong) (has pending) */
 .orderTicketButton {
   position: absolute;
   left: 45.47cqi;
   top: 1.33cqb;
   width: 14.08cqi;
   height: 11.98cqb;
-  background: #7f0d1e;
+  background: var(--skin-accent);
   border: none;
   cursor: pointer;
   transform: skewX(-10deg);
@@ -143,7 +143,7 @@
 
 /* When there are pending tickets - bright red */
 .orderTicketHasPending {
-  background: #F70000;
+  background: var(--skin-accent-strong);
 }
 
 /* Main text: "ORDENAR TICKET" */
@@ -341,7 +341,7 @@
   font-family: var(--font-family-din), Helvetica, sans-serif;
   font-weight: 300;
   font-size: 0.81cqi;
-  color: var(--game-text-primary, #029ad0);
+  color: var(--game-text-primary, var(--skin-cyan));
   text-transform: uppercase;
   letter-spacing: 0.025cqi;
 }
@@ -350,7 +350,7 @@
   font-family: var(--font-family-din), Helvetica, sans-serif;
   font-weight: 600;
   font-size: 1.485cqi;
-  color: var(--game-text-primary, #029ad0);
+  color: var(--game-text-primary, var(--skin-cyan));
   letter-spacing: normal;
   margin-top: -1.03cqb;
 }
@@ -640,9 +640,9 @@
 
 /* Background layers for terminal info panel - 3 layered SVGs like Original POS */
 /* Original POS has 3 overlapping pastilla shapes creating depth effect:
-   - timer2: left=1468, width=292, z-index=2 (gray-blue shadow #4a5260 @ 0.7)
-   - timer2Over: left=1468, width=292, z-index=3 (light gray highlight #6a7f93 @ 0.8)
-   - lasche_ro: left=1485, width=275, z-index=2 (dark blue main #242b33 @ 0.66) */
+   - timer2: left=1468, width=292, z-index=2 (gray-blue shadow var(--skin-chrome-2) @ 0.7)
+   - timer2Over: left=1468, width=292, z-index=3 (light gray highlight var(--skin-chrome) @ 0.8)
+   - lasche_ro: left=1485, width=275, z-index=2 (dark blue main var(--skin-chrome-3) @ 0.66) */
 
 /* Layer 1: timer2 - Background shadow layer */
 .infoPanelBgShadow {
@@ -825,7 +825,7 @@
   right: 0;
   width: calc(13.5cqi + 34px);  /* Extended to right edge */
   height: 8.20cqb;  /* 70.39px / 858 = 8.20cqb */
-  background: #feed01;  /* Yellow from original */
+  background: var(--skin-highlight);  /* Yellow from original */
   display: flex;
   align-items: center;
   padding: 0 0.5cqi;
@@ -893,7 +893,7 @@
 .operatorId {
   font-family: var(--font-family-din), Helvetica, sans-serif;
   font-size: 1.2cqi;
-  color: var(--game-text-primary, #029ad0); /* Dynamic theme color */
+  color: var(--game-text-primary, var(--skin-cyan)); /* Dynamic theme color */
   font-weight: 400;
   text-align: right;
   white-space: nowrap;
@@ -1014,7 +1014,7 @@
    Original POS measurements (1760x858 viewport):
    - Background SVG: 387.19px × 543.69px = 22.00cqi × 63.37cqb
    - Text: 17.6px = 1cqi, weight 100, skewX(-12deg)
-   - Colors: Active #FEED01 (yellow), Inactive #C2DEF8 (light blue)
+   - Colors: Active var(--skin-highlight) (yellow), Inactive var(--skin-text-soft) (light blue)
 ============================================= */
 
 /* Wrapper to position the menu behind operator panel */
@@ -1047,7 +1047,7 @@
   right: 0;
   width: 17.97cqi;  /* 2px narrower from left */
   height: 16.17cqb;  /* 50px shorter from bottom */
-  background-color: var(--game-panel-bg, #0C1F46);
+  background-color: var(--game-panel-bg, var(--skin-panel));
   z-index: 0;
   opacity: 0.95;
   /* Parallelogram: both sides slanted, rounded bottom-right corner */
@@ -1117,7 +1117,7 @@
   font-family: var(--font-family-din), Helvetica, sans-serif;
   font-size: 1cqi;  /* 17.6px / 1760 * 100 = 1cqi */
   font-weight: 100;
-  color: #feed01;  /* Yellow from original - active */
+  color: var(--skin-highlight);  /* Yellow from original - active */
   text-transform: uppercase;
   letter-spacing: 0.02em;
   transform: skewX(-12deg);  /* Original POS italic/skew effect */
@@ -1127,7 +1127,7 @@
   font-family: var(--font-family-din), Helvetica, sans-serif;
   font-size: 1cqi;  /* 17.6px / 1760 * 100 = 1cqi */
   font-weight: 100;
-  color: var(--game-text-secondary, #c2def8);  /* Dynamic theme secondary color */
+  color: var(--game-text-secondary, var(--skin-text-soft));  /* Dynamic theme secondary color */
   text-transform: uppercase;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -1152,40 +1152,40 @@
   border: none;
   cursor: pointer;
   background: transparent;
-  color: var(--game-text-secondary, #c2def8);  /* Dynamic theme secondary color */
+  color: var(--game-text-secondary, var(--skin-text-soft));  /* Dynamic theme secondary color */
   transition: color 0.15s ease;
   transform: skewX(-12deg);  /* Original POS italic/skew effect */
 }
 
 .toggleBtn:hover {
-  color: var(--game-text-accent, #feed01);
+  color: var(--game-text-accent, var(--skin-highlight));
 }
 
 .toggleActive {
-  color: var(--game-text-accent, #feed01);  /* Dynamic theme accent color */
+  color: var(--game-text-accent, var(--skin-highlight));  /* Dynamic theme accent color */
 }
 
 /* Pill-shaped toggle slider (matches original POS) */
 .toggleSlider {
   width: 2.5cqi;  /* ~44px / 1760 * 100 */
   height: 1.4cqi;  /* ~25px / 1760 * 100 */
-  background: color-mix(in srgb, var(--game-text-secondary, #c2def8) 30%, transparent);
+  background: color-mix(in srgb, var(--game-text-secondary, var(--skin-text-soft)) 30%, transparent);
   border-radius: 0.7cqi;
   position: relative;
   cursor: pointer;
   transition: background 0.15s ease;
-  border: 1px solid color-mix(in srgb, var(--game-text-secondary, #c2def8) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--game-text-secondary, var(--skin-text-soft)) 50%, transparent);
 }
 
 .toggleSlider:hover {
-  background: color-mix(in srgb, var(--game-text-secondary, #c2def8) 40%, transparent);
+  background: color-mix(in srgb, var(--game-text-secondary, var(--skin-text-soft)) 40%, transparent);
 }
 
 /* Circular knob inside the slider */
 .toggleKnob {
   width: 1cqi;  /* ~18px / 1760 * 100 */
   height: 1cqi;
-  background: var(--game-text-secondary, #c2def8);
+  background: var(--game-text-secondary, var(--skin-text-soft));
   border-radius: 50%;
   position: absolute;
   top: 50%;
@@ -1196,7 +1196,7 @@
 
 .toggleSliderActive .toggleKnob {
   left: calc(100% - 1.2cqi);  /* Move to right (APA. active) */
-  background: var(--game-text-accent, #feed01);
+  background: var(--game-text-accent, var(--skin-highlight));
 }
 
 /* Legacy toggle indicator (kept for backwards compatibility) */
@@ -1671,7 +1671,7 @@
 }
 
 .coinButtonActive .coinValue {
-  color: #029ad0;
+  color: var(--skin-cyan);
 }
 
 /* Delete Button */
@@ -1873,7 +1873,7 @@
   align-items: center;
   gap: 1cqi;
   padding: 0.3cqb 1cqi;
-  background: linear-gradient(180deg, #F4F500 0%, #E5D300 3%, #D6C500 100%);
+  background: linear-gradient(180deg, var(--skin-highlight-2) 0%, var(--skin-highlight-3) 3%, var(--skin-highlight-4) 100%);
   clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%);
 }
 
@@ -1992,7 +1992,7 @@
 
 /* Number colors matching the racing dogs */
 .number1 { background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); }
-.number2 { background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%); }
+.number2 { background: linear-gradient(135deg, var(--skin-link-2) 0%, var(--skin-link-deep) 100%); }
 .number3 { background: linear-gradient(135deg, #424242 0%, #212121 100%); }
 .number4 { background: linear-gradient(135deg, #616161 0%, #424242 100%); }
 .number5 { background: linear-gradient(135deg, #f9a825 0%, #f57f17 100%); }

@@ -5,6 +5,7 @@ import LoginError from '@/components/LoginError'
 import Numpad from '@/components/Numpad'
 import SessionErrorModal from '@/components/SessionErrorModal'
 import { usePOSConnectionContext } from '@/contexts/POSConnectionContext'
+import { useSkin } from '@/contexts/SkinContext'
 
 // Assets
 import clearButtonSvg from '@/assets/login/butt_rot_x.svg'
@@ -46,6 +47,10 @@ export default function Login({ onLogin, onLoginFailed }: LoginProps) {
 
   const operatorInputRef = useRef<HTMLInputElement>(null)
   const passwordInputRef = useRef<HTMLInputElement>(null)
+
+  // 'web' skin (modern) uses a clean card login (like tvbox-online); the
+  // classic skin keeps the original image-based login + on-screen numpad.
+  const { skin } = useSkin()
 
   // POS Connection from Context
   const {
@@ -230,6 +235,8 @@ export default function Login({ onLogin, onLoginFailed }: LoginProps) {
           </div>
         )}
 
+        {/* ── Classic skin: original image-based login + numpad ────────── */}
+        {skin !== 'web' && (<>
         {/* Login Form */}
         <form className={styles.loginForm} onSubmit={handleSubmit} autoComplete="off">
           <div className={styles.loginCont}>
@@ -328,6 +335,54 @@ export default function Login({ onLogin, onLoginFailed }: LoginProps) {
 
         {/* Version */}
         <div className={styles.version}>2.60.05</div>
+        </>)}
+
+        {/* ── Web skin (modern): clean card login, keyboard-driven ──────── */}
+        {skin === 'web' && (
+          <div className={styles.webLogin}>
+            <form className={styles.webCard} onSubmit={handleSubmit} autoComplete="off">
+              <h1 className={styles.webTitle}>{locationName || 'ACCESO'}</h1>
+              <input
+                ref={operatorInputRef}
+                className={styles.webInput}
+                type="text"
+                name="operatorId"
+                inputMode="numeric"
+                placeholder="ID DE OPERADOR"
+                value={formData.operatorId}
+                onChange={handleInputChange}
+                onFocus={() => setActiveField('operatorId')}
+                disabled={isFormDisabled}
+                autoFocus
+                autoComplete="off"
+                maxLength={15}
+              />
+              <input
+                ref={passwordInputRef}
+                className={styles.webInput}
+                type="password"
+                name="password"
+                inputMode="numeric"
+                placeholder="CONTRASEÑA"
+                value={formData.password}
+                onChange={handleInputChange}
+                onFocus={() => setActiveField('password')}
+                disabled={isFormDisabled}
+                autoComplete="off"
+              />
+              {showLoginError && loginErrorMessage && (
+                <div className={styles.webError}>{loginErrorMessage}</div>
+              )}
+              <button
+                type="submit"
+                className={styles.webButton}
+                disabled={isFormDisabled}
+              >
+                {isLoggingIn ? 'ACCEDIENDO...' : 'ACCESO'}
+              </button>
+            </form>
+          </div>
+        )}
 
         {/* Device Error Modal */}
         {deviceError && (deviceError === 'DEVICE_IN_USE' || deviceError === 'DEVICE_NOT_FOUND' || deviceError === 'DEVICE_NOT_CONFIGURED') && (

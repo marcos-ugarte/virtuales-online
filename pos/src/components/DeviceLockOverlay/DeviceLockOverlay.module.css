@@ -38,7 +38,7 @@
 .lockIcon {
   width: 4cqi;
   height: 4cqi;
-  color: #f70000;
+  color: var(--skin-accent-strong);
 }
 
 .title {

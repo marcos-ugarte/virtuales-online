@@ -9,6 +9,8 @@ import BaseModal from '@/components/BaseModal'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { useImagePreloader, DASHBOARD_IMAGES } from '@/hooks/useImagePreloader'
 import { POSConnectionProvider, usePOSConnectionContext } from '@/contexts/POSConnectionContext'
+import { SkinProvider } from '@/contexts/SkinContext'
+import SkinToggle from '@/components/SkinToggle/SkinToggle'
 import { posLogger, LogEvents } from '@/services/posLogger'
 import DeviceLockOverlay from '@/components/DeviceLockOverlay'
 
@@ -230,9 +232,12 @@ function AppContent() {
 function App() {
   return (
     <ErrorBoundary>
-      <POSConnectionProvider>
-        <AppContent />
-      </POSConnectionProvider>
+      <SkinProvider>
+        <POSConnectionProvider>
+          <AppContent />
+        </POSConnectionProvider>
+        <SkinToggle />
+      </SkinProvider>
     </ErrorBoundary>
   )
 }
