@@ -122,6 +122,23 @@ During the wait between race videos, show an optional **premium animated present
 ## Also done since the overlay milestone
 - **Winner-phase race bar fix** (`RaceOverlay.tsx` + `LiveMonitor.tsx`, commit 4d10ba1): the race number + timer stayed hidden during the winners panel because `getRaceLength()` (bar visibility window) was set from the finish time (~29s) so the bar faded before WinnerDog (32s/40.5s). Now `getRaceLength` = VIDEO duration (`videoEndDt-videoStartDt`); the timer's frozen value stays the finish time (`totalRaceTime=clockEndTime`) → race number + "00:29" stay visible during winners. Also: overlays hidden when the video isn't actively playing (winner no longer lingers into the next countdown).
 
+## Overlays ported into the web-lobby LiveMonitor (2026-05-25)
+The lobby's embedded race monitor now shows the SAME overlays as tvbox-online.
+- **What was copied:** `tvbox-online/src/tvkit/**` → `web-lobby/src/tvkit/**` VERBATIM (33 files incl. DIN fonts). `pixi.js@^7.4.3` added to web-lobby.
+- **Ours in the lobby:** `web-lobby/src/components/RaceOverlay.tsx` (ported from tvbox but takes a real `gameType` prop instead of hardcoding `'dog6'`), the resolve/path **aliases** in `vite.config.ts` + `tsconfig.app.json`, the `import './tvkit/fonts.css'` in `main.tsx`, an `.lm-overlay` CSS block in `global.css`, and the `interval` field added to the `Race` type in `types/websocket.ts` (it already arrived at runtime via the `...payload` spread; the lobby's `useRaceFeed.ts` is byte-identical to tvbox's).
+- **Mount:** `LiveMonitor.tsx` maps `pickedKey` → `OVERLAY_GAME_TYPE` (`dog→dog6`, `dog8→dog8`, `horsec→null` = no overlay; no horse PIXI components are vendored) and mounts `<RaceOverlay>` inside `.lm-video`. The video keeps `className="lm-video-el"` (the overlay finds it as a sibling for the time provider).
+- **GOTCHA — dev server cannot load the vendored files.** The streaming_kit files do `import { GameLength } from "common/Definitions"` where `GameLength` is a **type** (not `import type`). Under `verbatimModuleSyntax`, Vite's per-file dev transform keeps it as a runtime import → browser throws *"does not provide an export named 'GameLength'"*. **tvbox-online has the EXACT same failure in `npm run dev`** — both apps are meant to be verified through `vite build` + `vite preview` (rollup elides the type-only import). This is why CLAUDE.md says "build with vite build". Do NOT "fix" it by editing the vendored files.
+- **Preview serves videos:** the dev-only `localRaceVideosPlugin` was given a `configurePreviewServer` (shared `register()`) so `/videos/*` works under `vite preview` too — needed to see a real race clip when verifying.
+- **Verified (Playwright, swiftshader):** logged in with mock `demo-player-01`/`demo-pass-01`, caught a live dog8 race (RaceBar + intervals box + WinnerDog panels @ t≈26–42s) and a live dog6 from the salida (RaceBar + INTERVAL-1 leaders box @ t≈11s). No runtime errors (only harmless swiftshader GPU-stall warnings).
+
+## Access gate (login) added 2026-05-25
+tvbox-online (previously open) now sits behind a **client-side** username/password gate.
+- **Credentials (fixed):** user `tvbox` / pass `015166`. In `src/services/tvboxAuth.ts`.
+- **Components:** `src/services/tvboxAuth.ts` + `src/components/TvboxLogin.tsx` (`<TvboxAuthGate>` wraps the viewer in `App.tsx`; the WS feed only mounts once authed). Login CSS at the end of `src/styles/global.css` (`.tvbox-login-*`, `.tvbox-logout`).
+- **Session is remembered per device** (localStorage key `tvbox_auth_v`), with a small ⏻ logout button bottom-right.
+- **"Log out ALL devices" / force re-login:** bump `AUTH_VERSION` in `tvboxAuth.ts` (currently `'2026-05-25.1'`), then rebuild + relink + redeploy. A device is authed only while its stored token equals AUTH_VERSION, so bumping it invalidates every device on its next page load. NOTE: this is CLIENT-SIDE only (not strong security) and already-open pages won't re-prompt until they reload.
+- Verified on :8891 (login shows, wrong pass errors, tvbox/015166 enters, persists across reload, logout returns to login).
+
 ## Working-style notes (carry these)
 - Document findings/changes in the same step as the work (this repo's docs are the memory).
 - Pixel-perfect = port the REAL component (camino A), don't approximate. Verify visually with Playwright screenshots (Chrome channel + Xvfb + swiftshader flags on the VPS; locally just a normal browser).

@@ -11,6 +11,7 @@
  *   ?gameType=<key>  pin a specific gameType (dog | dog8 | horsec); default: auto
  */
 import { LiveMonitor } from './components/LiveMonitor';
+import { TvboxAuthGate } from './components/TvboxLogin';
 import { useRaceFeed } from './hooks/useRaceFeed';
 import type { GameKey } from './types/websocket';
 
@@ -27,7 +28,9 @@ const PINNED =
   (import.meta.env.VITE_PINNED_GAME as GameKey | undefined) ||
   null;
 
-export default function App() {
+/** The actual viewer — only mounted once authenticated, so the WebSocket feed
+ *  doesn't connect on the login screen. */
+function Viewer() {
   const { allGames, liveGames, clockOffsetMs, jackpotValue } = useRaceFeed({ wsUrl: WS_URL });
   return (
     <div className="tvbox-online-root">
@@ -39,5 +42,13 @@ export default function App() {
         pinnedGame={PINNED}
       />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <TvboxAuthGate>
+      <Viewer />
+    </TvboxAuthGate>
   );
 }
