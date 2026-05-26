@@ -241,6 +241,7 @@ export interface GameSlideProps {
   // Header — pending tickets / order ticket
   pendingTickets: number
   onOrderTicketClick?: () => void
+  onRecharge?: () => void
   // Header — settings
   showSettingsMenu: boolean
   setShowSettingsMenu: (show: boolean) => void
@@ -337,6 +338,7 @@ export default function GameSlide({
   sessionCode,
   pendingTickets,
   onOrderTicketClick,
+  onRecharge,
   showSettingsMenu,
   setShowSettingsMenu,
   isClosingSettings,
@@ -442,10 +444,11 @@ export default function GameSlide({
               </button>
             )
           })}
-          {/* RECARGAS — web skin only (hidden in classic via CSS). Action TBD. */}
+          {/* RECARGAS — web skin only (hidden in classic via CSS). Opens the
+              cashier "Cargar saldo" flow (phone + amount → confirm → deposit). */}
           <button
-            className={`${styles.menuButton} ${styles.recargasButton} ${activeMenu === 'RECARGAS' ? styles.menuButtonActive : ''}`}
-            onClick={() => setActiveMenu('RECARGAS')}
+            className={`${styles.menuButton} ${styles.recargasButton}`}
+            onClick={() => onRecharge?.()}
           >
             <span className={styles.menuButtonText}>RECARGAS</span>
           </button>

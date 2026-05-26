@@ -1852,20 +1852,8 @@ export default function Dashboard({ onLogout, onReady }: DashboardProps) {
         {sourceMode === 'test' && (
           <div className={styles.sourceModeBadge}>MODO TEST</div>
         )}
-        {/* Cashier "Cargar saldo" (recarga) — opens the phone+amount flow. */}
-        <button
-          type="button"
-          onClick={() => setShowRecharge(true)}
-          style={{
-            position: 'fixed', top: 12, left: 12, zIndex: 8000,
-            background: '#e0b040', color: '#1a1a1a', border: 'none',
-            borderRadius: 8, fontWeight: 700, fontSize: 14, letterSpacing: 0.5,
-            padding: '10px 18px', cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(0,0,0,.4)',
-          }}
-        >
-          RECARGA
-        </button>
+        {/* Cashier "Cargar saldo" (recarga) modal — opened by the RECARGAS
+            tab button inside GameSlide (web skin) via onRecharge. */}
         <RechargeModal open={showRecharge} onClose={() => setShowRecharge(false)} />
         {/* ============================================================
            FULL-PANEL GAME CAROUSEL
@@ -1974,6 +1962,7 @@ export default function Dashboard({ onLogout, onReady }: DashboardProps) {
                   setBetsExpanded={setBetsExpanded}
                   betsStyle={betsStyle}
                   onOrderTicketClick={() => setShowOrderTicket(true)}
+                  onRecharge={() => setShowRecharge(true)}
                 />
               )
             })}
