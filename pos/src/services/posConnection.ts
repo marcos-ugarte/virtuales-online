@@ -1158,6 +1158,46 @@ export class POSConnection {
     }
   }
 
+  // ── Web wallet (recarga / cobro) over /pos-go-ds ──────────────────────────
+  // Look up a web player by phone (10 digits, no prefix). Used to confirm the
+  // account + current balance before depositing/cashing out.
+  async webWalletLookup(phone: string): Promise<WalletInfoResult> {
+    if (!this.client || !this.client.isOpen() || !this.isAuthenticated()) {
+      return { success: false, errorCode: 'NOT_AUTHENTICATED', errorMessage: 'Operador no autenticado' }
+    }
+    try {
+      const reply = await this.client.request({
+        msgId: this.nextMsgId(),
+        msgType: 'webWalletLookup',
+        phone: phone.trim(),
+      })
+      return mapWalletReply(reply)
+    } catch (err) {
+      return { success: false, errorCode: 'INTERNAL_ERROR', errorMessage: err instanceof Error ? err.message : 'Error de conexión' }
+    }
+  }
+
+  // Credit (recarga) a web player's wallet by phone. `idempotencyKey` must match
+  // ^[A-Za-z0-9_-]{8,80}$ and be REUSED on retry of the same deposit so it's not
+  // double-applied. Amount is sent as a positive decimal string (wallet currency).
+  async webDeposit(phone: string, amount: number, idempotencyKey: string): Promise<WalletInfoResult> {
+    if (!this.client || !this.client.isOpen() || !this.isAuthenticated()) {
+      return { success: false, errorCode: 'NOT_AUTHENTICATED', errorMessage: 'Operador no autenticado' }
+    }
+    try {
+      const reply = await this.client.request({
+        msgId: this.nextMsgId(),
+        msgType: 'webDeposit',
+        phone: phone.trim(),
+        amount: amount.toFixed(2),
+        idempotencyKey,
+      })
+      return mapWalletReply(reply)
+    } catch (err) {
+      return { success: false, errorCode: 'INTERNAL_ERROR', errorMessage: err instanceof Error ? err.message : 'Error de conexión' }
+    }
+  }
+
   // Look up a ticket by its code (typed or scanned) via /pos-go-ds
   // `queryTicketCode` and map the reply → the GetTicketSuccess shape the UI
   // (search modal, pay/cancel/rebet) consumes. `ticketId` is a numeric
@@ -1242,6 +1282,37 @@ export class POSConnection {
 // ============================================================================
 
 let posConnectionInstance: POSConnection | null = null
+
+// Result of a web-wallet lookup/deposit (recarga). Shared shape.
+export interface WalletInfoResult {
+  success: boolean
+  username?: string
+  status?: string
+  currency?: string
+  balance?: number
+  available?: number
+  errorCode?: string
+  errorMessage?: string
+}
+
+// Map a /pos-go-ds web-wallet reply → WalletInfoResult.
+function mapWalletReply(reply: Record<string, unknown>): WalletInfoResult {
+  if (reply.msgValue === 'ok') {
+    return {
+      success: true,
+      username: reply.username as string | undefined,
+      status: reply.status as string | undefined,
+      currency: reply.currency as string | undefined,
+      balance: reply.balance != null ? Number(reply.balance) : undefined,
+      available: reply.available != null ? Number(reply.available) : undefined,
+    }
+  }
+  return {
+    success: false,
+    errorCode: (reply.errorCode as string) || 'WALLET_ERROR',
+    errorMessage: (reply.errorMessage as string) || 'Error en la operación',
+  }
+}
 
 export function getPOSConnection(config?: POSConnectionConfig): POSConnection {
   if (!posConnectionInstance && config) {

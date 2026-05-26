@@ -1,0 +1,100 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
+}
+
+.card {
+  width: min(92vw, 420px);
+  background: #1c2128;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  color: #f2f4f7;
+  font-family: var(--font-family-din, system-ui), sans-serif;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.title { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+.close {
+  background: none; border: none; color: #9aa4b2;
+  font-size: 26px; line-height: 1; cursor: pointer; padding: 0 4px;
+}
+.close:hover { color: #fff; }
+
+.body { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+
+.label { font-size: 12px; color: #9aa4b2; margin-top: 6px; letter-spacing: 0.5px; }
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #11151b;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 9px;
+  color: #fff;
+  font-size: 20px;
+  padding: 12px 14px;
+  outline: none;
+}
+.input:focus { border-color: #e0b040; }
+
+.primary {
+  background: #e0b040;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 9px;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 13px;
+  cursor: pointer;
+  margin-top: 8px;
+  letter-spacing: 0.5px;
+}
+.primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.secondary {
+  background: transparent;
+  color: #cdd5df;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9px;
+  font-size: 16px;
+  padding: 13px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.row { display: flex; gap: 10px; }
+.row > button { flex: 1; }
+
+.error {
+  background: rgba(255, 90, 60, 0.12);
+  border: 1px solid rgba(255, 90, 60, 0.4);
+  color: #ff8a73;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.confirmText { font-size: 16px; }
+.account {
+  background: #11151b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.acctName { font-size: 18px; font-weight: 700; }
+.acctMeta { font-size: 13px; color: #9aa4b2; margin-top: 4px; }
+
+.ok { font-size: 20px; font-weight: 700; color: #56d68a; text-align: center; }
