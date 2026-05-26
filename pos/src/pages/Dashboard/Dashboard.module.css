@@ -189,7 +189,7 @@
    ORDENAR TICKET CTA below.
    ============================================================ */
 :global(html[data-skin="web"]) .menuButtons {
-  gap: 0.6cqi;
+  gap: 0.78cqi; /* a touch more air between tabs */
   align-items: center;
   top: 2.4cqb; /* align with the DOG cards + Buscar Ticket row */
 }
@@ -223,7 +223,7 @@
   color: #ffffff;
 }
 :global(html[data-skin="web"]) .menuButton:active {
-  transform: translateY(0.1cqb);
+  transform: scale(0.98);
 }
 :global(html[data-skin="web"]) .menuButtonActive,
 :global(html[data-skin="web"]) .menuButtonActive:hover {
@@ -253,8 +253,26 @@
 .recargasButton {
   display: none;
 }
+/* RECARGAS → prominent orange action (like JUGADA active, a touch less intense). */
 :global(html[data-skin="web"]) .recargasButton {
   display: flex;
+  background: linear-gradient(180deg, #f59a1f 0%, #db820f 100%);
+  border-color: rgba(255, 190, 90, 0.5);
+  box-shadow: 0 0 1cqb rgba(245, 150, 30, 0.4),
+    0 0.3cqb 0.8cqb rgba(0, 0, 0, 0.45),
+    inset 0 0.14cqb 0 rgba(255, 255, 255, 0.3);
+}
+:global(html[data-skin="web"]) .recargasButton:hover {
+  background: linear-gradient(180deg, #ffa92c 0%, #ec8e15 100%);
+  border-color: rgba(255, 200, 110, 0.7);
+  transform: translateY(-0.23cqb);
+  box-shadow: 0 0 1.4cqb rgba(245, 150, 30, 0.55),
+    0 0.5cqb 1.1cqb rgba(0, 0, 0, 0.5),
+    inset 0 0.14cqb 0 rgba(255, 255, 255, 0.3);
+}
+:global(html[data-skin="web"]) .recargasButton .menuButtonText {
+  color: #ffffff;
+  text-shadow: 0 0.12cqb 0.3cqb rgba(90, 45, 0, 0.5);
 }
 
 /* Web skin: drop the per-game greyhound/horse background photo → flat graphite
@@ -313,7 +331,7 @@
   transform: translateY(-0.25cqb);
 }
 :global(html[data-skin="web"]) .coinButton:active {
-  transform: translateY(0.1cqb);
+  transform: scale(0.98);
 }
 /* Selected denomination → solid gold (same language as the active tab). */
 :global(html[data-skin="web"]) .coinButtonActive,
@@ -419,7 +437,7 @@
   box-shadow: 0 0.35cqb 0.8cqb rgba(0, 0, 0, 0.45),
     inset 0 0.18cqb 0 rgba(255, 255, 255, 0.22),
     inset 0 -0.22cqb 0.35cqb rgba(0, 0, 0, 0.28);
-  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, filter 0.15s ease-out;
+  transition: transform 0.18s ease-out, box-shadow 0.18s ease-out, filter 0.18s ease-out;
 }
 /* Glossy top sheen — unifies solid + striped traps into clean glass chips. */
 :global(html[data-skin="web"]) .selectionButton::before {
@@ -437,7 +455,11 @@
 }
 :global(html[data-skin="web"]) .selectionButton:hover {
   transform: translateY(-0.3cqb);
-  filter: brightness(1.06);
+  filter: brightness(1.08);
+  box-shadow: 0 0.5cqb 1.1cqb rgba(0, 0, 0, 0.5),
+    0 0 1cqb rgba(255, 255, 255, 0.12),
+    inset 0 0.18cqb 0 rgba(255, 255, 255, 0.22),
+    inset 0 -0.22cqb 0.35cqb rgba(0, 0, 0, 0.28);
 }
 :global(html[data-skin="web"]) .selectionButton:active {
   transform: translateY(0.1cqb);
@@ -508,9 +530,9 @@
 :global(html[data-skin="web"]) .timerSecondsLabel {
   font-family: var(--font-family-din-italic, "DIN Next LT Pro Italic");
   font-style: italic;
-  font-weight: 300;
-  color: #8a8a8a; /* discreet labels — let the values lead */
-  letter-spacing: 0.13em;
+  font-weight: 400;
+  color: #adb1b8; /* visible but still discreet */
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 :global(html[data-skin="web"]) .raceStartValue,
@@ -524,7 +546,10 @@
   font-family: var(--font-family-din-italic, "DIN Next LT Pro Italic");
   font-style: italic;
   font-weight: 700;
+  font-size: 3.45cqi; /* more protagonist */
+  letter-spacing: -0.015em; /* tighter tracking → more impact */
   color: #ffffff;
+  text-shadow: 0 0.15cqb 0.5cqb rgba(0, 0, 0, 0.55);
 }
 :global(html[data-skin="web"]) .timerSecondsValue {
   font-family: var(--font-family-din-italic, "DIN Next LT Pro Italic");
@@ -549,10 +574,12 @@
   display: none;
 }
 :global(html[data-skin="web"]) .timerBarProgress {
-  background: linear-gradient(90deg, #f5a623 0%, #ffc24d 100%);
+  background: linear-gradient(90deg, #f5901e 0%, #ffc24d 60%, #ffe07a 100%);
   border-radius: 1.3cqb;
-  box-shadow: 0 0 0.7cqb rgba(245, 166, 35, 0.6);
-  transition: width 0.3s linear;
+  box-shadow: 0 0 0.9cqb rgba(245, 166, 35, 0.6),
+    inset 0 0.12cqb 0 rgba(255, 255, 255, 0.45),
+    inset 0 -0.1cqb 0.2cqb rgba(120, 70, 0, 0.4);
+  transition: width 0.2s ease-out;
 }
 
 /* ============================================================
@@ -571,11 +598,11 @@
   display: none;
 }
 :global(html[data-skin="web"]) .gameSelectorsContainer {
-  right: 28cqi;
+  right: 29cqi; /* nudge the DOG 6/DOG 8 group away from Buscar Ticket */
   top: 2.4cqb;
   width: 17.19cqi;
   height: 7cqb;
-  gap: 0.5cqi;
+  gap: 0.7cqi; /* a little more separation between the two cards */
 }
 :global(html[data-skin="web"]) .gameSelectorBtn {
   flex: 1 1 0;
@@ -670,19 +697,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5cqi;
-  padding: 0 1cqi;
-  background: linear-gradient(180deg, #5e370d 0%, #3a2207 100%); /* matches the nav tabs */
-  border: 0.08cqi solid rgba(245, 166, 35, 0.3);
+  gap: 0.4cqi;
+  padding: 0 0.8cqi; /* slightly narrower */
+  background: linear-gradient(180deg, #f59a1f 0%, #db820f 100%); /* prominent action, matches RECARGAS */
+  border: 0.08cqi solid rgba(255, 190, 90, 0.5);
   border-radius: 0.6cqi;
-  box-shadow: 0 0.25cqb 0.7cqb rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 1cqb rgba(245, 150, 30, 0.4),
+    0 0.3cqb 0.8cqb rgba(0, 0, 0, 0.45),
+    inset 0 0.14cqb 0 rgba(255, 255, 255, 0.3);
   transition: background 0.16s ease-out, border-color 0.16s ease-out,
     box-shadow 0.16s ease-out, transform 0.16s ease-out;
 }
 :global(html[data-skin="web"]) .searchButton:hover {
-  background: linear-gradient(180deg, #784811 0%, #4a2c09 100%);
-  border-color: rgba(245, 166, 35, 0.5);
-  transform: translateX(-8.03cqi) translateY(-0.2cqb);
+  background: linear-gradient(180deg, #ffa92c 0%, #ec8e15 100%);
+  border-color: rgba(255, 200, 110, 0.7);
+  transform: translateX(-8.03cqi) translateY(-0.23cqb);
+  box-shadow: 0 0 1.4cqb rgba(245, 150, 30, 0.55),
+    0 0.5cqb 1.1cqb rgba(0, 0, 0, 0.5),
+    inset 0 0.14cqb 0 rgba(255, 255, 255, 0.3);
+}
+:global(html[data-skin="web"]) .searchButton:active {
+  transform: translateX(-8.03cqi) scale(0.98);
 }
 :global(html[data-skin="web"]) .searchButton:active {
   transform: translateX(-8.03cqi) translateY(0.1cqb);
@@ -700,6 +735,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #ffffff;
+  text-shadow: 0 0.12cqb 0.3cqb rgba(90, 45, 0, 0.5);
   white-space: nowrap;
 }
 
@@ -762,10 +798,12 @@
 /* Web skin: distinct header band (lighter) to separate it from the darker
    betting area below, with a thin separator line. */
 :global(html[data-skin="web"]) .header {
-  background: linear-gradient(180deg, #33353b 0%, #292a2f 100%);
-  border-bottom: 0.12cqb solid rgba(245, 166, 35, 0.16); /* faint gold hairline */
+  background: linear-gradient(180deg, #303237 0%, #25272c 100%);
+  /* soft premium transition instead of a hard cut: faint top-lit hairline +
+     a gentle downward shadow that fades into the betting area */
+  border-bottom: 0.06cqb solid rgba(255, 255, 255, 0.05);
   box-shadow: inset 0 0.12cqb 0 rgba(255, 255, 255, 0.05),
-    0 0.5cqb 1.2cqb rgba(0, 0, 0, 0.4);
+    0 0.9cqb 2cqb rgba(0, 0, 0, 0.55);
   height: 22.9cqb; /* push the header/betting divider ~50px lower */
 }
 /* Nudge the race data down ~15px (so it doesn't crowd the tab/card row) and
@@ -817,17 +855,25 @@
   background: linear-gradient(180deg, #232833 0%, #111318 100%);
   border: 0.08cqi solid rgba(255, 255, 255, 0.08);
   border-radius: 0.85cqi;
-  box-shadow: 0 0.25cqb 0.7cqb rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0.4cqb 1cqb rgba(0, 0, 0, 0.6),
+    0 0 0.8cqb rgba(45, 90, 150, 0.22),
+    inset 0 0.1cqb 0 rgba(255, 255, 255, 0.04);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.16s ease-out, border-color 0.16s ease-out,
-    box-shadow 0.16s ease-out, transform 0.16s ease-out;
+  transition: background 0.18s ease-out, border-color 0.18s ease-out,
+    box-shadow 0.18s ease-out, transform 0.18s ease-out;
 }
 :global(html[data-skin="web"]) .funcButton:hover {
   background: linear-gradient(180deg, #2b313d 0%, #15181e 100%);
-  border-color: rgba(255, 255, 255, 0.16);
-  transform: translateY(-0.25cqb);
+  border-color: rgba(90, 130, 190, 0.3);
+  transform: translateY(-0.23cqb);
+  box-shadow: 0 0.7cqb 1.6cqb rgba(0, 0, 0, 0.6),
+    0 0 1.3cqb rgba(50, 100, 170, 0.32),
+    inset 0 0.1cqb 0 rgba(255, 255, 255, 0.04);
+}
+:global(html[data-skin="web"]) .funcButton:active {
+  transform: scale(0.98);
 }
 :global(html[data-skin="web"]) .funcButton:active {
   transform: translateY(0.1cqb);

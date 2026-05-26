@@ -40,10 +40,13 @@
  * inline background-image (the one case where it beats inline).
  */
 :global(html[data-skin="web"]) .viewport {
-  /* Charcoal with depth: a soft top-center glow fading to darker edges
-     (subtle vignette) — premium sportsbook feel without clutter. */
+  /* Charcoal with depth + cinematic vignette + ultra-subtle noise grain.
+     Layers (top→bottom): noise → vignette → top-center glow gradient. */
   background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
+    radial-gradient(125% 105% at 50% 50%, transparent 42%, rgba(0, 0, 0, 0.5) 100%),
     radial-gradient(135% 95% at 50% -18%,
       #35383e 0%, #292b30 40%, #1c1d21 72%, #141517 100%) !important;
+  background-repeat: repeat, no-repeat, no-repeat;
   background-color: #141517;
 }
