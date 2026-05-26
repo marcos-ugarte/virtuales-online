@@ -132,3 +132,43 @@
     width: 90vw;
   }
 }
+
+/* ============================================================
+   WEB SKIN — premium dark dialog (matches RechargeModal): drop the
+   red/white skewed parallelogram for a clean graphite card with a
+   gold header accent and light text. Scoped to data-skin="web".
+   ============================================================ */
+:global(html[data-skin="web"]) .modalContent {
+  transform: none; /* remove the parallelogram skew */
+}
+:global(html[data-skin="web"]) .modalBackground {
+  width: 100%;
+  background: #1c2128;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: calc(14px * var(--modal-scale));
+  box-shadow: 0 calc(24px * var(--modal-scale)) calc(64px * var(--modal-scale)) rgba(0, 0, 0, 0.6);
+}
+:global(html[data-skin="web"]) .header {
+  transform: none;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(180deg, #232a33 0%, #1a1f26 100%);
+  border-bottom: calc(3px * var(--modal-scale)) solid var(--skin-accent, #e0b040);
+  border-radius: calc(14px * var(--modal-scale)) calc(14px * var(--modal-scale)) 0 0;
+  overflow: hidden;
+}
+:global(html[data-skin="web"]) .headerBackground {
+  display: none; /* drop the red header SVG */
+}
+:global(html[data-skin="web"]) .headerText {
+  transform: none;
+  left: 0;
+  color: #ffffff;
+  font-weight: 700;
+}
+/* Light text for any BaseModal-based dialog content (was black). */
+:global(html[data-skin="web"]) .content p,
+:global(html[data-skin="web"]) .content span,
+:global(html[data-skin="web"]) .content li {
+  color: #f2f4f7;
+}
