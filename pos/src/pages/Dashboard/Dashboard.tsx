@@ -673,6 +673,7 @@ export default function Dashboard({ onLogout, onReady }: DashboardProps) {
     toggleMediaRueda,
     ruedaMode,
     addBet,
+    removeBet,
     clearBets,
     clearBetsForGame
   } = useBetManagement({ activeGame })
@@ -1951,6 +1952,7 @@ export default function Dashboard({ onLogout, onReady }: DashboardProps) {
                   handlePrint={handlePrint}
                   isPrinting={isPrinting}
                   bets={bets}
+                  onRemoveBet={removeBet}
                   betsExpanded={betsExpanded}
                   setBetsExpanded={setBetsExpanded}
                   betsStyle={betsStyle}

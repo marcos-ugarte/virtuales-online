@@ -20,6 +20,8 @@ interface UseBetManagementReturn {
   selectedDenomination: number | null
   ruedaMode: RuedaMode
   addBet: (bet: Omit<Bet, 'id'>) => number
+  /** Removes a single bet line by id (web-skin bet column individual delete). */
+  removeBet: (id: number) => void
   clearBets: () => void
   /** Clears the pending bets of a specific game (not necessarily the active one).
    *  Used to wipe stale bets when that game's race starts — the cashier never
@@ -103,6 +105,10 @@ export function useBetManagement({ activeGame }: UseBetManagementOptions): UseBe
     updateBets(prev => [...prev, { ...bet, id }])
     return id
   }, [consumeNextId, updateBets])
+
+  const removeBet = useCallback((id: number) => {
+    updateBets(prev => prev.filter(b => b.id !== id))
+  }, [updateBets])
 
   const clearBets = useCallback(() => {
     setBetsByGame(prev => ({ ...prev, [activeGame]: [] }))
@@ -234,6 +240,7 @@ export function useBetManagement({ activeGame }: UseBetManagementOptions): UseBe
     selectedDenomination,
     ruedaMode,
     addBet,
+    removeBet,
     clearBets,
     clearBetsForGame,
     setLastBet,

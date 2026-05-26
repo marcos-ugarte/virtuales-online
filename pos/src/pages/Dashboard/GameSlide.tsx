@@ -1,4 +1,5 @@
 import Bets from '@/components/Bets'
+import WebBetColumn from '@/components/Bets/WebBetColumn'
 import Results from '@/components/Results'
 import Cuotas from '@/components/Cuotas'
 import Ventas from '@/components/Ventas'
@@ -308,6 +309,8 @@ export interface GameSlideProps {
   isPrinting: boolean
   // Bets
   bets: Bet[]
+  /** Remove a single bet line by id (web-skin bet column individual delete). */
+  onRemoveBet: (id: number) => void
   betsExpanded: boolean
   setBetsExpanded: (expanded: boolean) => void
   betsStyle: React.CSSProperties
@@ -392,6 +395,7 @@ export default function GameSlide({
   handlePrint,
   isPrinting,
   bets,
+  onRemoveBet,
   betsExpanded,
   setBetsExpanded,
   betsStyle
@@ -566,6 +570,18 @@ export default function GameSlide({
                   <img src={settingsGear} alt="Settings" className={styles.settingsIcon} />
                 </button>
               </div>
+              {/* Language/currency (web skin) — Dominican flag + DOP; future
+                 language + currency switcher. */}
+              <button className={styles.langCurrencyBtn} aria-label="Idioma y moneda">
+                <svg style={{ width: '2.4cqi', height: '1.6cqi', borderRadius: '0.2cqi', display: 'block', flexShrink: 0 }} viewBox="0 0 30 20" aria-hidden="true">
+                  <rect width="30" height="20" fill="#ffffff" />
+                  <rect x="0" y="0" width="13" height="8" fill="#002d62" />
+                  <rect x="17" y="0" width="13" height="8" fill="#ce1126" />
+                  <rect x="0" y="12" width="13" height="8" fill="#ce1126" />
+                  <rect x="17" y="12" width="13" height="8" fill="#002d62" />
+                </svg>
+                <span className={styles.currencyCode}>DOP</span>
+              </button>
             </div>
             {/* Settings Menu */}
             {showSettingsMenu && (
@@ -658,7 +674,15 @@ export default function GameSlide({
       })()}
 
       {/* ===== GAME CONTENT — hidden when not on JUGADA tab ===== */}
-      <div style={{ visibility: isJugadaTab ? 'visible' : 'hidden', pointerEvents: isJugadaTab ? 'auto' : 'none' }}>
+      {/* data-webbets drives the WEB-SKIN board shift: when the active slide has
+          pending bets the bet column opens and the runner board slides right. */}
+      <div
+        style={{ visibility: isJugadaTab ? 'visible' : 'hidden', pointerEvents: isJugadaTab ? 'auto' : 'none' }}
+        data-webbets={isActive && bets.length > 0 ? 'true' : undefined}
+      >
+
+      {/* WEB SKIN ONLY — left bet column (hidden in classic via CSS) */}
+      {isActive && <WebBetColumn bets={bets} onRemove={onRemoveBet} />}
 
       {/* DOT Left Panel - Bet Type Selection (only for DOT slides) */}
       {isThisDot && (
@@ -857,9 +881,15 @@ export default function GameSlide({
         <div className={styles.actionButtons}>
           <button className={styles.deleteButton} data-testid={isActive ? 'btn-delete' : undefined} onClick={handleDelete}>
             <img src={trashButton} alt="Borrar" className={styles.buttonIcon} />
+            <svg className={styles.webActionIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" />
+            </svg>
           </button>
           <button className={styles.printButton} data-testid={isActive ? 'btn-print' : undefined} onClick={handlePrint} disabled={isPrinting}>
             <img src={printButton} alt="Imprimir" className={styles.buttonIcon} />
+            <svg className={styles.webActionIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M6 9V2h12v7" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect x="6" y="14" width="12" height="8" rx="1" />
+            </svg>
             {isPrinting && (
               <div className={styles.printingOverlay}>
                 <div className={styles.printSpinner} />
@@ -869,16 +899,20 @@ export default function GameSlide({
         </div>
       </section>
 
-      {/* APUESTA Panel - Inside each slide so it moves with the carousel */}
+      {/* APUESTA Panel - Inside each slide so it moves with the carousel.
+          Classic-skin accordion; hidden in the web skin (the WebBetColumn
+          above replaces it) via `.classicBetsPanel`. */}
       {isActive && (
-        <Bets
-          bets={bets}
-          ankerPosition="top-left"
-          className="!absolute flex flex-col h-full"
-          style={betsStyle}
-          onExpandChange={setBetsExpanded}
-          forceClose={raceState === 'running' || raceState === 'closing'}
-        />
+        <div className={styles.classicBetsPanel}>
+          <Bets
+            bets={bets}
+            ankerPosition="top-left"
+            className="!absolute flex flex-col h-full"
+            style={betsStyle}
+            onExpandChange={setBetsExpanded}
+            forceClose={raceState === 'running' || raceState === 'closing'}
+          />
+        </div>
       )}
       </div>{/* end game content wrapper */}
 
