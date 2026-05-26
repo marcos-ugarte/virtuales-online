@@ -194,29 +194,29 @@
   top: 2.4cqb; /* align with the DOG cards + Buscar Ticket row */
 }
 :global(html[data-skin="web"]) .menuButton {
-  background: linear-gradient(180deg, #5d5d5d 0%, #4b4b4b 100%);
-  border: none;
+  background: linear-gradient(180deg, #1f232b 0%, #14161b 100%);
+  border: 0.08cqi solid rgba(120, 140, 170, 0.2);
   border-radius: 0.6cqi;
   width: 8.5cqi; /* equal width for all tabs (segmented-control look) */
   height: 7cqb; /* shorter than the classic full-band button */
   align-items: center;
   justify-content: center;
   padding: 0;
-  box-shadow: 0 0.18cqb 0.5cqb rgba(0, 0, 0, 0.38),
-    inset 0 0.14cqb 0 rgba(255, 255, 255, 0.09);
-  transition: background-color 0.16s ease-out, color 0.16s ease-out,
-    box-shadow 0.16s ease-out, transform 0.16s ease-out;
+  box-shadow: 0 0.25cqb 0.7cqb rgba(0, 0, 0, 0.5);
+  transition: background 0.16s ease-out, color 0.16s ease-out,
+    border-color 0.16s ease-out, box-shadow 0.16s ease-out, transform 0.16s ease-out;
 }
 /* Match the ORDENAR TICKET label: same size, weight and tracking. */
 :global(html[data-skin="web"]) .menuButtonText {
-  color: var(--skin-text, #e2e2e2);
+  color: #ffffff;
   font-size: 1.2cqi;
   font-weight: 700;
   font-style: normal;
   letter-spacing: 0.08em;
 }
 :global(html[data-skin="web"]) .menuButton:hover {
-  background: linear-gradient(180deg, #6c6c6c 0%, #585858 100%);
+  background: linear-gradient(180deg, #2b313d 0%, #1a1d24 100%);
+  border-color: rgba(140, 165, 200, 0.35);
   transform: translateY(-0.2cqb);
 }
 :global(html[data-skin="web"]) .menuButton:hover .menuButtonText {
@@ -268,15 +268,14 @@
 /* Web skin: stake "coins" → clean rectangular chips (charcoal + gold $amount),
    gap-separated (no fan overlap). Selected = gold fill, matching the tabs. */
 :global(html[data-skin="web"]) .coinButton {
-  background: linear-gradient(180deg, #565656 0%, #3e3e3e 100%);
-  border: 0.1cqi solid rgba(255, 255, 255, 0.07);
+  background: linear-gradient(180deg, #1f232b 0%, #111318 100%);
+  border: 0.1cqi solid rgba(245, 166, 35, 0.22);
   border-radius: 1cqi;
   width: 10.5cqi;
   height: 14cqb;
   margin-left: 0.7cqi;
-  box-shadow: 0 0.3cqb 0.8cqb rgba(0, 0, 0, 0.42),
-    inset 0 0.18cqb 0 rgba(255, 255, 255, 0.1);
-  transition: background-color 0.16s ease-out, border-color 0.16s ease-out,
+  box-shadow: 0 0.3cqb 0.8cqb rgba(0, 0, 0, 0.5);
+  transition: background 0.16s ease-out, border-color 0.16s ease-out,
     box-shadow 0.16s ease-out, transform 0.16s ease-out;
 }
 :global(html[data-skin="web"]) .coinButton:first-child {
@@ -305,8 +304,10 @@
   transform: translateY(-50%);
 }
 :global(html[data-skin="web"]) .coinButton:hover {
-  background: linear-gradient(180deg, #646464 0%, #4a4a4a 100%);
-  border-color: rgba(245, 166, 35, 0.55);
+  background: linear-gradient(180deg, #262b34 0%, #15181e 100%);
+  border-color: rgba(245, 166, 35, 0.65);
+  box-shadow: 0 0.3cqb 0.9cqb rgba(0, 0, 0, 0.5),
+    0 0 1.2cqb rgba(245, 166, 35, 0.32);
   transform: translateY(-0.25cqb);
 }
 :global(html[data-skin="web"]) .coinButton:active {
@@ -669,15 +670,16 @@
   justify-content: center;
   gap: 0.5cqi;
   padding: 0 1cqi;
-  background: linear-gradient(180deg, #5d5d5d 0%, #4b4b4b 100%);
+  background: linear-gradient(180deg, #232833 0%, #111318 100%);
+  border: 0.08cqi solid rgba(255, 255, 255, 0.08);
   border-radius: 0.6cqi;
-  box-shadow: 0 0.18cqb 0.5cqb rgba(0, 0, 0, 0.38),
-    inset 0 0.14cqb 0 rgba(255, 255, 255, 0.09);
-  transition: background-color 0.16s ease-out, box-shadow 0.16s ease-out,
-    transform 0.16s ease-out;
+  box-shadow: 0 0.25cqb 0.7cqb rgba(0, 0, 0, 0.5);
+  transition: background 0.16s ease-out, border-color 0.16s ease-out,
+    box-shadow 0.16s ease-out, transform 0.16s ease-out;
 }
 :global(html[data-skin="web"]) .searchButton:hover {
-  background: linear-gradient(180deg, #6c6c6c 0%, #585858 100%);
+  background: linear-gradient(180deg, #2b313d 0%, #15181e 100%);
+  border-color: rgba(255, 255, 255, 0.16);
   transform: translateX(-8.03cqi) translateY(-0.2cqb);
 }
 :global(html[data-skin="web"]) .searchButton:active {
@@ -716,18 +718,18 @@
   position: absolute;
   right: 0.5cqi; /* right edge flush with the device-id/session block */
   top: 9cqb; /* tucked just below the session id */
-  background: linear-gradient(180deg, #5d5d5d 0%, #4b4b4b 100%);
-  border: none;
+  background: linear-gradient(180deg, #232833 0%, #111318 100%);
+  border: 0.08cqi solid rgba(255, 255, 255, 0.08);
   border-radius: 0.5cqi;
   padding: 0.55cqb 0.8cqi;
   cursor: pointer;
-  box-shadow: 0 0.16cqb 0.45cqb rgba(0, 0, 0, 0.38),
-    inset 0 0.12cqb 0 rgba(255, 255, 255, 0.09);
-  transition: background-color 0.16s ease-out, box-shadow 0.16s ease-out,
-    transform 0.16s ease-out;
+  box-shadow: 0 0.2cqb 0.55cqb rgba(0, 0, 0, 0.5);
+  transition: background 0.16s ease-out, border-color 0.16s ease-out,
+    box-shadow 0.16s ease-out, transform 0.16s ease-out;
 }
 :global(html[data-skin="web"]) .langCurrencyBtn:hover {
-  background: linear-gradient(180deg, #6c6c6c 0%, #585858 100%);
+  background: linear-gradient(180deg, #2b313d 0%, #15181e 100%);
+  border-color: rgba(255, 255, 255, 0.16);
   transform: translateY(-0.2cqb);
 }
 :global(html[data-skin="web"]) .langCurrencyBtn:active {
@@ -810,18 +812,19 @@
   width: 7cqi;
   height: 14.3cqb; /* ≈ square in px (≈123×123) */
   margin-left: 0;
-  background: linear-gradient(180deg, #5d5d5d 0%, #4b4b4b 100%);
+  background: linear-gradient(180deg, #232833 0%, #111318 100%);
+  border: 0.08cqi solid rgba(255, 255, 255, 0.08);
   border-radius: 0.85cqi;
-  box-shadow: 0 0.25cqb 0.7cqb rgba(0, 0, 0, 0.4),
-    inset 0 0.16cqb 0 rgba(255, 255, 255, 0.09);
+  box-shadow: 0 0.25cqb 0.7cqb rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.16s ease-out, box-shadow 0.16s ease-out,
-    transform 0.16s ease-out;
+  transition: background 0.16s ease-out, border-color 0.16s ease-out,
+    box-shadow 0.16s ease-out, transform 0.16s ease-out;
 }
 :global(html[data-skin="web"]) .funcButton:hover {
-  background: linear-gradient(180deg, #6c6c6c 0%, #585858 100%);
+  background: linear-gradient(180deg, #2b313d 0%, #15181e 100%);
+  border-color: rgba(255, 255, 255, 0.16);
   transform: translateY(-0.25cqb);
 }
 :global(html[data-skin="web"]) .funcButton:active {
@@ -3388,7 +3391,7 @@
   bottom: 2cqb;
   width: 16.6cqi;
   z-index: 12;
-  background: linear-gradient(180deg, #353535, #2b2b2b);
+  background: linear-gradient(180deg, #1f232b, #111318);
   border: 0.1cqb solid rgba(245, 166, 35, 0.25);
   border-radius: 0.9cqi;
   box-shadow: 0 0.4cqb 1.2cqb rgba(0, 0, 0, 0.45);
