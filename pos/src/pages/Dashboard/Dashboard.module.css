@@ -194,17 +194,18 @@
   top: 2.4cqb; /* align with the DOG cards + Buscar Ticket row */
 }
 :global(html[data-skin="web"]) .menuButton {
-  background: var(--skin-surface-2, #585858);
+  background: linear-gradient(180deg, #5d5d5d 0%, #4b4b4b 100%);
   border: none;
-  border-radius: 0.35cqi;
+  border-radius: 0.6cqi;
   width: 8.5cqi; /* equal width for all tabs (segmented-control look) */
   height: 7cqb; /* shorter than the classic full-band button */
   align-items: center;
   justify-content: center;
   padding: 0;
-  box-shadow: inset 0 -0.2cqb 0 rgba(0, 0, 0, 0.28);
-  transition: background-color 0.14s ease-out, color 0.14s ease-out,
-    box-shadow 0.14s ease-out;
+  box-shadow: 0 0.18cqb 0.5cqb rgba(0, 0, 0, 0.38),
+    inset 0 0.14cqb 0 rgba(255, 255, 255, 0.09);
+  transition: background-color 0.16s ease-out, color 0.16s ease-out,
+    box-shadow 0.16s ease-out, transform 0.16s ease-out;
 }
 /* Match the ORDENAR TICKET label: same size, weight and tracking. */
 :global(html[data-skin="web"]) .menuButtonText {
@@ -215,15 +216,21 @@
   letter-spacing: 0.08em;
 }
 :global(html[data-skin="web"]) .menuButton:hover {
-  background: #6a6a6a;
+  background: linear-gradient(180deg, #6c6c6c 0%, #585858 100%);
+  transform: translateY(-0.2cqb);
 }
 :global(html[data-skin="web"]) .menuButton:hover .menuButtonText {
   color: #ffffff;
 }
-:global(html[data-skin="web"]) .menuButtonActive {
-  background: var(--skin-accent, #f5a623);
-  box-shadow: inset 0 -0.25cqb 0 var(--skin-accent-dark, #d4891a),
-    0 0.25cqb 0.7cqb rgba(0, 0, 0, 0.3);
+:global(html[data-skin="web"]) .menuButton:active {
+  transform: translateY(0.1cqb);
+}
+:global(html[data-skin="web"]) .menuButtonActive,
+:global(html[data-skin="web"]) .menuButtonActive:hover {
+  background: linear-gradient(180deg, #ffb43a 0%, #ef9c1e 100%);
+  transform: none;
+  box-shadow: 0 0.25cqb 0.9cqb rgba(245, 166, 35, 0.38),
+    inset 0 0.16cqb 0 rgba(255, 255, 255, 0.35);
 }
 :global(html[data-skin="web"]) .menuButtonActive .menuButtonText {
   color: var(--skin-accent-ink, #2a2118);
@@ -261,15 +268,16 @@
 /* Web skin: stake "coins" → clean rectangular chips (charcoal + gold $amount),
    gap-separated (no fan overlap). Selected = gold fill, matching the tabs. */
 :global(html[data-skin="web"]) .coinButton {
-  background: var(--skin-surface, #4a4a4a);
-  border: 0.12cqi solid rgba(245, 166, 35, 0.28);
-  border-radius: 0.7cqi;
+  background: linear-gradient(180deg, #565656 0%, #3e3e3e 100%);
+  border: 0.1cqi solid rgba(255, 255, 255, 0.07);
+  border-radius: 1cqi;
   width: 10.5cqi;
   height: 14cqb;
   margin-left: 0.7cqi;
-  box-shadow: inset 0 -0.2cqb 0 rgba(0, 0, 0, 0.28);
-  transition: background-color 0.14s ease-out, border-color 0.14s ease-out,
-    box-shadow 0.14s ease-out, transform 0.08s ease-out;
+  box-shadow: 0 0.3cqb 0.8cqb rgba(0, 0, 0, 0.42),
+    inset 0 0.18cqb 0 rgba(255, 255, 255, 0.1);
+  transition: background-color 0.16s ease-out, border-color 0.16s ease-out,
+    box-shadow 0.16s ease-out, transform 0.16s ease-out;
 }
 :global(html[data-skin="web"]) .coinButton:first-child {
   margin-left: 0;
@@ -297,17 +305,21 @@
   transform: translateY(-50%);
 }
 :global(html[data-skin="web"]) .coinButton:hover {
-  background: #5a5a5a;
-  border-color: var(--skin-accent, #f5a623);
+  background: linear-gradient(180deg, #646464 0%, #4a4a4a 100%);
+  border-color: rgba(245, 166, 35, 0.55);
+  transform: translateY(-0.25cqb);
 }
 :global(html[data-skin="web"]) .coinButton:active {
-  transform: translateY(0.15cqb);
+  transform: translateY(0.1cqb);
 }
 /* Selected denomination → solid gold (same language as the active tab). */
-:global(html[data-skin="web"]) .coinButtonActive {
-  background: var(--skin-accent, #f5a623);
+:global(html[data-skin="web"]) .coinButtonActive,
+:global(html[data-skin="web"]) .coinButtonActive:hover {
+  background: linear-gradient(180deg, #ffb43a 0%, #ef9c1e 100%);
   border-color: var(--skin-accent, #f5a623);
-  box-shadow: inset 0 -0.25cqb 0 var(--skin-accent-dark, #d4891a);
+  transform: none;
+  box-shadow: 0 0.3cqb 1cqb rgba(245, 166, 35, 0.42),
+    inset 0 0.18cqb 0 rgba(255, 255, 255, 0.35);
 }
 :global(html[data-skin="web"]) .coinButtonActive .coinValue {
   color: var(--skin-accent-ink, #2a2118);
@@ -340,22 +352,40 @@
 :global(html[data-skin="web"]) .deleteButton {
   margin: 0;
   height: 14cqb;
-  background: linear-gradient(180deg, #d9433a, #a82820);
-  border-radius: 0.7cqi;
+  background: linear-gradient(180deg, #e1564c 0%, #a82820 100%);
+  border-radius: 1cqi;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 -0.22cqb 0 rgba(0, 0, 0, 0.32);
+  box-shadow: 0 0.3cqb 0.8cqb rgba(168, 40, 32, 0.45),
+    inset 0 0.18cqb 0 rgba(255, 255, 255, 0.22);
+  transition: filter 0.16s ease-out, box-shadow 0.16s ease-out, transform 0.16s ease-out;
+}
+:global(html[data-skin="web"]) .deleteButton:hover {
+  filter: brightness(1.08);
+  transform: translateY(-0.25cqb);
+}
+:global(html[data-skin="web"]) .deleteButton:active {
+  transform: translateY(0.1cqb);
 }
 :global(html[data-skin="web"]) .printButton {
   margin: 0;
   height: 14cqb;
-  background: linear-gradient(180deg, var(--skin-accent, #f5a623), var(--skin-accent-dark, #d4891a));
-  border-radius: 0.7cqi;
+  background: linear-gradient(180deg, #ffb43a 0%, #ef9c1e 100%);
+  border-radius: 1cqi;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 -0.22cqb 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0.3cqb 1cqb rgba(245, 166, 35, 0.42),
+    inset 0 0.18cqb 0 rgba(255, 255, 255, 0.35);
+  transition: filter 0.16s ease-out, box-shadow 0.16s ease-out, transform 0.16s ease-out;
+}
+:global(html[data-skin="web"]) .printButton:hover {
+  filter: brightness(1.06);
+  transform: translateY(-0.25cqb);
+}
+:global(html[data-skin="web"]) .printButton:active {
+  transform: translateY(0.1cqb);
 }
 :global(html[data-skin="web"]) .webActionIcon {
   display: block;
@@ -381,10 +411,33 @@
   display: none; /* gold ring replaces the dot selection marker */
 }
 :global(html[data-skin="web"]) .selectionButton {
-  border-radius: 0.9cqi;
+  border-radius: 1.1cqi;
   overflow: visible;
-  box-shadow: 0 0.25cqb 0.6cqb rgba(0, 0, 0, 0.4),
-    inset 0 0.15cqb 0 rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0.35cqb 0.8cqb rgba(0, 0, 0, 0.45),
+    inset 0 0.18cqb 0 rgba(255, 255, 255, 0.22),
+    inset 0 -0.22cqb 0.35cqb rgba(0, 0, 0, 0.28);
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, filter 0.15s ease-out;
+}
+/* Glossy top sheen — unifies solid + striped traps into clean glass chips. */
+:global(html[data-skin="web"]) .selectionButton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.26) 0%,
+    rgba(255, 255, 255, 0.06) 40%,
+    rgba(0, 0, 0, 0.04) 70%,
+    rgba(0, 0, 0, 0.12) 100%);
+  z-index: 2; /* above the trap fill, below the number (z-index 4) */
+  pointer-events: none;
+}
+:global(html[data-skin="web"]) .selectionButton:hover {
+  transform: translateY(-0.3cqb);
+  filter: brightness(1.06);
+}
+:global(html[data-skin="web"]) .selectionButton:active {
+  transform: translateY(0.1cqb);
 }
 :global(html[data-skin="web"]) .selNum {
   display: flex;
@@ -433,9 +486,12 @@
   background: repeating-linear-gradient(135deg, #fb8200 0 1.2cqi, #1a1a1a 1.2cqi 2.4cqi);
 }
 /* Selected runner → gold ring (the trap color stays as the fill). */
-:global(html[data-skin="web"]) .selectionButtonActive {
+:global(html[data-skin="web"]) .selectionButtonActive,
+:global(html[data-skin="web"]) .selectionButtonActive:hover {
+  transform: translateY(-0.3cqb);
   box-shadow: 0 0 0 0.35cqi var(--skin-accent, #f5a623),
-    0 0.25cqb 0.6cqb rgba(0, 0, 0, 0.4);
+    0 0 1.4cqb rgba(245, 166, 35, 0.55),
+    0 0.4cqb 0.9cqb rgba(0, 0, 0, 0.45);
 }
 
 /* ============================================================
@@ -450,8 +506,9 @@
   font-family: var(--font-family-din-italic, "DIN Next LT Pro Italic");
   font-style: italic;
   font-weight: 300;
-  color: #9a9a9a;
-  letter-spacing: 0.04em;
+  color: #8a8a8a; /* discreet labels — let the values lead */
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
 }
 :global(html[data-skin="web"]) .raceStartValue,
 :global(html[data-skin="web"]) .activeTimeValue {
@@ -475,10 +532,13 @@
 :global(html[data-skin="web"]) .timerSecondsValueAlert {
   color: #ff5a5a;
 }
-/* Clean CSS timer bar: graphite track + gold fill (drop the red SVG + icon). */
+/* Clean CSS timer bar: inset graphite track + glowing gold fill (broadcast look). */
 :global(html[data-skin="web"]) .timerBarContainer {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.09);
   border-radius: 1.3cqb;
+  overflow: hidden;
+  box-shadow: inset 0 0.1cqb 0.25cqb rgba(0, 0, 0, 0.45),
+    inset 0 0 0 0.06cqb rgba(255, 255, 255, 0.06);
 }
 :global(html[data-skin="web"]) .timerBarBg,
 :global(html[data-skin="web"]) .timerBarLine,
@@ -486,8 +546,10 @@
   display: none;
 }
 :global(html[data-skin="web"]) .timerBarProgress {
-  background: var(--skin-accent, #f5a623);
+  background: linear-gradient(90deg, #f5a623 0%, #ffc24d 100%);
   border-radius: 1.3cqb;
+  box-shadow: 0 0 0.7cqb rgba(245, 166, 35, 0.6);
+  transition: width 0.3s linear;
 }
 
 /* ============================================================
@@ -522,7 +584,12 @@
   justify-content: center;
   background: var(--skin-surface-2, #585858) !important;
   filter: brightness(0.55); /* inactive cards dimmed; active is full color */
-  transition: filter 0.14s ease-out, box-shadow 0.14s ease-out;
+  box-shadow: 0 0.2cqb 0.55cqb rgba(0, 0, 0, 0.38);
+  transition: filter 0.16s ease-out, box-shadow 0.16s ease-out, transform 0.16s ease-out;
+}
+:global(html[data-skin="web"]) .gameSelectorBtn:hover {
+  filter: brightness(0.8);
+  transform: translateY(-0.2cqb);
 }
 /* Per-game brand colors: DOG 6 deep metallic blue, DOG 8 deep metallic green.
    Top sheen layer + a sharp mid gloss transition give the metallic look. */
@@ -602,9 +669,19 @@
   justify-content: center;
   gap: 0.5cqi;
   padding: 0 1cqi;
-  background: var(--skin-surface-2, #585858);
-  border-radius: 0.35cqi;
-  box-shadow: inset 0 -0.15cqb 0 rgba(0, 0, 0, 0.28);
+  background: linear-gradient(180deg, #5d5d5d 0%, #4b4b4b 100%);
+  border-radius: 0.6cqi;
+  box-shadow: 0 0.18cqb 0.5cqb rgba(0, 0, 0, 0.38),
+    inset 0 0.14cqb 0 rgba(255, 255, 255, 0.09);
+  transition: background-color 0.16s ease-out, box-shadow 0.16s ease-out,
+    transform 0.16s ease-out;
+}
+:global(html[data-skin="web"]) .searchButton:hover {
+  background: linear-gradient(180deg, #6c6c6c 0%, #585858 100%);
+  transform: translateX(-8.03cqi) translateY(-0.2cqb);
+}
+:global(html[data-skin="web"]) .searchButton:active {
+  transform: translateX(-8.03cqi) translateY(0.1cqb);
 }
 :global(html[data-skin="web"]) .searchIcon {
   width: 1.4cqi;
@@ -639,11 +716,22 @@
   position: absolute;
   right: 0.5cqi; /* right edge flush with the device-id/session block */
   top: 9cqb; /* tucked just below the session id */
-  background: var(--skin-surface-2, #585858);
+  background: linear-gradient(180deg, #5d5d5d 0%, #4b4b4b 100%);
   border: none;
-  border-radius: 0.45cqi;
+  border-radius: 0.5cqi;
   padding: 0.55cqb 0.8cqi;
   cursor: pointer;
+  box-shadow: 0 0.16cqb 0.45cqb rgba(0, 0, 0, 0.38),
+    inset 0 0.12cqb 0 rgba(255, 255, 255, 0.09);
+  transition: background-color 0.16s ease-out, box-shadow 0.16s ease-out,
+    transform 0.16s ease-out;
+}
+:global(html[data-skin="web"]) .langCurrencyBtn:hover {
+  background: linear-gradient(180deg, #6c6c6c 0%, #585858 100%);
+  transform: translateY(-0.2cqb);
+}
+:global(html[data-skin="web"]) .langCurrencyBtn:active {
+  transform: translateY(0.1cqb);
 }
 .flagDO {
   width: 2.4cqi;
@@ -670,8 +758,10 @@
 /* Web skin: distinct header band (lighter) to separate it from the darker
    betting area below, with a thin separator line. */
 :global(html[data-skin="web"]) .header {
-  background: #2c2c2c;
-  border-bottom: 0.12cqb solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, #33353b 0%, #292a2f 100%);
+  border-bottom: 0.12cqb solid rgba(245, 166, 35, 0.16); /* faint gold hairline */
+  box-shadow: inset 0 0.12cqb 0 rgba(255, 255, 255, 0.05),
+    0 0.5cqb 1.2cqb rgba(0, 0, 0, 0.4);
   height: 22.9cqb; /* push the header/betting divider ~50px lower */
 }
 /* Nudge the race data down ~15px (so it doesn't crowd the tab/card row) and
@@ -720,12 +810,22 @@
   width: 7cqi;
   height: 14.3cqb; /* ≈ square in px (≈123×123) */
   margin-left: 0;
-  background: var(--skin-surface-2, #585858);
-  border-radius: 0.6cqi;
-  box-shadow: inset 0 -0.2cqb 0 rgba(0, 0, 0, 0.28);
+  background: linear-gradient(180deg, #5d5d5d 0%, #4b4b4b 100%);
+  border-radius: 0.85cqi;
+  box-shadow: 0 0.25cqb 0.7cqb rgba(0, 0, 0, 0.4),
+    inset 0 0.16cqb 0 rgba(255, 255, 255, 0.09);
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.16s ease-out, box-shadow 0.16s ease-out,
+    transform 0.16s ease-out;
+}
+:global(html[data-skin="web"]) .funcButton:hover {
+  background: linear-gradient(180deg, #6c6c6c 0%, #585858 100%);
+  transform: translateY(-0.25cqb);
+}
+:global(html[data-skin="web"]) .funcButton:active {
+  transform: translateY(0.1cqb);
 }
 :global(html[data-skin="web"]) .funcButtonBg {
   display: none;
@@ -738,9 +838,12 @@
   object-fit: contain;
   filter: brightness(0) invert(1); /* white icon */
 }
-:global(html[data-skin="web"]) .funcButtonActive {
-  background: var(--skin-accent, #f5a623);
-  box-shadow: inset 0 -0.25cqb 0 var(--skin-accent-dark, #d4891a);
+:global(html[data-skin="web"]) .funcButtonActive,
+:global(html[data-skin="web"]) .funcButtonActive:hover {
+  background: linear-gradient(180deg, #ffb43a 0%, #ef9c1e 100%);
+  transform: none;
+  box-shadow: 0 0.25cqb 0.9cqb rgba(245, 166, 35, 0.4),
+    inset 0 0.16cqb 0 rgba(255, 255, 255, 0.35);
 }
 :global(html[data-skin="web"]) .funcButtonActive .funcButtonIcon {
   filter: brightness(0); /* dark ink on gold */

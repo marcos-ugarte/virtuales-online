@@ -40,7 +40,10 @@
  * inline background-image (the one case where it beats inline).
  */
 :global(html[data-skin="web"]) .viewport {
+  /* Charcoal with depth: a soft top-center glow fading to darker edges
+     (subtle vignette) — premium sportsbook feel without clutter. */
   background-image:
-    linear-gradient(180deg, #2a2a2a 0%, #1e1e1e 100%) !important;
-  background-color: #232323;
+    radial-gradient(135% 95% at 50% -18%,
+      #35383e 0%, #292b30 40%, #1c1d21 72%, #141517 100%) !important;
+  background-color: #141517;
 }
