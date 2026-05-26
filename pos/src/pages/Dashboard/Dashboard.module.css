@@ -191,7 +191,7 @@
 :global(html[data-skin="web"]) .menuButtons {
   gap: 0.6cqi;
   align-items: center;
-  top: 2.7cqb; /* nudged down so the shorter buttons sit centered in the band */
+  top: 2.4cqb; /* align with the DOG cards + Buscar Ticket row */
 }
 :global(html[data-skin="web"]) .menuButton {
   background: var(--skin-surface-2, #585858);
@@ -458,7 +458,7 @@
   display: none;
 }
 :global(html[data-skin="web"]) .gameSelectorsContainer {
-  right: 26cqi;
+  right: 28cqi;
   top: 2.4cqb;
   width: 17.19cqi;
   height: 7cqb;
@@ -525,8 +525,133 @@
 :global(html[data-skin="web"]) .versionText {
   color: rgba(255, 255, 255, 0.35);
 }
+/* Lupa "ID" → a proper "Buscar Ticket" button (magnifier + text). */
+.searchTicketLabel {
+  display: none;
+}
 :global(html[data-skin="web"]) .searchIdText {
-  color: var(--skin-accent, #f5a623);
+  display: none;
+}
+/* Shift the operator content down so its top row aligns with the header
+   buttons (tabs/cards sit at ~2.4cqb). */
+:global(html[data-skin="web"]) .infoPanelContent {
+  top: 2.4cqb;
+}
+:global(html[data-skin="web"]) .searchButton {
+  position: absolute; /* out of the flex flow so it doesn't push the operator data */
+  right: 0.5cqi;
+  top: 0; /* infoPanelContent is already at 2.4cqb → align with tabs/DOG cards */
+  width: auto;
+  height: 7cqb; /* match the header tab/card height */
+  margin-top: 0;
+  transform: translateX(-8.03cqi); /* nudge left, off the operator panel */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5cqi;
+  padding: 0 1cqi;
+  background: var(--skin-surface-2, #585858);
+  border-radius: 0.35cqi;
+  box-shadow: inset 0 -0.15cqb 0 rgba(0, 0, 0, 0.28);
+}
+:global(html[data-skin="web"]) .searchIcon {
+  width: 1.4cqi;
+  height: auto;
+  filter: brightness(0) invert(1);
+}
+:global(html[data-skin="web"]) .searchTicketLabel {
+  display: inline;
+  font-family: var(--font-family-din, Helvetica, sans-serif);
+  font-weight: 700;
+  font-size: 0.95cqi;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* Web skin: hide the settings gear. */
+:global(html[data-skin="web"]) .settingsButton {
+  display: none;
+}
+
+/* Web skin: distinct header band (lighter) to separate it from the darker
+   betting area below, with a thin separator line. */
+:global(html[data-skin="web"]) .header {
+  background: #2c2c2c;
+  border-bottom: 0.12cqb solid rgba(255, 255, 255, 0.08);
+  height: 22.9cqb; /* push the header/betting divider ~50px lower */
+}
+/* Nudge the race data down ~15px (so it doesn't crowd the tab/card row) and
+   right ~20px (the whole line). */
+:global(html[data-skin="web"]) .raceNumber {
+  top: 9.7cqb;
+  left: 6.3cqi;
+}
+:global(html[data-skin="web"]) .raceStartTime {
+  top: 14.15cqb;
+  left: 19.1cqi;
+}
+:global(html[data-skin="web"]) .activeTime {
+  top: 14.15cqb;
+  left: 31.42cqi;
+}
+:global(html[data-skin="web"]) .timerSecondsContainer {
+  top: 14.38cqb;
+  left: 43.74cqi;
+}
+:global(html[data-skin="web"]) .timerBarContainer {
+  top: 16.9cqb;
+  left: 48.44cqi;
+}
+
+/* Web skin: hide the other-game countdown (e.g. DOG 8's timer while on DOG 6). */
+:global(html[data-skin="web"]) .nextGameInfo {
+  display: none;
+}
+
+/* Web skin: rebet/function buttons (↕ ↘ R R/2) → square charcoal cards
+   (gold when active), no navy skew, white icons. */
+:global(html[data-skin="web"]) .functionButtons {
+  gap: 0.5cqi;
+  top: 31.89cqb; /* align the grid top with the runner-selector rows */
+  right: 6.5cqi; /* nudge left, off the right edge */
+}
+:global(html[data-skin="web"]) .funcButtonRow {
+  gap: 0.5cqi;
+  margin-top: 0; /* remove the staggered vertical overlap */
+}
+:global(html[data-skin="web"]) .funcButtonRow:last-child {
+  margin-left: 0; /* remove the horizontal shift → clean 2×2 grid */
+}
+:global(html[data-skin="web"]) .funcButton {
+  width: 7cqi;
+  height: 14.3cqb; /* ≈ square in px (≈123×123) */
+  margin-left: 0;
+  background: var(--skin-surface-2, #585858);
+  border-radius: 0.6cqi;
+  box-shadow: inset 0 -0.2cqb 0 rgba(0, 0, 0, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+:global(html[data-skin="web"]) .funcButtonBg {
+  display: none;
+}
+:global(html[data-skin="web"]) .funcButtonIcon {
+  position: relative;
+  transform: none;
+  width: 50%;
+  height: 50%;
+  object-fit: contain;
+  filter: brightness(0) invert(1); /* white icon */
+}
+:global(html[data-skin="web"]) .funcButtonActive {
+  background: var(--skin-accent, #f5a623);
+  box-shadow: inset 0 -0.25cqb 0 var(--skin-accent-dark, #d4891a);
+}
+:global(html[data-skin="web"]) .funcButtonActive .funcButtonIcon {
+  filter: brightness(0); /* dark ink on gold */
 }
 
 /* Exit/Logout Button */

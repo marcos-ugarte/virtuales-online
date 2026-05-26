@@ -540,6 +540,7 @@ export default function GameSlide({
                 >
                   <img src={searchIcon} alt="Search" className={styles.searchIcon} />
                   <span className={styles.searchIdText}>ID</span>
+                  <span className={styles.searchTicketLabel}>Buscar Ticket</span>
                 </button>
                 <div className={styles.textColumn}>
                   <span className={styles.operatorId}>{operatorId}</span>
