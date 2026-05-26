@@ -17,6 +17,16 @@ import { useLang } from '../i18n';
 import { JackpotDisplay } from './JackpotDisplay';
 import { resolveVideoUrl, resolveVideoPoster } from '../services/videoUrl';
 import { RaceOverlay } from './RaceOverlay';
+import { PremiumIntro } from '../premium/PremiumIntro';
+
+/** Wait-screen mode for the PRE phase: 'image' (static hero + countdown) or
+ *  'premium' (Gold Luxe animated presentation). `?wait=` wins over the
+ *  build-time VITE_WAIT_MODE default. */
+const WAIT_MODE: 'image' | 'premium' = (() => {
+  const p = new URLSearchParams(window.location.search).get('wait');
+  const v = p || (import.meta.env.VITE_WAIT_MODE as string | undefined);
+  return v === 'premium' ? 'premium' : 'image';
+})();
 
 /** Game types the LiveMonitor will render video for. Horsec is on the
  *  roadmap but excluded for now — video assets aren't ready. The cards
@@ -286,6 +296,13 @@ export function LiveMonitor({
             <span className="lm-video-text">{t('monitor.live')}</span>
             <span className="lm-video-game">{t(GAME_LABEL_KEYS[pickedKey!])}</span>
           </div>
+        ) : pickedRace && pickedTimer && WAIT_MODE === 'premium' ? (
+          <PremiumIntro
+            race={pickedRace}
+            gameKey={pickedKey!}
+            remainingSec={pickedTimer.remainingSec}
+            jackpotValue={jackpotValue}
+          />
         ) : pickedRace && pickedTimer ? (
           <div
             className="lm-video-pre"

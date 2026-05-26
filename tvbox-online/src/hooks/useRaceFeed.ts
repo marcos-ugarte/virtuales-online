@@ -332,6 +332,7 @@ export function useRaceFeed(opts: { wsUrl: string }): {
     // the figure stable.
     let maxJp = 0;
     for (const r of latestGamepoolRef.current) {
+      if (!IN_SCOPE.has(r.eventType)) continue; // exclude out-of-scope feeds (horse 251, dog63, …)
       const v = r.jackpotInfo?.bonusValue ?? 0;
       if (v > maxJp) maxJp = v;
     }

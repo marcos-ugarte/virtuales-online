@@ -11,14 +11,71 @@ import { useLang } from './i18n';
 import { useBetslip } from './state/betslip';
 import { useAuth } from './state/auth';
 import { RaceFeedSnapshotProvider } from './state/raceFeedSnapshot';
+import { RaceOverlay, type OverlayGameType } from './components/RaceOverlay';
 import type { GameKey } from './types/websocket';
 
 const WS_URL =
   (import.meta.env.VITE_WS_URL as string | undefined) ??
   'ws://localhost:4099/web-ds';
 
+/** Dev-only isolation harness for the embedded-monitor PIXI overlay.
+ *  ?overlayDemo=dog6|dog8 — mounts RaceOverlay over a dummy live video with
+ *  mock competitors/odds/finish/interval so all 3 overlays draw immediately,
+ *  with no WS/auth and no live-phase timing. Used to diagnose dog8 vs dog6. */
+function OverlayDemo({ gameType }: { gameType: OverlayGameType }) {
+  const N = gameType === 'dog8' ? 8 : 6;
+  const now = Date.now();
+  const iso = (ms: number) =>
+    new Date(ms).toISOString().slice(0, 19).replace('T', ' ');
+  const competitors: Record<string, { name: string; bestLap?: number }> = {};
+  for (let i = 1; i <= N; i++) competitors[String(i)] = { name: `RUNNER ${i}`, bestLap: 28 + i / 10 };
+  const odds = Array.from({ length: N * N }, (_, k) => 2 + (k % 40));
+  // competitorIndex is 1-based (post position); toResult subtracts 1.
+  const finish: Record<string, { competitorIndex: number; time?: number }> = {
+    '1': { competitorIndex: 3, time: 29.4 },
+    '2': { competitorIndex: 1, time: 29.7 },
+    '3': { competitorIndex: 5, time: 30.1 },
+  };
+  const interval = {
+    '1': { '1': { competitorIndex: 3, time: 11.04 }, '2': { competitorIndex: 4, time: 11.1 } },
+    '2': { '1': { competitorIndex: 3, time: 24.5 }, '2': { competitorIndex: 1, time: 24.7 } },
+  };
+  return (
+    <div style={{ width: '100vw', height: '100vh', background: '#000' }}>
+      <div className="lm-video" style={{ position: 'relative', width: '100%', height: '100%' }}>
+        {/* real local clip so the overlay's video-time gating advances */}
+        <video
+          className="lm-video-el"
+          src={`/videos/${gameType === 'dog8' ? 'dog8' : 'dog6'}/R0001_h.mp4`}
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={{ width: '100%', height: '100%' }}
+        />
+        <RaceOverlay
+          gameType={gameType}
+          raceId={`demo_${gameType}_1`}
+          competitors={competitors as never}
+          finish={finish}
+          interval={interval as never}
+          odds={odds}
+          videoStartDt={iso(now - 28000)}
+          videoEndDt={iso(now + 20000)}
+          clockOffsetMs={0}
+          phase="live"
+          remainingSec={0}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const { status } = useAuth();
+
+  const od = new URLSearchParams(window.location.search).get('overlayDemo');
+  if (od === 'dog6' || od === 'dog8') return <OverlayDemo gameType={od} />;
 
   if (status === 'loading') {
     return <BootSplash />;
