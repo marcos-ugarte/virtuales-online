@@ -194,8 +194,8 @@
   top: 2.4cqb; /* align with the DOG cards + Buscar Ticket row */
 }
 :global(html[data-skin="web"]) .menuButton {
-  background: linear-gradient(180deg, #1f232b 0%, #14161b 100%);
-  border: 0.08cqi solid rgba(120, 140, 170, 0.2);
+  background: linear-gradient(180deg, #5e370d 0%, #3a2207 100%); /* dark, muted orange */
+  border: 0.08cqi solid rgba(245, 166, 35, 0.3);
   border-radius: 0.6cqi;
   width: 8.5cqi; /* equal width for all tabs (segmented-control look) */
   height: 7cqb; /* shorter than the classic full-band button */
@@ -215,8 +215,8 @@
   letter-spacing: 0.08em;
 }
 :global(html[data-skin="web"]) .menuButton:hover {
-  background: linear-gradient(180deg, #2b313d 0%, #1a1d24 100%);
-  border-color: rgba(140, 165, 200, 0.35);
+  background: linear-gradient(180deg, #784811 0%, #4a2c09 100%);
+  border-color: rgba(245, 166, 35, 0.5);
   transform: translateY(-0.2cqb);
 }
 :global(html[data-skin="web"]) .menuButton:hover .menuButtonText {
@@ -227,10 +227,12 @@
 }
 :global(html[data-skin="web"]) .menuButtonActive,
 :global(html[data-skin="web"]) .menuButtonActive:hover {
-  background: linear-gradient(180deg, #ffb43a 0%, #ef9c1e 100%);
+  background: linear-gradient(180deg, #ffc24d 0%, #f5a623 55%, #ef9c1e 100%);
+  border-color: rgba(255, 200, 90, 0.7);
   transform: none;
-  box-shadow: 0 0.25cqb 0.9cqb rgba(245, 166, 35, 0.38),
-    inset 0 0.16cqb 0 rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 1.4cqb rgba(245, 166, 35, 0.6),
+    0 0.3cqb 0.9cqb rgba(0, 0, 0, 0.35),
+    inset 0 0.16cqb 0 rgba(255, 255, 255, 0.45);
 }
 :global(html[data-skin="web"]) .menuButtonActive .menuButtonText {
   color: var(--skin-accent-ink, #2a2118);
@@ -670,16 +672,16 @@
   justify-content: center;
   gap: 0.5cqi;
   padding: 0 1cqi;
-  background: linear-gradient(180deg, #232833 0%, #111318 100%);
-  border: 0.08cqi solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, #5e370d 0%, #3a2207 100%); /* matches the nav tabs */
+  border: 0.08cqi solid rgba(245, 166, 35, 0.3);
   border-radius: 0.6cqi;
   box-shadow: 0 0.25cqb 0.7cqb rgba(0, 0, 0, 0.5);
   transition: background 0.16s ease-out, border-color 0.16s ease-out,
     box-shadow 0.16s ease-out, transform 0.16s ease-out;
 }
 :global(html[data-skin="web"]) .searchButton:hover {
-  background: linear-gradient(180deg, #2b313d 0%, #15181e 100%);
-  border-color: rgba(255, 255, 255, 0.16);
+  background: linear-gradient(180deg, #784811 0%, #4a2c09 100%);
+  border-color: rgba(245, 166, 35, 0.5);
   transform: translateX(-8.03cqi) translateY(-0.2cqb);
 }
 :global(html[data-skin="web"]) .searchButton:active {
