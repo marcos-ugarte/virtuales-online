@@ -313,6 +313,36 @@
    Web skin (modern) — clean card login, like tvbox-online.
    Inside the ScaleWrapper container → container-query units.
    ============================================================ */
+/* Motion background: seamless B/W greyhound-race loop, heavily blurred.
+   The clip is already grayscale-baked; CSS adds the soft blur + dimming.
+   scale(1.08) overscans so the blur never bleeds a faded edge. */
+.webBgVideo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
+  filter: grayscale(1) blur(10px) brightness(0.5) contrast(1.05);
+  pointer-events: none;
+}
+
+/* Dark gradient + gold glow over the video so the card stays legible */
+.webBgOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 80% at 50% 42%, rgba(245, 166, 35, 0.12), transparent 55%),
+    linear-gradient(180deg, rgba(20, 18, 14, 0.55) 0%, rgba(15, 15, 15, 0.82) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .webBgVideo { display: none; }
+}
+
 .webLogin {
   position: absolute;
   inset: 0;

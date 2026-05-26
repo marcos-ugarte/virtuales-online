@@ -8,8 +8,8 @@ interface TicketDetailModalProps {
   scale?: number
   visible?: boolean
   onClose: () => void
-  onPay?: (ticketId: number) => void
-  onCancel?: (ticketId: number) => void
+  onPay?: (ticketId: string) => void
+  onCancel?: (ticketId: string) => void
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -147,7 +147,7 @@ export default function TicketDetailModal({
           {canPay && onPay && (
             <button
               className={styles.actionButton}
-              onClick={() => onPay(ticket.ticketId)}
+              onClick={() => onPay(ticket.ticketNumber)}
             >
               <img src={acceptButtonBg} alt="" className={styles.buttonBg} />
               <span className={styles.buttonText}>PAGAR</span>
@@ -156,7 +156,7 @@ export default function TicketDetailModal({
           {canCancel && onCancel && (
             <button
               className={`${styles.actionButton} ${styles.cancelAction}`}
-              onClick={() => onCancel(ticket.ticketId)}
+              onClick={() => onCancel(ticket.ticketNumber)}
             >
               <img src={acceptButtonBg} alt="" className={styles.buttonBg} />
               <span className={styles.buttonText}>CANCELAR</span>

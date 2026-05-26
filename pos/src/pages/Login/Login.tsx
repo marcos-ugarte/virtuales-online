@@ -13,6 +13,10 @@ import loginButtonSvg from '@/assets/login/butt_login.svg'
 import dsLogoImg from '@/assets/images/ds_logo_login.png'
 import gamesImg from '@/assets/images/games_img.webp'
 
+// Web-skin login background: seamless B/W greyhound-race loop (served from public/)
+const webBgVideo = `${import.meta.env.BASE_URL}login-race.mp4`
+const webBgPoster = `${import.meta.env.BASE_URL}login-race-poster.jpg`
+
 // Types
 interface LoginFormData {
   operatorId: string
@@ -338,7 +342,20 @@ export default function Login({ onLogin, onLoginFailed }: LoginProps) {
         </>)}
 
         {/* ── Web skin (modern): clean card login, keyboard-driven ──────── */}
-        {skin === 'web' && (
+        {skin === 'web' && (<>
+          {/* Motion background: seamless B/W race loop, blurred behind the card */}
+          <video
+            className={styles.webBgVideo}
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster={webBgPoster}
+            aria-hidden="true"
+          >
+            <source src={webBgVideo} type="video/mp4" />
+          </video>
+          <div className={styles.webBgOverlay} aria-hidden="true" />
           <div className={styles.webLogin}>
             <form className={styles.webCard} onSubmit={handleSubmit} autoComplete="off">
               <h1 className={styles.webTitle}>{locationName || 'ACCESO'}</h1>
@@ -382,7 +399,7 @@ export default function Login({ onLogin, onLoginFailed }: LoginProps) {
               </button>
             </form>
           </div>
-        )}
+        </>)}
 
         {/* Device Error Modal */}
         {deviceError && (deviceError === 'DEVICE_IN_USE' || deviceError === 'DEVICE_NOT_FOUND' || deviceError === 'DEVICE_NOT_CONFIGURED') && (

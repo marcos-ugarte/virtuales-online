@@ -35,6 +35,12 @@ function canReachLocalPrintServer(): boolean {
   if (h === 'localhost' || h === '127.0.0.1') return true
   if (navigator.userAgent.includes('Electron')) return true
   if (window.location.protocol === 'https:') return true
+  // Remote HTTP (e.g. Hostinger http://<ip>:4069): a plain-HTTP page CAN still
+  // fetch the cashier's local WebPosPrinter at http://localhost:8085 (same
+  // scheme, no mixed-content block). Attempt it; vendorSendXml fails gracefully
+  // if the printer app isn't running. Without this, http://<ip> deployments
+  // never print.
+  if (window.location.protocol === 'http:') return true
   return false
 }
 

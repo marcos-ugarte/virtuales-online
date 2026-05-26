@@ -14,8 +14,8 @@ interface TicketActionModalProps {
   scale?: number
   loading?: boolean
   onClose: () => void
-  onPay?: (ticketId: number) => void
-  onCancel?: (ticketId: number) => void
+  onPay?: (ticketId: string) => void
+  onCancel?: (ticketId: string) => void
   onRebet?: (ticket: GetTicketSuccess) => void
 }
 
@@ -93,8 +93,8 @@ export default function TicketActionModal({
           disabled={loading}
           onClick={() => {
             if (loading) return
-            if (variant === 'pay' && onPay) onPay(ticket.ticketId)
-            if (variant === 'cancel' && onCancel) onCancel(ticket.ticketId)
+            if (variant === 'pay' && onPay) onPay(ticket.ticketNumber)
+            if (variant === 'cancel' && onCancel) onCancel(ticket.ticketNumber)
             if (variant === 'rebet' && onRebet) onRebet(ticket)
           }}
         >

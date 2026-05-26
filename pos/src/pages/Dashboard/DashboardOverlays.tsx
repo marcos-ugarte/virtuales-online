@@ -26,8 +26,8 @@ export interface DashboardOverlaysProps {
   setSearchedTicket: (ticket: GetTicketSuccess | null) => void
   isCancelling: boolean
   isPaying: boolean
-  handleTicketPay: (ticketId: number) => void
-  handleTicketCancel: (ticketId: number) => void
+  handleTicketPay: (ticketId: string) => void
+  handleTicketCancel: (ticketId: string) => void
   handleRebet: (ticket: GetTicketSuccess) => void
 }
 

@@ -138,6 +138,11 @@ export class POSConnection {
   // Last gameRound/gameResult seen, replayed to late subscribers so a hook
   // that mounts after the first broadcast still gets primed immediately.
   private lastGameRound: PosGoDsMessage | null = null
+  // round code → odds[] (full matrix) from the gamepool feed. Used by
+  // sendTicket to stamp each tip with server-fed odds (the /pos-go-ds backend
+  // stores the tip odds and settlement pays `amount * odds * bonus`, so the
+  // POS must supply the authoritative round odds, NOT a client-typed value).
+  private roundOddsById: Map<string, number[]> = new Map()
   private deviceId: string = ''
   private wsUrl: string = ''
   private keepaliveInterval: ReturnType<typeof setInterval> | null = null
@@ -416,6 +421,7 @@ export class POSConnection {
     this.client.onBroadcast('gameRound', (msg) => {
       this.config.events?.onGameRoundOpened?.(msg)
       this.lastGameRound = msg
+      this.cacheRoundOdds(msg)
       this.emitRaceBroadcast({ kind: 'gameRound', msg })
     })
     this.client.onBroadcast('gameResult', (msg) => {
@@ -609,6 +615,7 @@ export class POSConnection {
         serverTime: (reply.serverTime as string) || '',
       }
       this.lastGameRound = synthetic
+      this.cacheRoundOdds(synthetic)
       this.emitRaceBroadcast({ kind: 'gameRound', msg: synthetic })
     }
 
@@ -913,28 +920,149 @@ export class POSConnection {
   // safe value) so the UI never throws while these flows are unimplemented.
   // ==========================================================================
 
+  // Cache each round's odds[] from a gameRound/gamepool message so sendTicket
+  // can stamp tips with authoritative round odds.
+  private cacheRoundOdds(msg: PosGoDsMessage): void {
+    const pool = (msg as any)?.gamepool
+    if (!Array.isArray(pool)) return
+    for (const r of pool) {
+      if (r?.id && Array.isArray(r.odds)) this.roundOddsById.set(String(r.id), r.odds as number[])
+    }
+  }
+
+  /**
+   * Create a ticket over /pos-go-ds. Mirrors the virteon SignalR sendTicket
+   * flow (same bet→index math, same result shape) but sends a structured
+   * `tips[]` payload — the Go backend stores each tip's odds and settlement
+   * pays `amount * odds * bonus`, so we stamp tips with the authoritative
+   * round odds fed over the gamepool (NOT a client-typed value). Bonus is
+   * resolved server-side. Win/exacta index math is shared with buildBetIndexMap.
+   */
   async sendTicket(
-    _gameType: string,
-    _gameId: string,
-    _bets: Array<{ betType: BetType; selection1: number; selection2?: number; amount: number }>
+    gameType: string,
+    gameId: string,
+    bets: Array<{ betType: BetType; selection1: number; selection2?: number; amount: number }>
   ): Promise<SendTicketResult> {
-    return { msgType: 'sendTicket', msgId: this.nextMsgId(), msgValue: 'error', errorCode: 'INTERNAL_ERROR', errorMessage: 'Tickets not implemented yet (Phase 2)' }
+    const msgId = this.nextMsgId()
+    if (!this.client || !this.client.isOpen()) {
+      return { msgType: 'sendTicket', msgId, msgValue: 'error', errorCode: 'NO_SESSION', errorMessage: 'Not connected' }
+    }
+    if (!this.isAuthenticated()) {
+      return { msgType: 'sendTicket', msgId, msgValue: 'error', errorCode: 'NOT_AUTHENTICATED', errorMessage: 'User not authenticated' }
+    }
+
+    const config = GAME_CONFIGS[gameType]
+    const participants = config?.participants ?? 8
+    const roundOdds = this.roundOddsById.get(gameId)
+
+    const tips = bets.map((bet, i) => {
+      const isExacta = bet.betType === BetType.EXACTA && bet.selection2 != null && bet.selection2 > 0
+      const oddsIndex = isExacta
+        ? POSConnection.calculateExactaIndex(bet.selection1, bet.selection2!, participants)
+        : POSConnection.calculateWinIndex(bet.selection1)
+      const odds = roundOdds && typeof roundOdds[oddsIndex] === 'number' ? roundOdds[oddsIndex] : 0
+      return {
+        line: i + 1,
+        betType: isExacta ? 2 : 1,
+        betTypeName: isExacta ? 'Forecast in order' : 'Winner',
+        selection1: bet.selection1,
+        selection2: isExacta ? bet.selection2 : null,
+        amount: bet.amount,
+        odds,
+        oddsIndex,
+      }
+    })
+
+    try {
+      const reply = await this.client.request({
+        msgId,
+        msgType: 'sendTicket',
+        type: gameType,
+        gameId,
+        sendDt: this.formatClientDt(),
+        tips,
+      })
+
+      if (reply.msgValue === 'ok') {
+        const success: SendTicketSuccess = {
+          msgType: 'sendTicket',
+          msgId,
+          msgValue: 'ok',
+          ticketID: (reply.ticketID as string) || '',
+          ticketNumber: (reply.ticketID as string) || undefined,
+          checksum: (reply.checksum as string) || '',
+          limitProfitWarning: Boolean(reply.limitProfitWarning),
+          limitTurnoverWarning: Boolean(reply.limitTurnoverWarning),
+          serverTime: (reply.serverTime as string) || '',
+        }
+        this.config.events?.onTicketCreated?.(success)
+        return success
+      }
+
+      const error: SendTicketError = {
+        msgType: 'sendTicket',
+        msgId,
+        msgValue: 'error',
+        errorCode: ((reply.errorCode as string) || 'INTERNAL_ERROR') as SendTicketError['errorCode'],
+        errorMessage: (reply.errorMessage as string) || (reply.error as string) || 'Ticket creation failed',
+      }
+      this.config.events?.onTicketError?.(error)
+      return error
+    } catch (err) {
+      const error: SendTicketError = {
+        msgType: 'sendTicket',
+        msgId,
+        msgValue: 'error',
+        errorCode: 'INTERNAL_ERROR',
+        errorMessage: err instanceof Error ? err.message : 'Unknown error',
+      }
+      this.config.events?.onTicketError?.(error)
+      return error
+    }
   }
 
+  // Raw bet-index variant kept for parity; the /pos-go-ds path uses the
+  // structured sendTicket above. Resolve selections from the index map would
+  // lose odds context, so route advanced callers through sendTicket instead.
   async sendTicketRaw(_gameType: string, _gameId: string, _betIndexMap: BetIndexMap): Promise<SendTicketResult> {
-    return { msgType: 'sendTicket', msgId: this.nextMsgId(), msgValue: 'error', errorCode: 'INTERNAL_ERROR', errorMessage: 'Tickets not implemented yet (Phase 2)' }
+    return { msgType: 'sendTicket', msgId: this.nextMsgId(), msgValue: 'error', errorCode: 'INTERNAL_ERROR', errorMessage: 'Use sendTicket() on /pos-go-ds' }
   }
 
+  // /pos-go-ds has NO reserve/confirm handshake — `sendTicket` creates the
+  // ticket atomically in PostgreSQL. So on this transport "reserve" == create:
+  // we delegate to sendTicket and surface the result in the ReserveTicketResult
+  // shape (ticketNumber + tips) the printerRequired flow expects; confirmTicket
+  // is then a no-op success. ⚠️ Because the ticket is already persisted, a
+  // printerRequired device that fails its printer check AFTER reserve would
+  // leave an orphan — our devices are printerRequired:false (direct sendTicket
+  // path), so this path is defensive. A real backend reserve/confirm is the
+  // proper fix if a printer-gated device is ever deployed.
   async reserveTicket(
-    _gameType: string,
-    _gameId: string,
-    _bets: Array<{ betType: BetType; selection1: number; selection2?: number; amount: number }>
+    gameType: string,
+    gameId: string,
+    bets: Array<{ betType: BetType; selection1: number; selection2?: number; amount: number }>
   ): Promise<ReserveTicketResult> {
-    return { msgType: 'reserveTicket', msgId: this.nextMsgId(), msgValue: 'error', errorCode: 'INTERNAL_ERROR', errorMessage: 'Tickets not implemented yet (Phase 2)' }
+    const result = await this.sendTicket(gameType, gameId, bets)
+    if (result.msgValue === 'ok') {
+      const config = GAME_CONFIGS[gameType]
+      const participants = config?.participants ?? 8
+      const roundOdds = this.roundOddsById.get(gameId)
+      const tips = bets.map((bet) => {
+        const isExacta = bet.betType === BetType.EXACTA && bet.selection2 != null && bet.selection2 > 0
+        const oddsIndex = isExacta
+          ? POSConnection.calculateExactaIndex(bet.selection1, bet.selection2!, participants)
+          : POSConnection.calculateWinIndex(bet.selection1)
+        const odds = roundOdds && typeof roundOdds[oddsIndex] === 'number' ? roundOdds[oddsIndex] : 0
+        return { selection1: bet.selection1, selection2: isExacta ? bet.selection2 : undefined, amount: bet.amount, odds, possibleWin: bet.amount * odds }
+      })
+      return { msgType: 'reserveTicket', msgId: result.msgId, msgValue: 'ok', ticketNumber: result.ticketID, reservationId: result.ticketID, expiresAt: '', serverTime: result.serverTime || '', tips } as ReserveTicketResult
+    }
+    return { msgType: 'reserveTicket', msgId: result.msgId, msgValue: 'error', errorCode: result.errorCode, errorMessage: result.errorMessage } as ReserveTicketResult
   }
 
-  async confirmTicket(_ticketNumber: string): Promise<ConfirmTicketResult> {
-    return { success: false, error: 'INTERNAL_ERROR', errorMessage: 'Tickets not implemented yet (Phase 2)' }
+  // No-op success: on /pos-go-ds the ticket was already persisted by reserve.
+  async confirmTicket(ticketNumber: string): Promise<ConfirmTicketResult> {
+    return { success: true, ticketNumber, ticketID: ticketNumber, confirmedAt: this.formatClientDt() }
   }
 
   async getBalance(): Promise<{ success: boolean; error?: string }> {
@@ -946,10 +1074,40 @@ export class POSConnection {
     return { success: true }
   }
 
-  async sendBalance(_data: SendBalanceData): Promise<SendBalanceResult> {
-    // Auto-balance during login (processPendingSessions) calls this; treat as
-    // success so the login flow completes. Real implementation is Phase 2.
-    return { success: true }
+  // Close/reconcile a session over /pos-go-ds. Mirrors virteon's sendBalance
+  // payload (totals + balanceSessionID + isAutobalance), adapted to our WS
+  // transport. The Go backend (handlePosGoSendBalance → pgpos.InsertBalance) is
+  // server-authoritative: it recomputes the balance from DB totals and stores
+  // ours as the "reported" reconciliation values. Used for shift-close (Z) AND
+  // for auto-balancing previous sessions during login (processPendingSessions).
+  // Fails open to success so a backend hiccup never blocks logout/login (the Z
+  // was already printed) — same policy as virteon.
+  async sendBalance(data: SendBalanceData): Promise<SendBalanceResult> {
+    if (!this.client || !this.client.isOpen() || !this.isAuthenticated()) {
+      return { success: false, error: 'NOT_AUTHENTICATED', errorMessage: 'User not authenticated' }
+    }
+    const sessionCode = data.balanceSessionID || this.sessionInfo?.sessionCode || ''
+    try {
+      const reply = await this.client.request({
+        msgId: this.nextMsgId(),
+        msgType: 'sendBalance',
+        sendDt: this.formatClientDt(),
+        balanceSessionID: sessionCode,
+        sessionID: sessionCode,
+        totalBet: data.totalBet,
+        totalWin: data.totalWin,
+        totalCassa: data.totalBet - data.totalWin,
+        countTip: data.countTip,
+        countTicketCancel: data.countTicketCancel,
+        ticketData: data.ticketData,
+        isAutobalance: data.isAutobalance ? 'y' : 'n',
+      })
+      return { success: reply.msgValue === 'ok' }
+    } catch (err) {
+      // Fail open: the balance receipt was already printed; don't block the flow.
+      console.warn('[POS] sendBalance failed (treating as success):', err)
+      return { success: true }
+    }
   }
 
   getSessionCode(): string {
@@ -965,24 +1123,117 @@ export class POSConnection {
     }
   }
 
+  // Pay or cancel a ticket over /pos-go-ds. Mirrors virteon's sendTicketStatus
+  // (ticketId + newStatus + confirm). The Go backend maps payout/autopayout→paid,
+  // cancel/autocancel→cancelled (pgpos.UpdateTicketStatus) and resolves the
+  // session from client state. Used for manual pay/cancel AND auto-payout of old
+  // unpaid tickets / auto-cancel from previous sessions (processPendingSessions).
   async sendTicketStatus(
-    _ticketId: string,
-    _newStatus: 'payout' | 'autopayout' | 'cancel' | 'autocancel'
-  ): Promise<{ msgType: string; msgId: number; msgValue: string; status?: string }> {
-    // Autopay during login calls this; return ok-ish so the flow continues.
-    return { msgType: 'sendTicketStatus', msgId: this.nextMsgId(), msgValue: 'ok' }
+    ticketId: string,
+    newStatus: 'payout' | 'autopayout' | 'cancel' | 'autocancel'
+  ): Promise<{ msgType: string; msgId: number; msgValue: string; status?: string; errorCode?: string; errorMessage?: string }> {
+    const msgId = this.nextMsgId()
+    if (!this.client || !this.client.isOpen() || !this.isAuthenticated()) {
+      return { msgType: 'sendTicketStatus', msgId, msgValue: 'error', errorCode: 'NOT_AUTHENTICATED', errorMessage: 'User not authenticated' }
+    }
+    try {
+      const reply = await this.client.request({
+        msgId,
+        msgType: 'sendTicketStatus',
+        ticketId,
+        newStatus,
+        sessionID: this.sessionInfo?.sessionCode || '',
+        confirm: 'confirm',
+      })
+      return {
+        msgType: 'sendTicketStatus',
+        msgId,
+        msgValue: (reply.msgValue as string) || 'error',
+        status: reply.status as string | undefined,
+        errorCode: reply.errorCode as string | undefined,
+        errorMessage: (reply.errorMessage as string) || (reply.error as string) || undefined,
+      }
+    } catch (err) {
+      return { msgType: 'sendTicketStatus', msgId, msgValue: 'error', errorCode: 'INTERNAL_ERROR', errorMessage: err instanceof Error ? err.message : 'Unknown error' }
+    }
   }
 
-  async cancelTicket(_ticketId: number): Promise<CancelTicketResult> {
-    return { success: false, error: 'TICKET_NOT_FOUND', errorMessage: 'Not implemented yet (Phase 2)' }
+  // Look up a ticket by its code (typed or scanned) via /pos-go-ds
+  // `queryTicketCode` and map the reply → the GetTicketSuccess shape the UI
+  // (search modal, pay/cancel/rebet) consumes. `ticketId` is a numeric
+  // placeholder — pay/cancel key off `ticketNumber` (our codes are hex strings).
+  async getTicket(ticketIdentifier: string): Promise<GetTicketResult> {
+    if (!this.client || !this.client.isOpen() || !this.isAuthenticated()) {
+      return { success: false, error: 'NOT_AUTHENTICATED', errorMessage: 'User not authenticated' }
+    }
+    try {
+      const reply = await this.client.request({
+        msgId: this.nextMsgId(),
+        msgType: 'queryTicketCode',
+        code: ticketIdentifier.trim(),
+      })
+      if (reply.msgValue !== 'ok') {
+        return { success: false, error: 'TICKET_NOT_FOUND', errorMessage: (reply.errorMessage as string) || 'Boleto no encontrado' }
+      }
+      const status = String(reply.status ?? '')
+      const rawTips = Array.isArray(reply.tips) ? reply.tips : []
+      return {
+        success: true,
+        ticketId: 0,
+        ticketNumber: String(reply.ticketID ?? ''),
+        ticketUUID: String(reply.ticketID ?? ''),
+        deviceId: this.deviceId,
+        status,
+        gameTypeName: reply.gameType as string | undefined,
+        gameTypeId: Number(reply.betofferId ?? 0),
+        roundCode: reply.roundCode as string | undefined,
+        betAmount: Number(reply.betAmount ?? 0),
+        winAmount: Number(reply.winAmount ?? 0),
+        possibleWin: Number(reply.possibleWin ?? 0),
+        isPaid: Boolean(reply.isPaid),
+        isCancelled: status === 'cancelled',
+        createdAt: String(reply.createdAt ?? ''),
+        tips: rawTips.map((t: any) => ({
+          lineNumber: Number(t.line ?? 0),
+          betTypeName: t.betTypeName as string | undefined,
+          selection1: Number(t.selection1 ?? 0),
+          selection2: t.selection2 != null ? Number(t.selection2) : undefined,
+          amount: Number(t.amount ?? 0),
+          odds: Number(t.odds ?? 0),
+          winAmount: Number(t.winAmount ?? 0),
+          status: String(t.status ?? ''),
+        })),
+      }
+    } catch (err) {
+      return { success: false, error: 'TICKET_NOT_FOUND', errorMessage: err instanceof Error ? err.message : 'Unknown error' }
+    }
   }
 
-  async payTicket(_ticketId: number): Promise<PayTicketResult> {
-    return { success: false, error: 'TICKET_NOT_FOUND', errorMessage: 'Not implemented yet (Phase 2)' }
+  // Cancel a ticket by its number (manual cashier flow). Looks the ticket up
+  // first to validate + get the amount for the receipt, then sendTicketStatus.
+  async cancelTicket(ticketNumber: string): Promise<CancelTicketResult> {
+    const t = await this.getTicket(ticketNumber)
+    if (!t.success) return { success: false, error: 'TICKET_NOT_FOUND', errorMessage: t.errorMessage }
+    if (t.isCancelled) return { success: false, error: 'ALREADY_CANCELLED', errorMessage: 'Ticket ya cancelado' }
+    if (t.isPaid) return { success: false, error: 'ALREADY_PAID', errorMessage: 'Ticket ya pagado' }
+    const res = await this.sendTicketStatus(ticketNumber, 'cancel')
+    if (res.msgValue !== 'ok') {
+      return { success: false, error: 'TICKET_NOT_FOUND', errorMessage: res.errorMessage || 'No se pudo cancelar' }
+    }
+    return { success: true, ticketId: 0, ticketNumber, cancelledAmount: t.betAmount, cancelledAt: this.formatClientDt() }
   }
 
-  async getTicket(_ticketIdentifier: string): Promise<GetTicketResult> {
-    return { success: false, error: 'TICKET_NOT_FOUND', errorMessage: 'Not implemented yet (Phase 2)' }
+  // Pay a winning ticket by its number. Looks it up for the payout amount,
+  // then sendTicketStatus('payout').
+  async payTicket(ticketNumber: string): Promise<PayTicketResult> {
+    const t = await this.getTicket(ticketNumber)
+    if (!t.success) return { success: false, error: 'TICKET_NOT_FOUND', errorMessage: t.errorMessage }
+    if (t.isPaid) return { success: false, error: 'ALREADY_PAID', errorMessage: 'Ticket ya pagado' }
+    const res = await this.sendTicketStatus(ticketNumber, 'payout')
+    if (res.msgValue !== 'ok') {
+      return { success: false, error: 'TICKET_NOT_FOUND', errorMessage: res.errorMessage || 'No se pudo pagar' }
+    }
+    return { success: true, ticketId: 0, ticketNumber, paidAmount: t.winAmount, paidAt: this.formatClientDt() }
   }
 }
 

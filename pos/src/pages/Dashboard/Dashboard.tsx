@@ -23,6 +23,7 @@ import { savePending, removePending, getPending, clearExpired } from '@/services
 import GameSlide from './GameSlide'
 import DashboardOverlays from './DashboardOverlays'
 import OrderTicket from '@/components/OrderTicket'
+import BaseModal from '@/components/BaseModal'
 import type { PrepTicket } from '@/components/OrderTicket/OrderTicket'
 import styles from './Dashboard.module.css'
 
@@ -46,6 +47,16 @@ const GAME_PREFIX_TO_TYPE: Record<GamePrefix, string> = {
   dot: 'dog63',
   doe: 'dog8',
   hoc: 'horsec'
+}
+
+// Discovery (`connectionInfo.games`) lists games by *type* name (e.g.
+// "dog", "dog8"), but the dashboard works in POS *prefixes* ("dos", "doe").
+// Translate the types we support so the carousel can match them. Unknown
+// types pass through unchanged (and get filtered out by GAME_PREFIXES).
+const DISCOVERY_TYPE_TO_PREFIX: Record<string, GamePrefix> = {
+  dog: 'dos',
+  dog6: 'dos',
+  dog8: 'doe',
 }
 
 // Reverse map: backend ticket gameTypeId → game prefix. Derived from
@@ -153,8 +164,10 @@ export default function Dashboard({ onLogout, onReady }: DashboardProps) {
   const desktopGames = (window as unknown as Record<string, unknown>).desktopApp
     ? ((window as unknown as Record<string, { config?: { games?: string[] } }>).desktopApp?.config?.games || [])
     : []
-  // Games from discovery API (connectionInfo)
-  const discoveryGames: string[] = (connectionInfo as any)?.games || []
+  // Games from discovery API (connectionInfo), mapped from type names to
+  // POS prefixes (e.g. "dog"/"dog8" → "dos"/"doe"). Direct prefixes still match.
+  const discoveryGames: string[] = ((connectionInfo as any)?.games || [])
+    .map((g: string) => DISCOVERY_TYPE_TO_PREFIX[g] ?? g)
   const WEB_DEFAULT_GAMES: GamePrefix[] = ['dos', 'doe']
   const enabledPrefixes = desktopGames.length > 0
     ? GAME_PREFIXES.filter(g => desktopGames.includes(g))
@@ -1352,7 +1365,36 @@ export default function Dashboard({ onLogout, onReady }: DashboardProps) {
           clearBets()
           clearSelections()
 
-          // No-printer mode: show success notification on screen
+          // Print the ticket. printerRequired=false means the printer is
+          // OPTIONAL (it never blocks ticket creation), but if a printer/print
+          // server is configured we still print — fire-and-forget so a missing
+          // printer never delays the sale. (Previously this flow only showed the
+          // on-screen notification and never printed.)
+          const printData: PrintTicketData = {
+            ticketId,
+            date: new Date().toLocaleDateString('es-ES'),
+            time: new Date().toLocaleTimeString('es-ES'),
+            gameId: gameId!,
+            sitio: locationName || '',
+            terminalId: deviceId,
+            operadorId: operatorId,
+            juego: gameTheme.name,
+            bets: bets.map((b, i) => ({
+              num: i + 1,
+              jugada: b.second != null && b.second > 0 ? `${b.first}-${b.second}` : `${b.first}`,
+              cuota: getBetCuota(b),
+              monto: b.amount.toFixed(2)
+            })),
+            total: total.toFixed(2),
+            maxBenefit,
+            jackpot: jackpotAmount
+          }
+          console.log('[handlePrint] no-printer flow printData:', JSON.stringify(printData))
+          PrinterService.printTicket(printData)
+            .then(() => console.log('[handlePrint] printTicket completed'))
+            .catch(err => console.warn('[Print] Failed:', err))
+
+          // Show success notification on screen
           setTicketNotification({ show: true, ticketId, total })
         } else {
           console.error('Ticket submission failed:', result.errorMessage || result.errorCode)
@@ -1512,7 +1554,7 @@ export default function Dashboard({ onLogout, onReady }: DashboardProps) {
     enabled: true,
   })
 
-  const handleTicketPay = useCallback(async (ticketId: number) => {
+  const handleTicketPay = useCallback(async (ticketId: string) => {
     setIsPaying(true)
     try {
       const result = await getPOSConnection().payTicket(ticketId)
@@ -1583,7 +1625,7 @@ export default function Dashboard({ onLogout, onReady }: DashboardProps) {
     }
   }, [searchedTicket, locationName, deviceId, operatorId, markTicketPaid])
 
-  const handleTicketCancel = useCallback(async (ticketId: number) => {
+  const handleTicketCancel = useCallback(async (ticketId: string) => {
     // Block cancel during active race
     if (currentData.raceState === 'running' || currentData.raceState === 'closing') {
       setTicketSearchError('No se puede cancelar durante carrera activa')
@@ -1792,6 +1834,16 @@ export default function Dashboard({ onLogout, onReady }: DashboardProps) {
   return (
     <ScaleWrapper backgroundImage={currentBackground}>
       {waitingForData && <Loading fullScreen text={relayTimeout ? "SIN DATOS DE CARRERAS — VERIFICAR CONEXION" : "CONECTANDO..."} />}
+      {/* No supported games for this device → tell the cashier instead of
+         showing an empty board (only the background). */}
+      {enabledPrefixes.length === 0 && (
+        <BaseModal title="SIN JUEGOS" height={320}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '0 40px', textAlign: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '26px', fontWeight: 700 }}>No hay juegos configurados</span>
+            <span style={{ fontSize: '18px', opacity: 0.85 }}>Este punto de venta no tiene juegos habilitados. Contacte al administrador.</span>
+          </div>
+        </BaseModal>
+      )}
       <div className={styles.dashboard} style={dashboardVisibilityStyle}>
         {/* Source Mode Badge - shown when simulator is in test mode */}
         {sourceMode === 'test' && (
