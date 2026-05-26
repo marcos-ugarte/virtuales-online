@@ -259,6 +259,9 @@ export function buildScene(
   const HOME = { x: mPivX, y: mPivY, s: 1 };
   const UP = { x: mPivX, y: mPivY - 70, s: 0.8 };
   const LEFT = { x: mPivX - 232, y: mPivY - 6, s: 0.72 };
+  // RIGHT: 80% scale (−20%) shifted right, right-aligned to the content margin so
+  // it stays fully on-screen for both dog6 and dog8 (dog8's board is wider).
+  const RIGHT = { x: DESIGN_W - 56 - 0.4 * gridW, y: mPivY, s: 0.8 };
   matrix.position.set(HOME.x, HOME.y);
 
   // ── Runner-data strip (appears BELOW the matrix) ──────────────────────────
@@ -386,7 +389,15 @@ export function buildScene(
   // animated background. Runner strip, jackpot panel, cycles and countdown are
   // wired but PARKED until this opening is approved.
   void playBrand; void playStrip; void playJackpot; void panel; void move;
-  void UP; void LEFT; void HOME; void finale; void barT; void barL; void mHead;
+  void UP; void LEFT; void finale; void barT; void barL; void mHead;
+
+  // ── Beat (10–15s): the board scales to 80% (−20%) and slides right ────────
+  // fromTo so the scrubbed timeline is deterministic regardless of mount time.
+  master.fromTo(matrix.position, { x: HOME.x, y: HOME.y },
+    { x: RIGHT.x, y: RIGHT.y, duration: 5, ease: 'power2.inOut' }, 10);
+  master.fromTo(matrix.scale, { x: 1, y: 1 },
+    { x: RIGHT.s, y: RIGHT.s, duration: 5, ease: 'power2.inOut' }, 10);
+
   master.to({}, { duration: 0.01 }, FILM);
 
   // The matrix entrance plays IMMEDIATELY on mount (NOT scrubbed by the clock),
