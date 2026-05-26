@@ -83,11 +83,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Fredoka', 'Baloo 2', system-ui, sans-serif; /* rounded letterforms */
+  font-family: var(--font-family-din, 'DIN Next LT Pro'), Helvetica, sans-serif;
   font-style: normal;
-  font-weight: 500;
-  font-size: 3.6cqi;
-  letter-spacing: 0.3cqi;
+  font-weight: 600;
+  font-size: 3.4cqi;
+  letter-spacing: 0.5cqi;
+  text-transform: uppercase;
   text-indent: 0.3cqi; /* balance the trailing letter-spacing for true centering */
   color: rgba(255, 255, 255, 0.92);
   text-shadow: 0 0.15cqb 0.4cqb rgba(0, 0, 0, 0.45);
