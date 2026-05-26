@@ -410,13 +410,22 @@ export function buildScene(
   intro.add(playMatrixBuild(), 0.15);
 
   // ── per-frame: clock + scrub + finale number/ring ─────────────────────────
+  // The clock ref only changes ~1×/s, but the film is scrubbed every frame — so
+  // interpolate a CONTINUOUS remaining time between updates, otherwise the
+  // scrubbed animations (e.g. the 10–15s move) jump once per second ("trompicones").
+  // Extrapolation is capped at 1s so a static/frozen clock can't run the film ahead.
+  let lastRem = clockRef.current;
+  let lastChangeMs = performance.now();
   const tick = () => {
     const rem = clockRef.current;
-    clock.text = fmtClock(rem);
-    master.time(Math.min(FILM, Math.max(0, FILM - rem)));
+    if (rem !== lastRem) { lastRem = rem; lastChangeMs = performance.now(); }
+    const since = Math.min(1, (performance.now() - lastChangeMs) / 1000);
+    const smoothRem = Math.max(0, lastRem - since);
+    clock.text = fmtClock(rem); // displayed countdown stays whole-second
+    master.time(Math.min(FILM, Math.max(0, FILM - smoothRem)));
     finaleNum.text = String(Math.max(0, Math.ceil(rem)));
     ring.clear();
-    const frac = Math.max(0, Math.min(1, rem / 30));
+    const frac = Math.max(0, Math.min(1, smoothRem / 30));
     ring.lineStyle({ width: 9, color: COLORS.hairline, alpha: 0.35 }).drawCircle(0, 0, 78);
     ring.lineStyle({ width: 9, color: rem <= 5 ? 0xff5a3c : COLORS.goldBright, alpha: 0.95 });
     ring.arc(0, 0, 78, -Math.PI / 2, -Math.PI / 2 + frac * Math.PI * 2);
