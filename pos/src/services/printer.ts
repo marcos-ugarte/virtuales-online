@@ -34,13 +34,12 @@ function canReachLocalPrintServer(): boolean {
   const h = window.location.hostname
   if (h === 'localhost' || h === '127.0.0.1') return true
   if (navigator.userAgent.includes('Electron')) return true
+  // HTTPS is required to reach the cashier's local WebPosPrinter: Chrome lets an
+  // HTTPS page fetch http://localhost (localhost is a secure context), but a
+  // plain-HTTP remote page cannot reliably reach it. So the POS must be served
+  // over HTTPS (prod profile / nginx) for printing to work — plain http://<ip>
+  // deployments will NOT print.
   if (window.location.protocol === 'https:') return true
-  // Remote HTTP (e.g. Hostinger http://<ip>:4069): a plain-HTTP page CAN still
-  // fetch the cashier's local WebPosPrinter at http://localhost:8085 (same
-  // scheme, no mixed-content block). Attempt it; vendorSendXml fails gracefully
-  // if the printer app isn't running. Without this, http://<ip> deployments
-  // never print.
-  if (window.location.protocol === 'http:') return true
   return false
 }
 
