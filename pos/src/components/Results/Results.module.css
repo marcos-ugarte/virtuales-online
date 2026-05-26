@@ -304,3 +304,100 @@
 @keyframes resultsSpin {
   to { transform: rotate(360deg); }
 }
+
+/* ============================================================
+   WEB SKIN — modern sportsbook results screen (CSS only).
+   Scoped to data-skin="web"; classic stays identical.
+   ============================================================ */
+
+/* Panel → premium translucent graphite card; keep the diagonal clip but give
+   it a clean inner border + a soft drop-shadow that follows the cut. */
+:global(html[data-skin="web"]) .betsZoneBg { display: none; }
+:global(html[data-skin="web"]) .resultsPanel {
+  background: linear-gradient(158deg, rgba(44, 47, 54, 0.92) 0%, rgba(22, 24, 28, 0.95) 100%);
+  box-shadow:
+    inset 0 0 0 0.12cqb rgba(255, 255, 255, 0.09),
+    inset 0 0.28cqb 0 rgba(255, 255, 255, 0.06);
+  filter: drop-shadow(0 0.8cqb 1.8cqb rgba(0, 0, 0, 0.5));
+}
+
+/* Header: darker, discreet uppercase labels + a thin gold underline. */
+:global(html[data-skin="web"]) .tableHeader {
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 0.18cqb solid rgba(245, 166, 35, 0.5);
+  height: 6cqb;
+}
+:global(html[data-skin="web"]) .headerRaceNum,
+:global(html[data-skin="web"]) .headerResult {
+  font-size: 1.25cqi;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Rows: subtle alternation, discreet dividers, gentle hover, gold latest row. */
+:global(html[data-skin="web"]) .resultRow {
+  background: rgba(255, 255, 255, 0.022);
+  border-bottom: 0.12cqb solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.15s ease;
+}
+:global(html[data-skin="web"]) .resultRowOdd {
+  background: rgba(255, 255, 255, 0.055);
+}
+:global(html[data-skin="web"]) .resultRow:hover {
+  background: rgba(245, 166, 35, 0.08);
+}
+:global(html[data-skin="web"]) .resultRowFirst {
+  border-left: 0.3cqi solid var(--skin-accent, #f5a623);
+}
+:global(html[data-skin="web"]) .raceNumberCell {
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Print buttons → compact rounded dark-blue gradient cards, vertically aligned;
+   drop the parallelogram SVG + use an inline printer icon (.webPrintIcon). */
+:global(html[data-skin="web"]) .paginationBg,
+:global(html[data-skin="web"]) .paginationIcon { display: none; }
+:global(html[data-skin="web"]) .paginationButton {
+  width: 13cqi;
+  height: 10.5cqb;
+  border-radius: 1cqi;
+  background: linear-gradient(180deg, #1e4a78 0%, #112c4a 100%);
+  box-shadow: 0 0.4cqb 1cqb rgba(0, 0, 0, 0.45),
+    inset 0 0.16cqb 0 rgba(255, 255, 255, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+:global(html[data-skin="web"]) .paginationButton:nth-child(1) { left: 56cqi; top: 16cqb; }
+:global(html[data-skin="web"]) .paginationButton:nth-child(2) { left: 56cqi; top: 30cqb; }
+:global(html[data-skin="web"]) .paginationButton:nth-child(3) { left: 56cqi; top: 44cqb; }
+:global(html[data-skin="web"]) .paginationButton:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+  box-shadow: 0 0.7cqb 1.5cqb rgba(0, 0, 0, 0.5),
+    inset 0 0.16cqb 0 rgba(255, 255, 255, 0.12);
+}
+:global(html[data-skin="web"]) .paginationButton:active {
+  transform: scale(0.98);
+}
+:global(html[data-skin="web"]) .paginationText {
+  right: 3cqi;
+  font-size: 2.4cqi;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Inline printer icon — web skin only (hidden in classic). */
+.webPrintIcon { display: none; }
+:global(html[data-skin="web"]) .webPrintIcon {
+  display: block;
+  position: absolute;
+  left: 2.9cqi;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3cqi;
+  height: 3cqi;
+  color: #ffffff;
+  z-index: 2;
+}
