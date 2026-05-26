@@ -83,12 +83,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-family-din-italic), var(--font-family-din), Helvetica, sans-serif;
-  font-style: italic;
-  font-weight: 800;
-  font-size: 9cqi;
-  letter-spacing: 1cqi;
-  text-indent: 1cqi; /* balance the trailing letter-spacing for true centering */
+  font-family: 'Fredoka', 'Baloo 2', system-ui, sans-serif; /* rounded letterforms */
+  font-style: normal;
+  font-weight: 600;
+  font-size: 8.5cqi;
+  letter-spacing: 0.4cqi;
+  text-indent: 0.4cqi; /* balance the trailing letter-spacing for true centering */
   color: #ffd400;
   text-shadow: 0 0 2cqi rgba(255, 212, 0, 0.45);
   animation: liveBlink 1.1s ease-in-out infinite;

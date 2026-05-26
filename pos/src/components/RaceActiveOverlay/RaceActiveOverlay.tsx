@@ -18,7 +18,7 @@ export default function RaceActiveOverlay({ visible = true, showTitle = true, is
       {/* Classic: running dog/horse sprite. Web skin hides the sprite (CSS) and
           shows the blinking yellow LIVE indicator instead. */}
       {showTitle && <div className={spriteClass} />}
-      {showTitle && <div className={styles.liveIndicator}>LIVE</div>}
+      {showTitle && <div className={styles.liveIndicator}>ON LIVE</div>}
     </div>
   )
 }
