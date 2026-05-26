@@ -56,6 +56,14 @@ const GAME_DISPLAY_NAMES: Record<string, string> = {
   hoc: 'CABALLOS'
 }
 
+// Short labels for the web-skin game-selection cards (replace the brand logos).
+const GAME_CARD_LABELS: Record<string, string> = {
+  dos: 'DOG 6',
+  doe: 'DOG 8',
+  dot: 'TRÍO',
+  hoc: 'CABALLOS'
+}
+
 // Import background images per game
 import backgroundDos from '@/assets/svg/bg_214_backgroundImage_dos_backgroundImage_stdText.jpeg'
 import backgroundDoe from '@/assets/svg/bg_111_doe_backgroundImage_backgroundImage_stdText_gameSe.jpeg'
@@ -430,6 +438,13 @@ export default function GameSlide({
               </button>
             )
           })}
+          {/* RECARGAS — web skin only (hidden in classic via CSS). Action TBD. */}
+          <button
+            className={`${styles.menuButton} ${styles.recargasButton} ${activeMenu === 'RECARGAS' ? styles.menuButtonActive : ''}`}
+            onClick={() => setActiveMenu('RECARGAS')}
+          >
+            <span className={styles.menuButtonText}>RECARGAS</span>
+          </button>
         </nav>
 
         {/* Order Ticket Button */}
@@ -497,9 +512,11 @@ export default function GameSlide({
               <button
                 key={`gs-${gp}`}
                 className={`${styles.gameSelectorBtn} ${activeGame === gp ? styles.gameSelectorActive : ''}`}
+                data-game={gp}
                 onClick={() => setActiveGame(gp)}
               >
                 <img src={GAME_SELECTORS[index]} alt={gp} />
+                <span className={styles.gameSelectorLabel}>{GAME_CARD_LABELS[gp] ?? gp}</span>
               </button>
             )
           })}
@@ -702,6 +719,7 @@ export default function GameSlide({
                   <div className={styles.selectionDotBg} style={SELECTION_DOT_STYLE} />
                 )}
                 <img src={img} alt={`${index + 1}`} className={styles.selectionNumberImg} draggable={false} />
+                <span className={styles.selNum}>{index + 1}</span>
               </button>
             ))}
           </div>
@@ -732,6 +750,7 @@ export default function GameSlide({
                   <div className={styles.selectionDotBg} style={SELECTION_DOT_STYLE} />
                 )}
                 <img src={img} alt={`${index + 1}`} className={styles.selectionNumberImg} draggable={false} />
+                <span className={styles.selNum}>{index + 1}</span>
               </button>
             ))}
           </div>
@@ -763,6 +782,7 @@ export default function GameSlide({
                     <div className={styles.selectionDotBg} style={SELECTION_DOT_STYLE} />
                   )}
                   <img src={img} alt={`${index + 1}`} className={styles.selectionNumberImg} draggable={false} />
+                <span className={styles.selNum}>{index + 1}</span>
                 </button>
               ))}
             </div>

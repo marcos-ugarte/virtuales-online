@@ -180,6 +180,355 @@
   padding-right: 0.4cqi;
 }
 
+/* ============================================================
+   WEB SKIN ONLY — "Gold Slab" nav tabs, matching the ORDENAR
+   TICKET button (same colors / rectangle / font size).
+   Scoped to html[data-skin="web"]; the classic skin is untouched.
+   Inactive tabs are charcoal slabs; the ACTIVE tab is a solid
+   gold rectangle with dark ink — identical treatment to the
+   ORDENAR TICKET CTA below.
+   ============================================================ */
+:global(html[data-skin="web"]) .menuButtons {
+  gap: 0.6cqi;
+  align-items: center;
+  top: 2.7cqb; /* nudged down so the shorter buttons sit centered in the band */
+}
+:global(html[data-skin="web"]) .menuButton {
+  background: var(--skin-surface-2, #585858);
+  border: none;
+  border-radius: 0.35cqi;
+  width: 8.5cqi; /* equal width for all tabs (segmented-control look) */
+  height: 7cqb; /* shorter than the classic full-band button */
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: inset 0 -0.2cqb 0 rgba(0, 0, 0, 0.28);
+  transition: background-color 0.14s ease-out, color 0.14s ease-out,
+    box-shadow 0.14s ease-out;
+}
+/* Match the ORDENAR TICKET label: same size, weight and tracking. */
+:global(html[data-skin="web"]) .menuButtonText {
+  color: var(--skin-text, #e2e2e2);
+  font-size: 1.2cqi;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.08em;
+}
+:global(html[data-skin="web"]) .menuButton:hover {
+  background: #6a6a6a;
+}
+:global(html[data-skin="web"]) .menuButton:hover .menuButtonText {
+  color: #ffffff;
+}
+:global(html[data-skin="web"]) .menuButtonActive {
+  background: var(--skin-accent, #f5a623);
+  box-shadow: inset 0 -0.25cqb 0 var(--skin-accent-dark, #d4891a),
+    0 0.25cqb 0.7cqb rgba(0, 0, 0, 0.3);
+}
+:global(html[data-skin="web"]) .menuButtonActive .menuButtonText {
+  color: var(--skin-accent-ink, #2a2118);
+  font-weight: 700;
+}
+/* No classic white top-line in the web skin. */
+:global(html[data-skin="web"]) .menuButtonActive::before {
+  display: none;
+}
+
+/* Web skin: hide ORDENAR TICKET; RECARGAS takes its place in the tab row. */
+:global(html[data-skin="web"]) .orderTicketButton {
+  display: none;
+}
+
+/* RECARGAS button — only exists in the web skin (hidden in classic). Reuses
+   .menuButton styling; sits right after VENTAS in the tab row. */
+.recargasButton {
+  display: none;
+}
+:global(html[data-skin="web"]) .recargasButton {
+  display: flex;
+}
+
+/* Web skin: drop the per-game greyhound/horse background photo → flat graphite
+   (the ScaleWrapper viewport supplies the graphite; the slide stays transparent). */
+:global(html[data-skin="web"]) .gameLayerBackground,
+:global(html[data-skin="web"]) .backgroundImage {
+  display: none;
+}
+:global(html[data-skin="web"]) .gameLayer {
+  background: transparent;
+}
+
+/* Web skin: stake "coins" → clean rectangular chips (charcoal + gold $amount),
+   gap-separated (no fan overlap). Selected = gold fill, matching the tabs. */
+:global(html[data-skin="web"]) .coinButton {
+  background: var(--skin-surface, #4a4a4a);
+  border: 0.12cqi solid rgba(245, 166, 35, 0.28);
+  border-radius: 0.7cqi;
+  width: 10.5cqi;
+  height: 14cqb;
+  margin-left: 0.7cqi;
+  box-shadow: inset 0 -0.2cqb 0 rgba(0, 0, 0, 0.28);
+  transition: background-color 0.14s ease-out, border-color 0.14s ease-out,
+    box-shadow 0.14s ease-out, transform 0.08s ease-out;
+}
+:global(html[data-skin="web"]) .coinButton:first-child {
+  margin-left: 0;
+}
+/* Hide the per-game colored coin SVG. */
+:global(html[data-skin="web"]) .coinImage {
+  display: none;
+}
+/* Center the amount, gold, with a $ prefix. */
+:global(html[data-skin="web"]) .coinValue {
+  left: 0;
+  width: 100%;
+  padding-left: 0;
+  text-align: center;
+  color: var(--skin-accent, #f5a623);
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: none;
+}
+:global(html[data-skin="web"]) .coinButton:hover {
+  background: #5a5a5a;
+  border-color: var(--skin-accent, #f5a623);
+}
+:global(html[data-skin="web"]) .coinButton:active {
+  transform: translateY(0.15cqb);
+}
+/* Selected denomination → solid gold (same language as the active tab). */
+:global(html[data-skin="web"]) .coinButtonActive {
+  background: var(--skin-accent, #f5a623);
+  border-color: var(--skin-accent, #f5a623);
+  box-shadow: inset 0 -0.25cqb 0 var(--skin-accent-dark, #d4891a);
+}
+:global(html[data-skin="web"]) .coinButtonActive .coinValue {
+  color: var(--skin-accent-ink, #2a2118);
+}
+/* Web skin: lift the coins up and center them under the runner-selector chips
+   (their center is ~43.3cqi, not screen-center). .bottomSection starts at
+   14.79cqi, so left:33.5% lands the block center at ~43.3cqi. Pin delete/print
+   to the right so they don't shift. */
+:global(html[data-skin="web"]) .denominationButtons {
+  position: absolute;
+  left: 33.5%;
+  transform: translateX(-50%);
+  bottom: 7cqb;
+  justify-content: center;
+}
+:global(html[data-skin="web"]) .actionButtons {
+  margin-left: auto;
+}
+
+/* Web skin: number selectors → clean rounded chips. TRAP COLORS kept (runner
+   identity), number rendered as text, selection shown with a gold ring. */
+.selNum {
+  display: none;
+}
+:global(html[data-skin="web"]) .selectionButton img {
+  display: none; /* drop the per-runner baked SVG chip */
+}
+:global(html[data-skin="web"]) .selectionDotBg {
+  display: none; /* gold ring replaces the dot selection marker */
+}
+:global(html[data-skin="web"]) .selectionButton {
+  border-radius: 0.9cqi;
+  overflow: visible;
+  box-shadow: 0 0.25cqb 0.6cqb rgba(0, 0, 0, 0.4),
+    inset 0 0.15cqb 0 rgba(255, 255, 255, 0.18);
+}
+:global(html[data-skin="web"]) .selNum {
+  display: flex;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+  font-family: var(--font-family-din), Helvetica, sans-serif;
+  font-weight: 800;
+  font-size: 4.8cqi;
+  color: #ffffff;
+  text-shadow: 0 0.12cqb 0.25cqb rgba(0, 0, 0, 0.6);
+}
+/* Trap colors (extracted from the product SVGs). */
+:global(html[data-skin="web"]) .selectionButton:nth-child(1) {
+  background: linear-gradient(180deg, #e60000, #bd0000);
+}
+:global(html[data-skin="web"]) .selectionButton:nth-child(2) {
+  background: linear-gradient(180deg, #0076fe, #0033d9);
+}
+:global(html[data-skin="web"]) .selectionButton:nth-child(3) {
+  background: linear-gradient(180deg, #ebebea, #d0d3d3);
+}
+:global(html[data-skin="web"]) .selectionButton:nth-child(3) .selNum {
+  color: #1a1a1a;
+  text-shadow: none;
+}
+:global(html[data-skin="web"]) .selectionButton:nth-child(4) {
+  background: linear-gradient(180deg, #383838, #0a0a0a);
+}
+:global(html[data-skin="web"]) .selectionButton:nth-child(5) {
+  background: linear-gradient(180deg, #ffaf00, #fb8200);
+}
+:global(html[data-skin="web"]) .selectionButton:nth-child(5) .selNum {
+  color: #241800;
+  text-shadow: none;
+}
+:global(html[data-skin="web"]) .selectionButton:nth-child(6) {
+  background: repeating-linear-gradient(135deg, #1a1a1a 0 1.2cqi, #ebebea 1.2cqi 2.4cqi);
+}
+:global(html[data-skin="web"]) .selectionButton:nth-child(7) {
+  background: repeating-linear-gradient(135deg, #179c2b 0 1.2cqi, #ffffff 1.2cqi 2.4cqi);
+}
+:global(html[data-skin="web"]) .selectionButton:nth-child(8) {
+  background: repeating-linear-gradient(135deg, #fb8200 0 1.2cqi, #1a1a1a 1.2cqi 2.4cqi);
+}
+/* Selected runner → gold ring (the trap color stays as the fill). */
+:global(html[data-skin="web"]) .selectionButtonActive {
+  box-shadow: 0 0 0 0.35cqi var(--skin-accent, #f5a623),
+    0 0.25cqb 0.6cqb rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================
+   WEB SKIN — race header in the tvbox-online "RaceBar" style:
+   light/bold ITALIC DIN, gray labels + white values, gold
+   countdown, and a clean CSS timer bar (no red SVG).
+   ============================================================ */
+:global(html[data-skin="web"]) .raceNumberLabel,
+:global(html[data-skin="web"]) .raceStartLabel,
+:global(html[data-skin="web"]) .activeTimeLabel,
+:global(html[data-skin="web"]) .timerSecondsLabel {
+  font-family: var(--font-family-din-italic, "DIN Next LT Pro Italic");
+  font-style: italic;
+  font-weight: 300;
+  color: #9a9a9a;
+  letter-spacing: 0.04em;
+}
+:global(html[data-skin="web"]) .raceStartValue,
+:global(html[data-skin="web"]) .activeTimeValue {
+  font-family: var(--font-family-din-italic, "DIN Next LT Pro Italic");
+  font-style: italic;
+  font-weight: 300;
+  color: #ffffff;
+}
+:global(html[data-skin="web"]) .raceNumberText {
+  font-family: var(--font-family-din-italic, "DIN Next LT Pro Italic");
+  font-style: italic;
+  font-weight: 700;
+  color: #ffffff;
+}
+:global(html[data-skin="web"]) .timerSecondsValue {
+  font-family: var(--font-family-din-italic, "DIN Next LT Pro Italic");
+  font-style: italic;
+  color: var(--skin-accent, #f5a623);
+}
+/* Keep the ≤10s alert color in the web skin too (status color, not themed). */
+:global(html[data-skin="web"]) .timerSecondsValueAlert {
+  color: #ff5a5a;
+}
+/* Clean CSS timer bar: graphite track + gold fill (drop the red SVG + icon). */
+:global(html[data-skin="web"]) .timerBarContainer {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 1.3cqb;
+}
+:global(html[data-skin="web"]) .timerBarBg,
+:global(html[data-skin="web"]) .timerBarLine,
+:global(html[data-skin="web"]) .timerIconImg {
+  display: none;
+}
+:global(html[data-skin="web"]) .timerBarProgress {
+  background: var(--skin-accent, #f5a623);
+  border-radius: 1.3cqb;
+}
+
+/* ============================================================
+   WEB SKIN — game-selection cards: drop the RACING DOGS brand
+   logo + per-game icons, show text labels (DOG 6 / DOG 8 / …)
+   as charcoal+gold cards (same language as the tabs).
+   ============================================================ */
+:global(html[data-skin="web"]) .gameIcon,
+:global(html[data-skin="web"]) .gameIconBg {
+  display: none;
+}
+:global(html[data-skin="web"]) .gameSelectorBtn img {
+  display: none;
+}
+.gameSelectorLabel {
+  display: none;
+}
+:global(html[data-skin="web"]) .gameSelectorsContainer {
+  right: 26cqi;
+  top: 2.4cqb;
+  width: 17.19cqi;
+  height: 7cqb;
+  gap: 0.5cqi;
+}
+:global(html[data-skin="web"]) .gameSelectorBtn {
+  flex: 1 1 0;
+  width: auto;
+  height: 100%;
+  border-radius: 0.5cqi !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--skin-surface-2, #585858) !important;
+  filter: brightness(0.55); /* inactive cards dimmed; active is full color */
+  transition: filter 0.14s ease-out, box-shadow 0.14s ease-out;
+}
+/* Per-game brand colors: DOG 6 deep metallic blue, DOG 8 deep metallic green.
+   Top sheen layer + a sharp mid gloss transition give the metallic look. */
+:global(html[data-skin="web"]) .gameSelectorBtn[data-game="dos"] {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 14%),
+    linear-gradient(180deg, #285a86 0%, #163b60 48%, #0d2c49 52%, #091f33 100%) !important;
+}
+:global(html[data-skin="web"]) .gameSelectorBtn[data-game="doe"] {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 14%),
+    linear-gradient(180deg, #2c7541 0%, #16522d 48%, #0f4022 52%, #0a2e16 100%) !important;
+}
+:global(html[data-skin="web"]) .gameSelectorLabel {
+  display: block;
+  font-family: var(--font-family-din, Helvetica, sans-serif);
+  font-weight: 700;
+  font-size: 0.95cqi;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+  white-space: nowrap;
+}
+:global(html[data-skin="web"]) .gameSelectorActive {
+  filter: brightness(1);
+  box-shadow: inset 0 -0.2cqb 0 rgba(255, 255, 255, 0.35),
+    0 0.2cqb 0.5cqb rgba(0, 0, 0, 0.35) !important;
+}
+:global(html[data-skin="web"]) .gameSelectorActive::before {
+  display: none;
+}
+
+/* ============================================================
+   WEB SKIN — operator profile + settings gear, modern app style
+   (no navy card; just clean text + icons on the graphite).
+   ============================================================ */
+:global(html[data-skin="web"]) .infoPanelBg,
+:global(html[data-skin="web"]) .infoPanelBgShadow,
+:global(html[data-skin="web"]) .infoPanelBgHighlight {
+  display: none;
+}
+:global(html[data-skin="web"]) .operatorId {
+  color: #ffffff;
+  font-weight: 700;
+}
+:global(html[data-skin="web"]) .deviceId {
+  color: rgba(255, 255, 255, 0.55);
+}
+:global(html[data-skin="web"]) .versionText {
+  color: rgba(255, 255, 255, 0.35);
+}
+:global(html[data-skin="web"]) .searchIdText {
+  color: var(--skin-accent, #f5a623);
+}
+
 /* Exit/Logout Button */
 .exitButton {
   position: absolute;

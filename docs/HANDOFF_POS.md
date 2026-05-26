@@ -49,6 +49,41 @@ backend transport was swapped from Microsoft **SignalR/.NET** to **virtuales-go'
 - `reserveTicket`/`confirmTicket`: **/pos-go-ds has no reserve/confirm handshake** (`sendTicket` creates atomically), so reserve == create (delegates to sendTicket, returns ReserveTicketResult shape + tips) and confirm is a no-op success. ⚠️ printerRequired devices risk an orphan if the printer check fails after reserve — our devices are printerRequired:false (direct sendTicket path); a real backend reserve/confirm is the proper fix if a printer-gated device is deployed.
 Verified live round-trip: create→ok, queryTicketCode→ok (status pending, odds 4.3 stored), sendTicketStatus(cancel)→ok, requery→status **cancelled**. **STILL STUB:** `getBalance` (unused — balance comes from the session/init).
 
+## POS client-logs → Elasticsearch (2026-05-26)
+The POS `posLogger` batches client events and POSTs `/api/pos-logs/batch`
+(`{deviceId,sessionId,operatorId,appVersion,logs[]}`). virtuales-go had no such
+route → **404** (harmless, the client is fire-and-forget, but logs were lost).
+Implemented in **virtuales-go** (`cmd/api/poslogs.go`, branch `feat/pos-logs-es`
+commit `11dfaf6`, deployed to the running `virtuales-api` container): `POST
+/api/pos-logs` + `/batch` index one doc per log into the **`vg-pos-client-logs`**
+ES index (Elastic Cloud, sibling of `vg-pos-messages`), device→location/provider
+resolved from PG. Modeled on the .NET `PosLogsController` + what virteon sends.
+ES creds live in virtuales-go `.env` (`ES_ENABLED/ES_HOST/ES_API_KEY/POS_LOGS_ES_INDEX`,
+wired via `docker-compose.override.yml`). Verified e2e (direct + via nginx HTTPS):
+`{ok,count}` 200 and docs land in ES. Query: `vg-pos-client-logs/_search`.
+
+## HTTPS access on the VPS (required for printing — 2026-05-26)
+Printing needs a **secure context** (`canReachLocalPrintServer()` is https-only:
+Chrome lets an HTTPS page fetch `http://localhost:8085` WebPosPrinter, an HTTP
+page can't). The POS is served on this VPS (187.124.95.45) by the **vite dev
+server on :4069** (this repo, HMR — code changes are live without a build) and
+exposed over **HTTPS by system nginx** via the `pos-test` site → one origin
+`https://187.124.95.45/` routing UI→4069, `/api/*`→4101, `/pos-go-ds`(wss)→4099.
+Two gotchas hit while wiring this up:
+- **`sites-enabled/pos-test` is a regular COPY, not a symlink** to
+  `sites-available/` — edit the enabled copy (then `nginx -t && systemctl reload
+  nginx`). `pos-test` had **no `server_name`**, so the bare IP fell through to
+  `ds-capture` (its dashboard). Fix: added `server_name 187.124.95.45;` to the
+  `:443` block of the enabled `pos-test`. (Re-apply if nginx configs are regen'd.)
+- **`pos/.env` must use same-origin**: set `VITE_API_URL=` (empty) so discovery
+  is relative (`/api/ws/discover`) and the WS is `wss://<host>/pos-go-ds` derived
+  from the page origin (resolveWsUrl). A non-empty `http://…:4101` causes
+  **mixed-content** ("sin conexión / reconectando") on the HTTPS page. Restart
+  vite after editing `.env`.
+Use **`https://187.124.95.45/?deviceId=ce0b8aa81d6378ed42b077e6042b07b5`** (accept
+the self-signed cert), NOT `http://…:4069` (no printing, and same-origin discover
+won't resolve without nginx).
+
 ## How to run & verify
 ```
 cd pos && npm install

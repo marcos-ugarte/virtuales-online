@@ -324,7 +324,21 @@ function resolveTimezone(tz?: string): string {
   const mapped = WINDOWS_TO_IANA_TIMEZONE[tz]
   if (mapped) return mapped
 
-  // Fallback to default if unknown
+  // Fixed UTC offset (e.g. "-04:00") — the /pos-go-ds backend sends the
+  // location offset, not an IANA name. Intl.DateTimeFormat can't take an
+  // offset as `timeZone`, so map common offsets to a representative no-DST
+  // IANA zone. (Only affects the displayed clock; race timing is UTC-based.)
+  const OFFSET_TO_IANA: Record<string, string> = {
+    '-03:00': 'America/Argentina/Buenos_Aires',
+    '-04:00': 'America/Santo_Domingo',
+    '-05:00': 'America/Bogota',
+    '-06:00': 'America/Guatemala',
+    '+00:00': 'UTC',
+    '-00:00': 'UTC',
+  }
+  if (OFFSET_TO_IANA[tz]) return OFFSET_TO_IANA[tz]
+
+  // Fallback to default if unknown (warn once-ish — unknown non-offset value)
   console.warn(`[useRealRaceData] Unknown timezone: ${tz}, using default`)
   return DEFAULT_TIMEZONE
 }
