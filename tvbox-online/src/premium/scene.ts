@@ -216,8 +216,10 @@ export function buildScene(
     return c;
   };
   const lblPrimero = pill('PRIMERO', -Math.PI / 2); // reads bottom→top
-  // left edge, vertically centred (its inner side touches the panel border)
-  lblPrimero.position.set(startX - lblPrimero.width / 2, mTop + gridH / 2);
+  // left edge, vertically centred. NOTE: PIXI's .width/.height are LOCAL bounds
+  // (ignore rotation), so for this −90° pill the on-screen horizontal extent is
+  // its .height — use that (not .width) so the inner side hugs the panel border.
+  lblPrimero.position.set(startX - lblPrimero.height / 2 + 2, mTop + gridH / 2);
   const lblSegundo = pill('SEGUNDO', 0);
   // top edge, horizontally centred (its lower side touches the panel border)
   lblSegundo.position.set(startX + gridW / 2, mTop - lblSegundo.height / 2);
