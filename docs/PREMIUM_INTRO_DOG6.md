@@ -41,6 +41,12 @@ tilts aside, then a long matrix hold into pre-race dusk. Elegant but mostly
 *static graphics over cinematic video* — the premium feel is the footage +
 glass/perspective + trap-color coding + smooth parallax, not heavy motion.
 
+**Axis labels (PRIMERO/SEGUNDO):** anchored to the board edges, not floating —
+`PRIMERO` (rows = 1st place) is a vertical tab centred on the LEFT edge,
+`SEGUNDO` (columns = 2nd place) a horizontal tab centred on the TOP edge. Both
+are children of the `matrix` container (`scene.ts`), so the move/scale beats
+transform the board **and its labels as one unit** (matrix pivot = visual centre).
+
 ### Reverse-engineered beats (timestamps from the _oao clip)
 | t (s)   | Beat | What's on screen |
 |---------|------|------------------|

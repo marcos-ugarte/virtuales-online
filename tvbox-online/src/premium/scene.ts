@@ -197,8 +197,11 @@ export function buildScene(
   for (let r = 0; r <= N; r++) grid.moveTo(cellsX, cellsY + r * cellH).lineTo(cellsX + N * cellW, cellsY + r * cellH);
   matrix.addChild(grid);
 
-  // axis labels (like the reference): PRIMERO = rows/1st (left, rotated),
-  // SEGUNDO = columns/2nd (top-right, horizontal). Dark semi-transparent pills.
+  // Axis labels, anchored to the PANEL EDGES (so they read as part of the board,
+  // not floating chips): PRIMERO = rows/1st place → vertical tab emerging from the
+  // LEFT edge, centred on it; SEGUNDO = columns/2nd place → horizontal tab centred
+  // on the TOP edge. Both are children of `matrix`, so the move/scale animations
+  // carry them with the board as one unit. Dark semi-transparent pills.
   const pill = (str: string, rot: number) => {
     const c = new PIXI.Container();
     const t = text(str, { size: 11, weight: 'medium', color: COLORS.cream, letterSpacing: 2 });
@@ -213,9 +216,11 @@ export function buildScene(
     return c;
   };
   const lblPrimero = pill('PRIMERO', -Math.PI / 2); // reads bottom→top
-  lblPrimero.position.set(startX - lblPrimero.width / 2 - 3, mTop + gridH / 2);
+  // left edge, vertically centred (its inner side touches the panel border)
+  lblPrimero.position.set(startX - lblPrimero.width / 2, mTop + gridH / 2);
   const lblSegundo = pill('SEGUNDO', 0);
-  lblSegundo.position.set(cellsX + N * cellW - lblSegundo.width / 2 - 2, mTop - 13);
+  // top edge, horizontally centred (its lower side touches the panel border)
+  lblSegundo.position.set(startX + gridW / 2, mTop - lblSegundo.height / 2);
   matrix.addChild(lblPrimero, lblSegundo);
 
   const matrixRows: { row: PIXI.Container; counts: Array<() => gsap.core.Tween> }[] = [];
