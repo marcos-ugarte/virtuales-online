@@ -1198,6 +1198,26 @@ export class POSConnection {
     }
   }
 
+  // Cash out (cobro) a web player's wallet by phone. Same shape as webDeposit;
+  // server debits the wallet (validates available balance → INSUFFICIENT_FUNDS).
+  async webCashout(phone: string, amount: number, idempotencyKey: string): Promise<WalletInfoResult> {
+    if (!this.client || !this.client.isOpen() || !this.isAuthenticated()) {
+      return { success: false, errorCode: 'NOT_AUTHENTICATED', errorMessage: 'Operador no autenticado' }
+    }
+    try {
+      const reply = await this.client.request({
+        msgId: this.nextMsgId(),
+        msgType: 'webCashout',
+        phone: phone.trim(),
+        amount: amount.toFixed(2),
+        idempotencyKey,
+      })
+      return mapWalletReply(reply)
+    } catch (err) {
+      return { success: false, errorCode: 'INTERNAL_ERROR', errorMessage: err instanceof Error ? err.message : 'Error de conexión' }
+    }
+  }
+
   // Look up a ticket by its code (typed or scanned) via /pos-go-ds
   // `queryTicketCode` and map the reply → the GetTicketSuccess shape the UI
   // (search modal, pay/cancel/rebet) consumes. `ticketId` is a numeric
