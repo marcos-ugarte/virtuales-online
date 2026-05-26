@@ -328,15 +328,17 @@
   pointer-events: none;
 }
 
-/* Dark gradient + gold glow over the video so the card stays legible */
+/* Cinematic overlay: faint gold glow + vignette + dark gradient so the card
+   pops and the blurred race reads as ambience, not noise. */
 .webBgOverlay {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
   background:
-    radial-gradient(120% 80% at 50% 42%, rgba(245, 166, 35, 0.12), transparent 55%),
-    linear-gradient(180deg, rgba(20, 18, 14, 0.55) 0%, rgba(15, 15, 15, 0.82) 100%);
+    radial-gradient(110% 75% at 50% 40%, rgba(245, 166, 35, 0.10), transparent 50%),
+    radial-gradient(140% 120% at 50% 50%, transparent 38%, rgba(0, 0, 0, 0.55) 100%),
+    linear-gradient(180deg, rgba(12, 12, 14, 0.58) 0%, rgba(8, 8, 10, 0.88) 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -352,68 +354,115 @@
   justify-content: center;
 }
 
+/* Compact glassmorphism card: translucent dark + blur + cinematic shadow. */
 .webCard {
   display: flex;
   flex-direction: column;
-  gap: 1.6cqi;
-  width: clamp(280px, 30cqi, 560px);
-  padding: 2.6cqi 2.4cqi;
-  background: var(--skin-surface, #4a4a4a);
-  border: 1px solid var(--skin-border, rgba(255, 255, 255, 0.16));
-  border-radius: 1.2cqi;
-  box-shadow: 0 1.5cqi 4cqi rgba(0, 0, 0, 0.55);
+  gap: 1.1cqi;
+  width: clamp(258px, 23cqi, 430px);
+  padding: 2cqi 2cqi 2.1cqi;
+  background: linear-gradient(180deg, rgba(40, 43, 50, 0.62) 0%, rgba(20, 22, 26, 0.66) 100%);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  backdrop-filter: blur(20px) saturate(1.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.4cqi;
+  box-shadow:
+    0 2.4cqi 5.5cqi rgba(0, 0, 0, 0.6),
+    0 0.4cqi 1.2cqi rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .webTitle {
-  margin: 0 0 0.6cqi;
+  margin: 0 0 0.5cqi;
   text-align: center;
   font-family: var(--skin-font-display, 'Barlow Condensed', sans-serif);
   font-weight: 800;
-  font-size: 2.6cqi;
-  letter-spacing: 0.05em;
+  font-size: 2cqi;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--skin-accent, #f5a623);
+  text-shadow: 0 0 1.4cqi rgba(245, 166, 35, 0.3);
+}
+/* Subtle gold underline → premium hierarchy without extra markup. */
+.webTitle::after {
+  content: "";
+  display: block;
+  width: 2.6cqi;
+  height: 0.3cqb;
+  margin: 0.55cqi auto 0;
+  border-radius: 1cqb;
+  background: var(--skin-accent, #f5a623);
+  opacity: 0.85;
 }
 
 .webInput {
   width: 100%;
   box-sizing: border-box;
-  padding: 1.2cqi 1.4cqi;
-  border-radius: 0.7cqi;
-  border: 1px solid var(--skin-border, rgba(255, 255, 255, 0.16));
-  background: var(--skin-bg, #3a3a3a);
+  padding: 0.95cqi 1.3cqi;
+  border-radius: 0.6cqi;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
   color: var(--skin-text, #fff);
   font-family: var(--skin-font-body, 'Open Sans', sans-serif);
-  font-size: 1.9cqi;
+  font-size: 1.7cqi;
   text-align: center;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   outline: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
 }
-.webInput::placeholder { color: var(--skin-text-dim, #b8b8b8); letter-spacing: 0.06em; }
+.webInput::placeholder { color: rgba(255, 255, 255, 0.5); letter-spacing: 0.08em; }
 .webInput:focus {
   border-color: var(--skin-accent, #f5a623);
-  box-shadow: 0 0 0 0.2cqi rgba(245, 166, 35, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 0.18cqi rgba(245, 166, 35, 0.25);
 }
 
 .webError {
   text-align: center;
   color: #ff6b6b;
   font-family: var(--skin-font-body, 'Open Sans', sans-serif);
-  font-size: 1.5cqi;
+  font-size: 1.45cqi;
+  margin: -0.3cqi 0 0;
 }
 
 .webButton {
-  margin-top: 0.6cqi;
-  padding: 1.3cqi;
+  margin-top: 0.5cqi;
+  padding: 1.05cqi;
   border: none;
-  border-radius: 0.7cqi;
+  border-radius: 0.6cqi;
   cursor: pointer;
-  background: linear-gradient(180deg, var(--skin-accent, #f5a623) 0%, #d18d12 100%);
+  background: linear-gradient(180deg, #ffb43a 0%, #ef9c1e 55%, #e08f12 100%);
   color: #1a1206;
   font-family: var(--skin-font-display, 'Barlow Condensed', sans-serif);
   font-weight: 800;
-  font-size: 2cqi;
-  letter-spacing: 0.05em;
+  font-size: 1.9cqi;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  box-shadow: 0 0.6cqi 1.6cqi rgba(245, 166, 35, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: filter 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
 }
-.webButton:disabled { opacity: 0.55; cursor: not-allowed; }
+.webButton:hover {
+  filter: brightness(1.06);
+  transform: translateY(-0.2cqb);
+  box-shadow: 0 0.9cqi 2cqi rgba(245, 166, 35, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.webButton:active { transform: translateY(0.1cqb); }
+.webButton:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+/* Web skin: glassy status pill (matches the card), smaller + subtler. */
+:global(html[data-skin="web"]) .statusBar {
+  background: rgba(18, 20, 24, 0.55);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.4cqb;
+  padding: 0.6cqb 1.6cqi;
+  box-shadow: 0 0.5cqi 1.4cqi rgba(0, 0, 0, 0.45);
+}
+:global(html[data-skin="web"]) .statusText {
+  font-size: 1.5cqb;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.9);
+}
