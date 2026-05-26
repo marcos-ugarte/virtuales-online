@@ -67,3 +67,33 @@
   from { left: 5%; }
   to { left: calc(95% - 360px); }
 }
+
+/* ============================================================
+   WEB SKIN — drop the running dog/horse sprite; show a blinking
+   yellow LIVE centered on the overlay instead.
+   ============================================================ */
+.liveIndicator {
+  display: none;
+}
+:global(html[data-skin="web"]) .dogRunning,
+:global(html[data-skin="web"]) .horseRunning {
+  display: none;
+}
+:global(html[data-skin="web"]) .liveIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family-din-italic), var(--font-family-din), Helvetica, sans-serif;
+  font-style: italic;
+  font-weight: 800;
+  font-size: 9cqi;
+  letter-spacing: 1cqi;
+  text-indent: 1cqi; /* balance the trailing letter-spacing for true centering */
+  color: #ffd400;
+  text-shadow: 0 0 2cqi rgba(255, 212, 0, 0.45);
+  animation: liveBlink 1.1s ease-in-out infinite;
+}
+@keyframes liveBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.12; }
+}

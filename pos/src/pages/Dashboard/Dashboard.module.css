@@ -637,8 +637,8 @@
   align-items: center;
   gap: 0.5cqi;
   position: absolute;
-  right: 1cqi; /* centered under the device-id/session block */
-  top: 12.9cqb; /* at the race-data row level (CARRERA/EMPIEZA/SEG) */
+  right: 0.5cqi; /* right edge flush with the device-id/session block */
+  top: 9cqb; /* tucked just below the session id */
   background: var(--skin-surface-2, #585858);
   border: none;
   border-radius: 0.45cqi;
