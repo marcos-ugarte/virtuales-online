@@ -323,3 +323,108 @@
   flex: 1;
   max-width: 6.5cqi;
 }
+
+/* ============================================================
+   WEB SKIN — modern dark sportsbook CUOTAS (CSS only). Straight
+   rectangular panel (NO diagonal). Scoped to data-skin="web";
+   classic keeps the navy SVG panel.
+   ============================================================ */
+:global(html[data-skin="web"]) .betsZoneBg { display: none; }
+
+/* Panel → clean rectangular graphite card (diagonal removed). */
+:global(html[data-skin="web"]) .cuotasPanel {
+  clip-path: none;
+  border-radius: 1cqi;
+  background: linear-gradient(158deg, rgba(42, 46, 54, 0.92) 0%, rgba(20, 23, 28, 0.95) 100%);
+  box-shadow:
+    inset 0 0 0 0.12cqb rgba(255, 255, 255, 0.08),
+    inset 0 0.28cqb 0 rgba(255, 255, 255, 0.05);
+  filter: drop-shadow(0 0.8cqb 1.8cqb rgba(0, 0, 0, 0.55));
+}
+
+/* Header → darker translucent bar, discreet uppercase label. */
+:global(html[data-skin="web"]) .tableHeader {
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 0.12cqb solid rgba(255, 255, 255, 0.08);
+}
+:global(html[data-skin="web"]) .headerRaceNum {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+/* Dog number chips → premium badges (soft shadow). */
+:global(html[data-skin="web"]) .headerOddsIcon img {
+  filter: drop-shadow(0 0.15cqb 0.3cqb rgba(0, 0, 0, 0.6));
+}
+
+/* Rows → subtle navy alternation, discreet dividers, blue hover glow. */
+:global(html[data-skin="web"]) .oddsRow {
+  border-bottom: 0.1cqb solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+:global(html[data-skin="web"]) .oddsRowOdd {
+  background: rgba(30, 52, 86, 0.3);
+}
+:global(html[data-skin="web"]) .oddsRow:hover {
+  background: rgba(45, 95, 160, 0.2);
+  box-shadow: inset 0.25cqi 0 0 rgba(80, 140, 210, 0.6);
+}
+:global(html[data-skin="web"]) .raceNumberCell {
+  font-weight: 700;
+  color: #fff;
+}
+:global(html[data-skin="web"]) .oddsCell {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* Scrollbar → discreet translucent. */
+:global(html[data-skin="web"]) .scrollbarTrack { background: rgba(255, 255, 255, 0.05); }
+:global(html[data-skin="web"]) .scrollbarThumb { background: rgba(255, 255, 255, 0.3); }
+:global(html[data-skin="web"]) .scrollbarThumb:active { background: rgba(255, 255, 255, 0.5); }
+
+/* Print buttons → compact rounded dark-blue cards, vertically aligned;
+   inline printer icon replaces the parallelogram SVG. */
+:global(html[data-skin="web"]) .paginationBg,
+:global(html[data-skin="web"]) .paginationIcon { display: none; }
+:global(html[data-skin="web"]) .paginationButton {
+  width: 13cqi;
+  height: 10.5cqb;
+  border-radius: 1cqi;
+  background: linear-gradient(180deg, #1e4a78 0%, #112c4a 100%);
+  box-shadow: 0 0.4cqb 1cqb rgba(0, 0, 0, 0.5),
+    inset 0 0.16cqb 0 rgba(255, 255, 255, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+:global(html[data-skin="web"]) .paginationButton:nth-child(1) { left: 70cqi; top: 16cqb; }
+:global(html[data-skin="web"]) .paginationButton:nth-child(2) { left: 70cqi; top: 30cqb; }
+:global(html[data-skin="web"]) .paginationButton:nth-child(3) { left: 70cqi; top: 44cqb; }
+:global(html[data-skin="web"]) .paginationButton:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.12);
+  box-shadow: 0 0.7cqb 1.5cqb rgba(0, 0, 0, 0.55),
+    inset 0 0.16cqb 0 rgba(255, 255, 255, 0.12);
+}
+:global(html[data-skin="web"]) .paginationButton:active {
+  transform: scale(0.98);
+}
+:global(html[data-skin="web"]) .paginationText {
+  right: 3cqi;
+  font-size: 2.4cqi;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Inline printer icon — web skin only (hidden in classic). */
+.webPrintIcon { display: none; }
+:global(html[data-skin="web"]) .webPrintIcon {
+  display: block;
+  position: absolute;
+  left: 2.9cqi;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3cqi;
+  height: 3cqi;
+  color: #ffffff;
+  z-index: 2;
+}

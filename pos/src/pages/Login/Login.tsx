@@ -343,9 +343,11 @@ export default function Login({ onLogin, onLoginFailed }: LoginProps) {
 
         {/* ── Web skin (modern): clean card login, keyboard-driven ──────── */}
         {skin === 'web' && (<>
-          {/* Motion background: seamless B/W race loop, blurred behind the card */}
+          {/* Motion background: seamless B/W race loop, blurred behind the card.
+              Played in slow motion for a calmer, cinematic feel. */}
           <video
             className={styles.webBgVideo}
+            ref={(v) => { if (v) v.playbackRate = 0.45 }}
             autoPlay
             muted
             loop
