@@ -363,6 +363,7 @@
 :global(html[data-skin="web"]) .ventasPanel {
   clip-path: none; /* remove the diagonal cut → clean rectangle */
   border-radius: 1cqi;
+  width: 72cqi;    /* right edge flush with the totals bar (footer ends ~69cqi) */
   height: 64cqb;   /* end just above the gold footer (matches the old bottom) */
   background: linear-gradient(158deg, rgba(42, 46, 54, 0.92) 0%, rgba(20, 23, 28, 0.95) 100%);
   box-shadow:
