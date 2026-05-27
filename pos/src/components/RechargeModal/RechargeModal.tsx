@@ -17,6 +17,8 @@ import styles from './RechargeModal.module.css'
 interface Props {
   open: boolean
   onClose: () => void
+  /** Fired after a successful recarga/cobro so the host can log it in Ventas. */
+  onSuccess?: (kind: 'recarga' | 'cobro', amount: number, phone: string) => void
 }
 
 type Mode = 'recarga' | 'cobro'
@@ -38,7 +40,7 @@ const errText = (code?: string, fallback?: string) =>
 
 const onlyDigits = (s: string) => s.replace(/\D/g, '')
 
-export function RechargeModal({ open, onClose }: Props) {
+export function RechargeModal({ open, onClose, onSuccess }: Props) {
   const [mode, setMode] = useState<Mode>('recarga')
   const [phase, setPhase] = useState<Phase>('form')
   const [phone, setPhone] = useState('')
@@ -91,9 +93,10 @@ export function RechargeModal({ open, onClose }: Props) {
       : await conn.webDeposit(phone, amountNum, idemKey)
     setLoading(false)
     if (!res.success) { setError(errText(res.errorCode, res.errorMessage)); return }
+    onSuccess?.(mode, amountNum, phone)
     setResult(res)
     setPhase('result')
-  }, [phone, amountNum, idemKey, loading, isCobro, exceedsBalance])
+  }, [phone, amountNum, idemKey, loading, isCobro, exceedsBalance, mode, onSuccess])
 
   if (!open) return null
 

@@ -285,7 +285,7 @@ export default function Dashboard({ onLogout, onReady }: DashboardProps) {
   const isRelayStale = staleCheckReady && relayConnected && isDataStale(25000)
 
   // Sales tracking - accumulates tickets created during the session
-  const { tickets, salesRecords, addTicket, updateTicketStatus, markTicketPaid, cancelTicket, cancelPendingTickets, clearTickets, replaceTickets } = useSalesTracker()
+  const { tickets, salesRecords, addTicket, addWalletMovement, updateTicketStatus, markTicketPaid, cancelTicket, cancelPendingTickets, clearTickets, replaceTickets } = useSalesTracker()
 
   // On mount, hydrate the sales list from SignalR Init resumeTicketList.
   // If there is an unclosed previous session, its tickets come back here and
@@ -1854,7 +1854,11 @@ export default function Dashboard({ onLogout, onReady }: DashboardProps) {
         )}
         {/* Cashier "Cargar saldo" (recarga) modal — opened by the RECARGAS
             tab button inside GameSlide (web skin) via onRecharge. */}
-        <RechargeModal open={showRecharge} onClose={() => setShowRecharge(false)} />
+        <RechargeModal
+          open={showRecharge}
+          onClose={() => setShowRecharge(false)}
+          onSuccess={(kind, amount, phone) => addWalletMovement(kind, amount, phone)}
+        />
         {/* ============================================================
            FULL-PANEL GAME CAROUSEL
            Each slide is a complete game panel including header, background,

@@ -6,7 +6,10 @@ const GAME_TYPE_MAP: Record<string, string> = {
   dog6: 'DOS',
   dog63: 'DOT',
   dog8: 'DOE',
-  horsec: 'HOC'
+  horsec: 'HOC',
+  // Wallet movements shown in the Ventas table (not real games):
+  RECARGA: 'RECARGA',
+  COBRO: 'COBRO',
 }
 
 // Participants per game type (for exacta index calculation)
@@ -149,6 +152,29 @@ export function useSalesTracker(options: UseSalesTrackerOptions = {}) {
 
     console.log('[useSalesTracker] Ticket added:', newTicket)
 
+    return newTicket
+  }, [])
+
+  // Record a wallet movement (recarga/cobro) in the Ventas table so the cashier
+  // sees its balance impact: a RECARGA shows as a sold ticket (counts in Monto);
+  // a COBRO shows as a paid winning ticket (counts in Pagar → subtracts from the
+  // running balance). `phone` last-4 is used as the row "number".
+  const addWalletMovement = useCallback((kind: 'recarga' | 'cobro', amount: number, phone: string) => {
+    const isCobro = kind === 'cobro'
+    const newTicket: CreatedTicket = {
+      ticketId: `${isCobro ? 'COBRO' : 'RECARGA'}-${Date.now()}-${phone.slice(-4)}`,
+      gameId: '',
+      gameType: isCobro ? 'COBRO' : 'RECARGA',
+      gamePrefix: '',
+      raceNumber: phone.slice(-4),
+      bets: [],
+      totalAmount: isCobro ? 0 : amount, // recarga → Monto; cobro → 0 stake
+      createdAt: new Date(),
+      status: isCobro ? 'win' : 'pending',
+      payout: isCobro ? amount : 0,      // cobro → Pagar (resta al balance)
+      isPaid: isCobro,                   // cobro paid immediately
+    }
+    setTickets(prev => [newTicket, ...prev])
     return newTicket
   }, [])
 
@@ -320,6 +346,7 @@ export function useSalesTracker(options: UseSalesTrackerOptions = {}) {
     tickets,
     salesRecords,
     addTicket,
+    addWalletMovement,
     updateTicketStatus,
     markTicketPaid,
     cancelTicket,
