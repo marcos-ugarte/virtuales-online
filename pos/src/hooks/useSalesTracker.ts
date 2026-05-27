@@ -170,9 +170,13 @@ export function useSalesTracker(options: UseSalesTrackerOptions = {}) {
       bets: [],
       totalAmount: isCobro ? 0 : amount, // recarga → Monto; cobro → 0 stake
       createdAt: new Date(),
-      status: isCobro ? 'win' : 'pending',
+      // Both resolve IMMEDIATELY in the balance (no race to wait for):
+      //  recarga → 'lost' (house keeps the cash → +amount to balance now),
+      //  cobro   → 'win' + payout (→ −amount to balance now). Neither is
+      //  'pending', so they never get reprocessed by race results either.
+      status: isCobro ? 'win' : 'lost',
       payout: isCobro ? amount : 0,      // cobro → Pagar (resta al balance)
-      isPaid: isCobro,                   // cobro paid immediately
+      isPaid: true,                      // resolved + paid at once
     }
     setTickets(prev => [newTicket, ...prev])
     return newTicket
